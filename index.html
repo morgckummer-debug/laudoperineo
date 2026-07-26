@@ -93,6 +93,7 @@
   }
   .field input.flag-abnormal{border-color:var(--amber);background:var(--amber-light);}
   .field input.format-error{border-color:#B4432F;background:#FBEAE6;}
+  .field input.field-missing{border-color:#B4432F;}
   .format-warning{font-size:11px;color:#B4432F;font-weight:600;display:block;margin-top:3px;}
   .field .flag-note{font-size:11px;color:var(--amber);font-weight:600;display:none;}
   .field .flag-note.show{display:block;}
@@ -1307,10 +1308,21 @@
 
   // ---------- Main render ----------
   let pendingCount = 0;
+  // Only borders fields red once the user has actually tried to print with
+  // pending fields — otherwise a blank form would look like a wall of errors
+  // before she's even started filling it in.
+  let printAttempted = false;
 
   function render(){
     pendingCount = 0;
-    function req(id){ const val = v(id); if(val==='') pendingCount++; return val; }
+    function req(id){
+      const val = v(id);
+      const empty = val === '';
+      const el = $(id);
+      if(el) el.classList.toggle('field-missing', printAttempted && empty);
+      if(empty) pendingCount++;
+      return val;
+    }
 
     const uretraComprimento = blankOrValue(req('uretraComprimento'));
     const aberturaUretral = v('aberturaUretral');
@@ -1717,6 +1729,8 @@
 
   $('btnPrint').addEventListener('click', ()=>{
     if(pendingCount > 0){
+      printAttempted = true;
+      render();
       const alertEl = $('printAlert');
       alertEl.classList.add('show');
       alertEl.scrollIntoView({behavior:'smooth', block:'center'});
@@ -1759,9 +1773,11 @@
     document.querySelectorAll('#formCol input[type=checkbox]').forEach(el=>el.checked=false);
     $('objIU').checked = true; $('objProlapso').checked = true; $('objFecal').checked = true;
     document.querySelectorAll('.conditional').forEach(el=>el.classList.remove('show'));
-    document.querySelectorAll('.field input, .field select').forEach(el=>el.classList.remove('flag-abnormal'));
+    document.querySelectorAll('.field input, .field select').forEach(el=>el.classList.remove('flag-abnormal', 'field-missing'));
     document.querySelectorAll('.flag-note').forEach(el=>el.classList.remove('show'));
     checkedState = {};
+    printAttempted = false;
+    $('printAlert').classList.remove('show');
     render();
   });
 
