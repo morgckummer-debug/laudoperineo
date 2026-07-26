@@ -159,6 +159,12 @@
   @media print{
     body *{visibility:hidden;}
     .paper, .paper *{visibility:visible;}
+    /* .preview-wrap is "position:sticky" on screen, which makes it the containing
+       block for .paper's absolute positioning below — so top:0/left:0 would resolve
+       against that sticky box (wherever the grid laid it out on screen) instead of
+       the printed page, leaving the print preview blank. Clearing it here lets
+       .paper anchor to the page itself. */
+    .preview-wrap{position:static;}
     .paper{position:absolute;top:0;left:0;width:100%;box-shadow:none;border:none;max-height:none;overflow:visible;padding:0 10mm;}
     .preview-actions, .status-pill{display:none !important;}
   }
