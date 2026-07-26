@@ -157,23 +157,21 @@
   ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
 
   /* @page margins repeat on every physical printed page — unlike an element's own
-     padding, which only reserves space once at the start of the (single, tall)
-     .paper box, leaving later pages without top margin and adding a trailing
-     blank page from the extra height. */
+     padding, which only reserves space once at the start of a tall box. */
   @page{
     margin: 4cm 1cm 1cm;
   }
   @media print{
-    body *{visibility:hidden;}
-    .paper, .paper *{visibility:visible;}
-    /* .preview-wrap is "position:sticky" on screen, which makes it the containing
-       block for .paper's absolute positioning below — so top:0/left:0 would resolve
-       against that sticky box (wherever the grid laid it out on screen) instead of
-       the printed page, leaving the print preview blank. Clearing it here lets
-       .paper anchor to the page itself. */
+    /* display:none actually removes these from the document flow. The previous
+       visibility:hidden approach kept them invisible but still occupying their
+       full on-screen height, so the (much taller) hidden form kept stretching
+       the printed document well past the end of the report, producing several
+       blank trailing pages. .paper is left to flow normally — no more
+       position:absolute, so no containing-block quirks either. */
+    .topbar, .settings-panel, #formCol, .preview-actions, .status-pill{display:none !important;}
+    .layout{display:block;padding:0;margin:0;max-width:none;}
     .preview-wrap{position:static;}
-    .paper{position:absolute;top:0;left:0;width:100%;box-shadow:none;border:none;max-height:none;overflow:visible;padding:0;}
-    .preview-actions, .status-pill{display:none !important;}
+    .paper{background:none;border:none;box-shadow:none;border-radius:0;max-height:none;overflow:visible;padding:0;margin:0;}
   }
 </style>
 </head>
