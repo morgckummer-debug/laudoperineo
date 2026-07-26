@@ -1366,8 +1366,14 @@
       el.style.textDecoration='underline'; el.style.fontSize='12pt';
       el.style.margin='20px 0 8px'; el.style.fontWeight='600';
     });
-    clone.querySelectorAll('ul').forEach(el=>{ el.style.margin='0 0 4px 0'; el.style.paddingLeft='20px'; });
-    clone.querySelectorAll('li').forEach(el=>{ el.style.marginBottom='9px'; });
+    clone.querySelectorAll('ul').forEach(el=>{
+      el.style.margin='0 0 4px 0'; el.style.paddingLeft='20px';
+      el.style.fontFamily="'Times New Roman', Times, serif"; el.style.fontSize='11pt';
+    });
+    clone.querySelectorAll('li').forEach(el=>{
+      el.style.marginBottom='9px';
+      el.style.fontFamily="'Times New Roman', Times, serif"; el.style.fontSize='11pt';
+    });
     clone.querySelectorAll('.impressao li').forEach(el=>{ el.style.fontWeight='700'; });
     clone.querySelectorAll('.filled').forEach(el=>{ el.style.color='#2b2b2e'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
