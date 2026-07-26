@@ -1694,13 +1694,19 @@
   });
 
   $('btnPrint').addEventListener('click', ()=>{
-    // window.print()/window.open() are unreliable here: this page usually runs
-    // inside a sandboxed preview frame that blocks both the print permission and
-    // popups, so calling them silently does nothing (no exception to catch).
-    // Downloading a standalone print-ready HTML file uses the same mechanism as
-    // "Baixar .txt" (an <a download> Blob link), which works in every context —
-    // the user opens it in a regular browser tab, where it auto-opens the print
-    // dialog, and can print or "Salvar como PDF" from there.
+    // On a normal top-level page (GitHub Pages, or a locally opened file) window.print()
+    // just works and opens the native dialog immediately, using the @media print rules
+    // above. It's only inside a sandboxed embed (the Claude Artifact chat preview) that
+    // the print permission and popups are silently blocked — window===window.top tells
+    // these two cases apart.
+    if(window === window.top){
+      window.print();
+      return;
+    }
+    // Embedded preview fallback: download a standalone print-ready HTML file, the same
+    // mechanism as "Baixar .txt" (an <a download> Blob link), which works in every
+    // context — the user opens it in a regular browser tab, where it auto-opens the
+    // print dialog, and can print or "Salvar como PDF" from there.
     try{
       const reportHtml = $('paper').innerHTML;
       const docHtml = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
