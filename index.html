@@ -1345,28 +1345,72 @@
     return ok;
   }
 
+  // Word's paste filter doesn't reliably inherit font-family/font-size from
+  // an ancestor — it needs both set explicitly on every single element, or it
+  // falls back to its own defaults (seen here as size 9 and Calibri). So we
+  // build an off-screen clone with the font baked into every node, select
+  // that, and copy it — instead of relying on inheritance from the .paper class.
+  function buildStyledClipboardNode(){
+    const FONT = "'Times New Roman', Times, serif";
+    const clone = $('paper').cloneNode(true);
+    clone.removeAttribute('contenteditable');
+    clone.removeAttribute('id');
+    clone.style.maxHeight = 'none';
+    clone.style.overflow = 'visible';
+    clone.style.lineHeight = '1.5';
+    clone.style.color = '#2b2b2e';
+    clone.querySelectorAll('*').forEach(el=>{ el.style.fontFamily = FONT; el.style.fontSize = '11pt'; });
+    clone.style.fontFamily = FONT;
+    clone.style.fontSize = '11pt';
+    clone.querySelectorAll('h3.doctitle').forEach(el=>{
+      el.style.textAlign='center'; el.style.textDecoration='underline';
+      el.style.fontSize='14pt'; el.style.margin='0 0 4px'; el.style.fontWeight='600';
+    });
+    clone.querySelectorAll('.doctitle-sub').forEach(el=>{
+      el.style.textAlign='center'; el.style.fontSize='10pt'; el.style.color='#5b5b5e'; el.style.marginBottom='20px';
+    });
+    clone.querySelectorAll('h4.sec').forEach(el=>{
+      el.style.textDecoration='underline'; el.style.fontSize='12pt';
+      el.style.margin='20px 0 8px'; el.style.fontWeight='600';
+    });
+    clone.querySelectorAll('.impressao li').forEach(el=>{ el.style.fontWeight='700'; });
+    clone.querySelectorAll('.filled').forEach(el=>{ el.style.color='#2b2b2e'; });
+    clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
+    clone.querySelectorAll('.footnote').forEach(el=>{
+      el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.marginTop='16px';
+    });
+    return clone;
+  }
+
   $('btnCopy').addEventListener('click', ()=>{
-    const paperEl = $('paper');
     const btn = $('btnCopy'); const old = btn.textContent;
-    // Selecting the rendered report and using execCommand('copy') copies the
-    // browser's own rich-text serialization (fonts, bullets, bold, colors) —
-    // navigator.clipboard.write() with a hand-built HTML blob was unreliable
-    // here (Word kept falling back to its own default 9pt), likely because
-    // the richer Clipboard API is flaky when the page is opened as a local
-    // file instead of served over http(s).
+    // Copy an off-screen, fully inline-styled clone via execCommand('copy')
+    // (same transport as a manual Ctrl+C) instead of navigator.clipboard.write(),
+    // which was unreliable when the file is opened locally instead of served
+    // over http(s).
+    const styledNode = buildStyledClipboardNode();
+    styledNode.style.position = 'fixed';
+    styledNode.style.top = '-10000px';
+    styledNode.style.left = '-10000px';
+    document.body.appendChild(styledNode);
     const range = document.createRange();
-    range.selectNodeContents(paperEl);
+    range.selectNodeContents(styledNode);
     const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
     let success = false;
     try{ success = document.execCommand('copy'); }catch(e){ success = false; }
-    if(!success){ success = fallbackCopy(paperEl.innerText); }
+    sel.removeAllRanges();
+    document.body.removeChild(styledNode);
+    if(!success){ success = fallbackCopy($('paper').innerText); }
     if(success){
-      sel.removeAllRanges();
       btn.textContent = 'Copiado ✓'; setTimeout(()=>btn.textContent=old, 1800);
     } else {
-      // Last resort: leave the report selected so the user can copy manually with Ctrl/Cmd+C
+      // Last resort: select the visible report so the user can copy manually with Ctrl/Cmd+C
+      const fallbackRange = document.createRange();
+      fallbackRange.selectNodeContents($('paper'));
+      sel.removeAllRanges();
+      sel.addRange(fallbackRange);
       alert('Não foi possível copiar automaticamente neste navegador. O texto do laudo foi selecionado — use Ctrl+C (ou Cmd+C no Mac) para copiar.');
     }
   });
