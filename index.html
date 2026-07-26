@@ -423,6 +423,12 @@
             <span class="flag-note" id="flag_uteroVolume">Acima do valor de referência</span>
           </div>
           <div class="field"><label>Espessura endometrial</label><input type="text" inputmode="decimal" data-decimals="1" id="endometrio" placeholder="mm"></div>
+          <div class="field"><label>Textura endometrial</label>
+            <select id="endometrioTextura"><option value="homogenea">Homogênea</option><option value="heterogenea">Heterogênea</option></select>
+          </div>
+          <div class="field"><label>Padrão endometrial</label>
+            <select id="endometrioPadrao"><option value="trilaminar">Trilaminar</option><option value="secretor">Secretor</option><option value="laminar">Laminar</option></select>
+          </div>
         </div>
         <div class="field-row">
           <div class="field"><label>Textura miometrial</label>
@@ -1330,6 +1336,8 @@
     const uteroVolume = blankOrValue(v('uteroVolume'));
     flag('uteroVolume', uteroVolumeNum!==null && uteroVolumeNum > vrUteroLimite);
     const endometrio = blankOrValue(req('endometrio'));
+    const endometrioTextura = v('endometrioTextura');
+    const endometrioPadrao = v('endometrioPadrao');
     const miometrioTextura = v('miometrioTextura');
     const miomaCountSel = miometrioTextura==='heterogenea' ? parseInt(v('miomaCount')||'1',10) : 0;
     const figoFrags = [];
@@ -1483,7 +1491,7 @@
     } else {
       html += '<li>'+phrase('miometrioHomogeneo')+'</li>';
     }
-    html += '<li>O endométrio é homogêneo, medindo '+span(endometrio)+' mm de espessura, com interface miometrial bem definida.</li>';
+    html += '<li>O endométrio é '+(endometrioTextura==='heterogenea'?'heterogêneo':'homogêneo')+', medindo '+span(endometrio)+' mm de espessura, com padrão '+endometrioPadrao+' e interface miometrial bem definida.</li>';
     html += '<li>'+(coloUterinoAspecto==='hipertrofico' ? phrase('coloHipertrofico', {COMPRIMENTO: coloUterinoComprimento.text}) : phrase('coloNormal', {COMPRIMENTO: coloUterinoComprimento.text}))+'</li>';
     const ovD_qualitativo = (ovD_aspecto==='alterado' && ovD_descricao) ? escapeHtml(ovD_descricao) : null;
     const ovE_qualitativo = (ovE_aspecto==='alterado' && ovE_descricao) ? escapeHtml(ovE_descricao) : null;
