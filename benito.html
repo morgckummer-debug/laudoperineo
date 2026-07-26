@@ -1473,9 +1473,9 @@
 
     // ----- Assemble laudo HTML -----
     let html = '';
-    html += '<p style="margin:0 0 2px;">Paciente: '+span(nomePaciente)+'</p>';
-    html += '<p style="margin:0 0 2px;">Médico: '+(medicoSolicitante ? escapeHtml(medicoSolicitante) : '<span class="blank">____</span>')+'</p>';
-    html += '<p style="margin:0 0 16px;">Data: '+(dataExame ? escapeHtml(dataExame) : '<span class="blank">____</span>')+'</p>';
+    html += '<p style="margin:0 0 2px;font-weight:700;">Paciente: '+span(nomePaciente)+'</p>';
+    html += '<p style="margin:0 0 2px;font-weight:700;">Médico: '+(medicoSolicitante ? escapeHtml(medicoSolicitante) : '<span class="blank">____</span>')+'</p>';
+    html += '<p style="margin:0 0 16px;font-weight:700;">Data: '+(dataExame ? escapeHtml(dataExame) : '<span class="blank">____</span>')+'</p>';
     html += '<h3 class="doctitle">ULTRASSONOGRAFIA TRANSVAGINAL PARA AVALIAÇÃO PERINEAL<br>E DE PROLAPSO GENITAL</h3>';
     html += '<div class="doctitle-sub">Ultrassom direcionado para '+escapeHtml(objetivoTexto)+'</div>';
     html += '<p>'+phrase('linhaEquipamento')+'</p>';
