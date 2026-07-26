@@ -130,7 +130,7 @@
   .paper .blank{color:#B4432F;font-weight:600;}
   .paper .filled{color:var(--ink);}
   .paper .impressao li{font-weight:700;}
-  .paper .footnote{font-style:italic;font-size:11.5pt;color:var(--ink-soft);margin-top:16px;}
+  .paper .footnote{font-style:italic;font-size:9pt;color:var(--ink-soft);margin-top:16px;}
 
   .preview-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
   .preview-actions button{flex:1;min-width:110px;}
@@ -1644,7 +1644,7 @@
     clone.querySelectorAll('.doctitle-sub').forEach(h=>{ h.style.textAlign='center'; h.style.color='#5b5b5e'; });
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
-    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; });
+    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; });
     const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;\">"+clone.innerHTML+'</div>';
 
     // Plain-text fallback: rebuild manually so list items keep a literal bullet
