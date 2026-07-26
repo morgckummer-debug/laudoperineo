@@ -114,7 +114,7 @@
     background:#FEFCFE;border:1px solid var(--line);border-radius:4px;
     box-shadow:var(--shadow);
     padding:34px 36px 40px;
-    font-family:'Times New Roman', Times, serif;font-size:11.5pt;line-height:1.5;color:var(--ink);
+    font-family:'Times New Roman', Times, serif;font-size:11pt;line-height:1.5;color:var(--ink);
     max-height:calc(100vh - 150px);overflow-y:auto;
   }
   .paper h3.doctitle{
@@ -130,7 +130,7 @@
   .paper .blank{color:#B4432F;font-weight:600;}
   .paper .filled{color:var(--ink);}
   .paper .impressao li{font-weight:700;}
-  .paper .footnote{font-style:italic;font-size:11.5pt;color:var(--ink-soft);margin-top:16px;}
+  .paper .footnote{font-style:italic;font-size:11pt;color:var(--ink-soft);margin-top:16px;}
 
   .preview-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
   .preview-actions button{flex:1;min-width:110px;}
@@ -1345,70 +1345,28 @@
     return ok;
   }
 
-  // Builds a copy of the report with every class-based style (headings, bullets,
-  // bold impressão items, blank/filled highlighting) baked in as inline styles,
-  // since pasted HTML keeps inline styles but not our external <style> rules.
-  function buildStyledClipboardHtml(){
-    const clone = $('paper').cloneNode(true);
-    clone.removeAttribute('contenteditable');
-    clone.style.fontFamily = "'Times New Roman', Times, serif";
-    clone.style.fontSize = '11pt';
-    clone.style.lineHeight = '1.5';
-    clone.style.color = '#2b2b2e';
-    clone.querySelectorAll('h3.doctitle').forEach(el=>{
-      el.style.textAlign='center'; el.style.textDecoration='underline';
-      el.style.fontSize='14pt'; el.style.margin='0 0 4px'; el.style.fontWeight='600';
-    });
-    clone.querySelectorAll('.doctitle-sub').forEach(el=>{
-      el.style.textAlign='center'; el.style.fontSize='10pt'; el.style.color='#5b5b5e'; el.style.marginBottom='20px';
-    });
-    clone.querySelectorAll('h4.sec').forEach(el=>{
-      el.style.textDecoration='underline'; el.style.fontSize='12pt';
-      el.style.margin='20px 0 8px'; el.style.fontWeight='600';
-    });
-    clone.querySelectorAll('ul').forEach(el=>{
-      el.style.margin='0 0 4px 0'; el.style.paddingLeft='20px';
-      el.style.fontFamily="'Times New Roman', Times, serif"; el.style.fontSize='11pt';
-    });
-    clone.querySelectorAll('li').forEach(el=>{
-      el.style.marginBottom='9px';
-      el.style.fontFamily="'Times New Roman', Times, serif"; el.style.fontSize='11pt';
-    });
-    clone.querySelectorAll('.impressao li').forEach(el=>{ el.style.fontWeight='700'; });
-    clone.querySelectorAll('.filled').forEach(el=>{ el.style.color='#2b2b2e'; });
-    clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
-    clone.querySelectorAll('.footnote').forEach(el=>{
-      el.style.fontStyle='italic'; el.style.fontSize='11pt'; el.style.color='#5b5b5e'; el.style.marginTop='16px';
-    });
-    return clone.outerHTML;
-  }
-
-  $('btnCopy').addEventListener('click', async ()=>{
-    const text = $('paper').innerText;
+  $('btnCopy').addEventListener('click', ()=>{
+    const paperEl = $('paper');
     const btn = $('btnCopy'); const old = btn.textContent;
+    // Selecting the rendered report and using execCommand('copy') copies the
+    // browser's own rich-text serialization (fonts, bullets, bold, colors) —
+    // navigator.clipboard.write() with a hand-built HTML blob was unreliable
+    // here (Word kept falling back to its own default 9pt), likely because
+    // the richer Clipboard API is flaky when the page is opened as a local
+    // file instead of served over http(s).
+    const range = document.createRange();
+    range.selectNodeContents(paperEl);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
     let success = false;
-    try{
-      if(navigator.clipboard && window.ClipboardItem){
-        const item = new ClipboardItem({
-          'text/plain': new Blob([text], {type:'text/plain'}),
-          'text/html': new Blob([buildStyledClipboardHtml()], {type:'text/html'})
-        });
-        await navigator.clipboard.write([item]);
-        success = true;
-      } else if(navigator.clipboard && navigator.clipboard.writeText){
-        await navigator.clipboard.writeText(text);
-        success = true;
-      }
-    }catch(e){ success = false; }
-    if(!success){ success = fallbackCopy(text); }
+    try{ success = document.execCommand('copy'); }catch(e){ success = false; }
+    if(!success){ success = fallbackCopy(paperEl.innerText); }
     if(success){
+      sel.removeAllRanges();
       btn.textContent = 'Copiado ✓'; setTimeout(()=>btn.textContent=old, 1800);
     } else {
-      // Last resort: select the report text so the user can copy manually with Ctrl/Cmd+C
-      const range = document.createRange();
-      range.selectNodeContents($('paper'));
-      const sel = window.getSelection();
-      sel.removeAllRanges(); sel.addRange(range);
+      // Last resort: leave the report selected so the user can copy manually with Ctrl/Cmd+C
       alert('Não foi possível copiar automaticamente neste navegador. O texto do laudo foi selecionado — use Ctrl+C (ou Cmd+C no Mac) para copiar.');
     }
   });
@@ -1423,13 +1381,13 @@
         '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
         '<title>Laudo de Ultrassonografia Perineal</title>'+
         '<style>'+
-        "body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;color:#2b2b2e;padding:20mm 18mm;max-width:800px;margin:0 auto;}"+
+        "body{font-family:'Times New Roman',Times,serif;font-size:11pt;line-height:1.5;color:#2b2b2e;padding:20mm 18mm;max-width:800px;margin:0 auto;}"+
         'h3.doctitle{text-align:center;text-decoration:underline;font-size:14.5pt;margin:0 0 4px;font-weight:600;}'+
         '.doctitle-sub{text-align:center;font-size:10.5pt;color:#5b5b5e;margin-bottom:20px;}'+
         'h4.sec{text-decoration:underline;font-size:13pt;margin:20px 0 8px;font-weight:600;}'+
         'ul{margin:0 0 4px 0;padding-left:20px;} li{margin-bottom:9px;}'+
         '.impressao li{font-weight:700;} .filled{color:#2b2b2e;} .blank{color:#B4432F;font-weight:600;}'+
-        '.footnote{font-style:italic;font-size:11.5pt;color:#5b5b5e;margin-top:16px;}'+
+        '.footnote{font-style:italic;font-size:11pt;color:#5b5b5e;margin-top:16px;}'+
         '@media print{ @page{margin:0;} body{padding:20mm 18mm;max-width:none;-webkit-box-decoration-break:clone;box-decoration-break:clone;} }'+
         '</style></head><body>'+reportHtml+'</body></html>'
       );
