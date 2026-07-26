@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Laudo de Ultrassonografia Perineal</title>
+<title>Laudo de Ultrassonografia Perineal — Dra. Morgana Kummer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -169,7 +169,7 @@
 <div class="topbar">
   <div>
     <h1>Laudo de Ultrassonografia Perineal</h1>
-    <div class="sub">Preencha as medidas obtidas — o laudo é montado automaticamente ao lado</div>
+    <div class="sub">Dra. Morgana Kummer · preencha as medidas obtidas — o laudo é montado automaticamente ao lado</div>
   </div>
   <div class="topbar-actions">
     <button class="btn-ghost" id="btnSettings">Valores de referência</button>
@@ -181,8 +181,8 @@
 <div class="settings-panel" id="settingsPanel">
   <h3>Identificação do médico (assinatura do laudo)</h3>
   <div class="settings-grid">
-    <div class="field"><label>Nome do médico (assinatura)</label><input type="text" id="vr_medicoNome" placeholder="ex: DRA. MORGANA KUMMER"></div>
-    <div class="field"><label>CRM</label><input type="text" id="vr_medicoCRM" placeholder="ex: CRM-MG 00000"></div>
+    <div class="field"><label>Nome do médico (assinatura)</label><input type="text" id="vr_medicoNome" value="DRA. MORGANA KUMMER"></div>
+    <div class="field"><label>CRM</label><input type="text" id="vr_medicoCRM" value="CRM-MG 45.304"></div>
   </div>
   <hr class="sep">
   <h3>Valores de referência (personalize e salve)</h3>
@@ -931,7 +931,7 @@
   });
 
   let VR = {
-    medicoNome:'', medicoCRM:'',
+    medicoNome:'DRA. MORGANA KUMMER', medicoCRM:'CRM-MG 45.304',
     afunilamento:5, espessura:5, mobilidade:10, gap:25,
     slingUretraMin:3, slingUretraMax:5, slingPubis:15,
     hiatoLeve:25, hiatoModerado:30, hiatoAcentuado:35, hiatoSevero:40,
