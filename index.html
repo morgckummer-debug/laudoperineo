@@ -397,29 +397,20 @@
           <div class="field"><label>Espessura endometrial</label><input type="text" inputmode="decimal" data-decimals="1" id="endometrio" placeholder="mm"></div>
         </div>
         <div class="field-row">
+          <div class="field"><label>Valor de referência — volume ovariano</label>
+            <select id="vrOvarioTipo">
+              <option value="padrao">VR: 3,0 a 9,0 cm³</option>
+              <option value="menopausa">VR: até 5,0 cm³</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
           <div class="field"><label>Ovário direito — L</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_L" placeholder="cm"></div>
           <div class="field"><label>Ovário direito — AP</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_AP" placeholder="cm"></div>
           <div class="field"><label>Ovário direito — T</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_T" placeholder="cm"></div>
           <div class="field"><label>Ovário direito — volume</label>
             <input type="text" inputmode="decimal" data-decimals="1" id="ovD_volume" placeholder="cm³">
             <span class="flag-note" id="flag_ovD_volume">Fora do valor de referência</span>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Ovário esquerdo — L</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_L" placeholder="cm"></div>
-          <div class="field"><label>Ovário esquerdo — AP</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_AP" placeholder="cm"></div>
-          <div class="field"><label>Ovário esquerdo — T</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_T" placeholder="cm"></div>
-          <div class="field"><label>Ovário esquerdo — volume</label>
-            <input type="text" inputmode="decimal" data-decimals="1" id="ovE_volume" placeholder="cm³">
-            <span class="flag-note" id="flag_ovE_volume">Fora do valor de referência</span>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Valor de referência — volume ovariano</label>
-            <select id="vrOvarioTipo">
-              <option value="padrao">VR: 3,0 a 9,0 cm³</option>
-              <option value="menopausa">VR: até 5,0 cm³</option>
-            </select>
           </div>
         </div>
         <div class="field-row">
@@ -430,6 +421,16 @@
         <div class="field conditional" id="wrap_ovD_descricao">
           <label>Descreva o achado — ovário direito</label>
           <textarea id="ovD_descricao" rows="2" placeholder="ex: cisto anecoico simples medindo X cm; imagem sugestiva de endometrioma; formação sólida com fluxo ao Doppler..."></textarea>
+        </div>
+        <hr class="sep">
+        <div class="field-row">
+          <div class="field"><label>Ovário esquerdo — L</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_L" placeholder="cm"></div>
+          <div class="field"><label>Ovário esquerdo — AP</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_AP" placeholder="cm"></div>
+          <div class="field"><label>Ovário esquerdo — T</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_T" placeholder="cm"></div>
+          <div class="field"><label>Ovário esquerdo — volume</label>
+            <input type="text" inputmode="decimal" data-decimals="1" id="ovE_volume" placeholder="cm³">
+            <span class="flag-note" id="flag_ovE_volume">Fora do valor de referência</span>
+          </div>
         </div>
         <div class="field-row">
           <div class="field"><label>Aspecto do ovário esquerdo</label>
