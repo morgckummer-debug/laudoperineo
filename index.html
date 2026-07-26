@@ -958,10 +958,10 @@
 
   function classifyHiato(area){
     if(area===null) return {label:'—', abnormal:false};
-    if(area >= VR.hiatoSevero) return {label:'severo', abnormal:true};
-    if(area >= VR.hiatoAcentuado) return {label:'acentuado', abnormal:true};
-    if(area >= VR.hiatoModerado) return {label:'moderado', abnormal:true};
-    if(area >= VR.hiatoLeve) return {label:'leve', abnormal:true};
+    if(area > VR.hiatoSevero) return {label:'severo', abnormal:true};
+    if(area > VR.hiatoAcentuado) return {label:'acentuado', abnormal:true};
+    if(area > VR.hiatoModerado) return {label:'moderado', abnormal:true};
+    if(area > VR.hiatoLeve) return {label:'leve', abnormal:true};
     return {label:'normal', abnormal:false};
   }
 
