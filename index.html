@@ -179,6 +179,12 @@
 </div>
 
 <div class="settings-panel" id="settingsPanel">
+  <h3>Identificação do médico (assinatura do laudo)</h3>
+  <div class="settings-grid">
+    <div class="field"><label>Nome do médico (assinatura)</label><input type="text" id="vr_medicoNome" placeholder="ex: DRA. MORGANA KUMMER"></div>
+    <div class="field"><label>CRM</label><input type="text" id="vr_medicoCRM" placeholder="ex: CRM-MG 00000"></div>
+  </div>
+  <hr class="sep">
   <h3>Valores de referência (personalize e salve)</h3>
   <div class="settings-grid">
     <div class="field"><label>Ângulo retrovesical — mínimo normal (°)</label><input type="text" inputmode="decimal" data-decimals="0" id="vr_anguloMin" value="90"></div>
@@ -226,6 +232,42 @@
   <h3>Personalizar frases do laudo</h3>
   <p style="font-size:12px;color:var(--ink-soft);margin:0 0 12px;">Estas são as frases usadas automaticamente conforme o que você marca no formulário. Edite o texto do jeito que preferir — a próxima vez que você abrir a ferramenta, seu texto continua aqui.</p>
 
+  <h3 style="margin-top:4px;">Técnica do exame</h3>
+  <div class="field" style="margin-bottom:8px;"><label>Linha de equipamento/técnica (abre o corpo do laudo, logo após o título)</label><textarea id="ph_linhaEquipamento" rows="2"></textarea></div>
+
+  <hr class="sep">
+  <h3>Colo uterino</h3>
+  <div class="field" style="margin-bottom:8px;"><label>Aspecto normal — use {COMPRIMENTO}</label><textarea id="ph_coloNormal" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Hipertrófico — use {COMPRIMENTO}</label><textarea id="ph_coloHipertrofico" rows="2"></textarea></div>
+
+  <hr class="sep">
+  <h3>Miométrio / miomas</h3>
+  <div class="field" style="margin-bottom:8px;"><label>Textura homogênea (sem nódulos)</label><textarea id="ph_miometrioHomogeneo" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Textura heterogênea (frase geral, antes da descrição dos nódulos)</label><textarea id="ph_miometrioHeterogeneo" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>1 nódulo — use {F1}</label><textarea id="ph_miomaIntro1" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>2 nódulos — use {F1} e {F2}</label><textarea id="ph_miomaIntro2" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>3 ou mais nódulos (introdução da lista)</label><textarea id="ph_miomaIntroVarios" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 0 — use {MEDIDA}</label><textarea id="ph_figoF0" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 1 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF1" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 2 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF2" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 3 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF3" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 4 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF4" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 5 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF5" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 6 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF6" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 7 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF7" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 8 — use {DETALHE} e {MEDIDA}</label><textarea id="ph_figoF8" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 2-5 (transmural) — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF25" rows="2"></textarea></div>
+
+  <hr class="sep">
+  <h3>Ovário não identificado</h3>
+  <div class="field" style="margin-bottom:8px;"><label>Ovário não identificado — use {LADO}</label><textarea id="ph_ovarioNaoIdentificado" rows="2"></textarea></div>
+
+  <hr class="sep">
+  <h3>Divertículos de sigmoide</h3>
+  <div class="field" style="margin-bottom:8px;"><label>Sem sinais inflamatórios</label><textarea id="ph_diverticulosSemInflamacao" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Com sinais inflamatórios</label><textarea id="ph_diverticulosComInflamacao" rows="2"></textarea></div>
+
+  <hr class="sep">
   <h3 style="margin-top:4px;">Descenso da parede vesical anterior (cistocele)</h3>
   <div class="field" style="margin-bottom:8px;"><label>Permanece acima da borda do púbis (normal)</label><textarea id="ph_cistoceleAusente" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Grau I (leve)</label><textarea id="ph_cistoceleI" rows="2"></textarea></div>
@@ -263,19 +305,6 @@
   <div class="field" style="margin-bottom:8px;"><label>Sling bem posicionado</label><textarea id="ph_slingBem" rows="2"></textarea></div>
 
   <hr class="sep">
-  <h3>Impressão diagnóstica (conclusões automáticas)</h3>
-  <div class="field" style="margin-bottom:8px;"><label>Exame normal (nenhum achado)</label><textarea id="ph_impNormal" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Hipermobilidade isolada do colo vesical</label><textarea id="ph_impHipermob" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Espessamento isolado do detrusor</label><textarea id="ph_impEspessamento" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Cistocele isolada (sem hipermobilidade) — use {GRAU}</label><textarea id="ph_impCistoceleIsolada" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Cistocele + hipermobilidade (uretrocistocele) — use {GRAU}</label><textarea id="ph_impUretrocistocele" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Incontinência urinária mista (espessamento + hipermobilidade, sem cistocele)</label><textarea id="ph_impIUMista" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Incontinência urinária mista + uretrocistocele — use {GRAU}</label><textarea id="ph_impIUMistaUretrocisto" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Prolapso uterino — use {GRAU} e {POPQ} (nota POP-Q, preenchida automaticamente para graus III/IV)</label><textarea id="ph_impProlapsoUterino" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Lesão da musculatura puborretal — use {GRAU} e {LADO}</label><textarea id="ph_impLesaoPuborretal" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Lesão do esfíncter interno — use {GRAU}, {PCT} e {SIGNIF} (preenchido automaticamente conforme o valor de referência)</label><textarea id="ph_impEsfIntDefeito" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Lesão do esfíncter externo — use {GRAU}, {PCT} e {SIGNIF}</label><textarea id="ph_impEsfExtDefeito" rows="2"></textarea></div>
-
   <div class="save-row">
     <button class="btn-copy" id="btnSavePhrases">Salvar frases</button>
     <button class="btn-clear" id="btnResetPhrases">Restaurar padrão</button>
@@ -394,6 +423,80 @@
             <span class="flag-note" id="flag_uteroVolume">Acima do valor de referência</span>
           </div>
           <div class="field"><label>Espessura endometrial</label><input type="text" inputmode="decimal" data-decimals="1" id="endometrio" placeholder="mm"></div>
+          <div class="field"><label>Textura endometrial</label>
+            <select id="endometrioTextura"><option value="homogenea">Homogênea</option><option value="heterogenea">Heterogênea</option></select>
+          </div>
+          <div class="field"><label>Padrão endometrial</label>
+            <select id="endometrioPadrao"><option value="trilaminar">Trilaminar</option><option value="secretor">Secretor</option><option value="laminar">Laminar</option></select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Textura miometrial</label>
+            <select id="miometrioTextura"><option value="homogenea">Sólida e homogênea (sem nódulos)</option><option value="heterogenea">Sólida e heterogênea (nódulos/miomas)</option></select>
+          </div>
+          <div class="field"><label>Colo uterino — comprimento</label><input type="text" inputmode="decimal" data-decimals="1" id="coloUterinoComprimento" placeholder="cm"></div>
+          <div class="field"><label>Aspecto do colo uterino</label>
+            <select id="coloUterinoAspecto"><option value="normal">Normal</option><option value="hipertrofico">Hipertrófico</option></select>
+          </div>
+        </div>
+        <div class="conditional" id="wrap_miomaDetalhes">
+          <div class="field-row">
+            <div class="field"><label>Número de nódulos</label>
+              <select id="miomaCount"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 ou mais</option></select>
+            </div>
+          </div>
+          <div class="subgroup" id="wrap_mioma1">
+            <div class="field-row">
+              <div class="field"><label>Nódulo 1 — classificação FIGO</label>
+                <select id="mioma1Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F25">FIGO 2-5 — transmural</option><option value="F8">FIGO 8 — cervical</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma1Parede"><label>Parede</label>
+                <select id="mioma1Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma1Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma1CervicalDetalhe" placeholder="ex: anterior"></div>
+              <div class="field"><label>Medida</label><input type="text" id="mioma1Medida" placeholder="mm"></div>
+            </div>
+          </div>
+          <div class="subgroup conditional" id="wrap_mioma2">
+            <div class="field-row">
+              <div class="field"><label>Nódulo 2 — classificação FIGO</label>
+                <select id="mioma2Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F25">FIGO 2-5 — transmural</option><option value="F8">FIGO 8 — cervical</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma2Parede"><label>Parede</label>
+                <select id="mioma2Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma2Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma2CervicalDetalhe" placeholder="ex: anterior"></div>
+              <div class="field"><label>Medida</label><input type="text" id="mioma2Medida" placeholder="mm"></div>
+            </div>
+          </div>
+          <div class="subgroup conditional" id="wrap_mioma3">
+            <div class="field-row">
+              <div class="field"><label>Nódulo 3 — classificação FIGO</label>
+                <select id="mioma3Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F25">FIGO 2-5 — transmural</option><option value="F8">FIGO 8 — cervical</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma3Parede"><label>Parede</label>
+                <select id="mioma3Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma3Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma3CervicalDetalhe" placeholder="ex: anterior"></div>
+              <div class="field"><label>Medida</label><input type="text" id="mioma3Medida" placeholder="mm"></div>
+            </div>
+          </div>
+          <div class="subgroup conditional" id="wrap_mioma4">
+            <div class="field-row">
+              <div class="field"><label>Nódulo 4 (e demais) — classificação FIGO</label>
+                <select id="mioma4Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F25">FIGO 2-5 — transmural</option><option value="F8">FIGO 8 — cervical</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma4Parede"><label>Parede</label>
+                <select id="mioma4Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma4Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma4CervicalDetalhe" placeholder="ex: anterior"></div>
+              <div class="field"><label>Medida</label><input type="text" id="mioma4Medida" placeholder="mm"></div>
+            </div>
+          </div>
+          <div class="field" style="margin-top:4px;">
+            <label>Observações adicionais (opcional)</label>
+            <textarea id="miometrioDescricao" rows="2" placeholder="qualquer detalhe extra sobre os nódulos, ou demais nódulos além dos listados acima..."></textarea>
+          </div>
         </div>
         <div class="field-row">
           <div class="field"><label>Ovário direito — L</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_L" placeholder="cm"></div>
@@ -423,7 +526,7 @@
         </div>
         <div class="field-row">
           <div class="field"><label>Aspecto do ovário direito</label>
-            <select id="ovD_aspecto"><option value="normal">Normal (dimensões e ecotextura preservadas)</option><option value="alterado">Alterado (descrever)</option></select>
+            <select id="ovD_aspecto"><option value="normal">Normal (dimensões e ecotextura preservadas)</option><option value="alterado">Alterado (descrever)</option><option value="nao_identificado">Não identificado</option></select>
           </div>
         </div>
         <div class="field conditional" id="wrap_ovD_descricao">
@@ -432,7 +535,7 @@
         </div>
         <div class="field-row">
           <div class="field"><label>Aspecto do ovário esquerdo</label>
-            <select id="ovE_aspecto"><option value="normal">Normal (dimensões e ecotextura preservadas)</option><option value="alterado">Alterado (descrever)</option></select>
+            <select id="ovE_aspecto"><option value="normal">Normal (dimensões e ecotextura preservadas)</option><option value="alterado">Alterado (descrever)</option><option value="nao_identificado">Não identificado</option></select>
           </div>
         </div>
         <div class="field conditional" id="wrap_ovE_descricao">
@@ -450,6 +553,9 @@
               <option value="4">Exterioriza-se completamente pelo intróito — prolapso grau IV (total)</option>
             </select>
           </div>
+        </div>
+        <div class="field-row conditional" id="wrap_inversaoUterina">
+          <div class="toggle-line" style="margin:0;"><input type="checkbox" id="chkInversaoAusente"><label for="chkInversaoAusente">Confirmar ausência de inversão uterina (útero exteriorizado)</label></div>
         </div>
       </div>
     </div>
@@ -492,6 +598,18 @@
           <div class="field"><label>Imagem em "casca de cebola" (intussuscepção)</label>
             <select id="cascaCebola"><option value="ausente">Ausente</option><option value="presente">Presente</option></select>
           </div>
+        </div>
+
+        <hr class="sep">
+        <div class="toggle-line"><input type="checkbox" id="chkDiverticulos"><label for="chkDiverticulos">Divertículos de sigmoide</label></div>
+        <div class="field-row conditional" id="wrap_diverticulosStatus">
+          <div class="field"><label>Sinais inflamatórios</label>
+            <select id="diverticulosStatus"><option value="sem">Sem sinais inflamatórios</option><option value="com">Com sinais inflamatórios (descrever)</option></select>
+          </div>
+        </div>
+        <div class="field conditional" id="wrap_diverticulosDescricao">
+          <label>Descreva os sinais inflamatórios</label>
+          <textarea id="diverticulosDescricao" rows="2" placeholder="ex: espessamento parietal segmentar, borramento da gordura pericólica..."></textarea>
         </div>
 
         <hr class="sep">
@@ -690,6 +808,27 @@
 
   // ---------- Customizable report phrases (editable by the doctor, no code needed) ----------
   const PHRASE_DEFAULTS = {
+    linhaEquipamento: 'Exame realizado com transdutor setorial, de 3,5 MHz e endocavitário tridimensional, multifrequencial, por via abdominal e endovaginal.',
+    coloNormal: 'O colo uterino apresenta aspecto ecográfico normal, medindo {COMPRIMENTO} cm, com endocérvix centrada e regular.',
+    coloHipertrofico: 'O colo uterino apresenta aspecto ecográfico hipertrófico, medindo {COMPRIMENTO} cm, com endocérvix centrada e regular.',
+    miometrioHomogeneo: 'A textura miometrial é sólida e homogênea.',
+    miometrioHeterogeneo: 'A textura miometrial é sólida e heterogênea.',
+    miomaIntro1: 'Observa-se imagem nodular sólida, hipoecóica e heterogênea, localizada na {F1}.',
+    miomaIntro2: 'Observam-se duas imagens nodulares sólidas, hipoecóicas e heterogêneas, uma localizada na {F1} e outra na {F2}.',
+    miomaIntroVarios: 'Observam-se algumas imagens nodulares sólidas, hipoecogênicas e heterogêneas, de localização e dimensões como descrito abaixo:',
+    figoF0: 'submucosa, inteiramente na cavidade uterina (FIGO 0), medindo {MEDIDA} mm',
+    figoF1: 'parede {PAREDE}, submucosa com menos de 50% do seu componente intramural (FIGO 1), medindo {MEDIDA} mm',
+    figoF2: 'parede {PAREDE}, submucosa com mais de 50% do seu componente intramural (FIGO 2), medindo {MEDIDA} mm',
+    figoF3: 'parede {PAREDE}, intramural, adjacente à cavidade endometrial, sem condicionar abaulamento da mesma (FIGO 3), medindo {MEDIDA} mm',
+    figoF4: 'parede {PAREDE}, totalmente intramural (FIGO 4), medindo {MEDIDA} mm',
+    figoF5: 'parede {PAREDE}, subserosa com mais de 50% do seu componente intramural (FIGO 5), medindo {MEDIDA} mm',
+    figoF6: 'parede {PAREDE}, subserosa com menos de 50% do seu componente intramural (FIGO 6), medindo {MEDIDA} mm',
+    figoF7: 'parede {PAREDE}, totalmente subserosa (FIGO 7), medindo {MEDIDA} mm',
+    figoF8: 'região cervical{DETALHE} (FIGO 8), medindo {MEDIDA} mm',
+    figoF25: 'parede {PAREDE}, transmural (FIGO 2-5), medindo {MEDIDA} mm',
+    ovarioNaoIdentificado: 'Ovário {LADO} não identificado. Não identificadas massas císticas ou tumorais em sua topografia.',
+    diverticulosSemInflamacao: 'Presença de divertículos de sigmoide, sem sinais inflamatórios.',
+    diverticulosComInflamacao: 'Presença de divertículos de sigmoide, com sinais inflamatórios: {DESCRICAO}.',
     cistoceleAusente: 'À manobra de Valsalva, não se observa descenso significativo da parede vesical anterior, permanecendo acima da borda inferior do púbis.',
     cistoceleI: 'À manobra de Valsalva, observa-se descenso da parede vesical anterior compatível com cistocele grau I (leve), alcançando a borda inferior do púbis.',
     cistoceleII: 'À manobra de Valsalva, observa-se descenso da parede vesical anterior compatível com cistocele grau II (moderada), alcançando o intróito vaginal.',
@@ -713,6 +852,14 @@
     esfExtDefeito: 'Observa-se defeito do esfíncter anal externo localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência.',
     slingBem: 'Sling bem posicionado.',
 
+    impTudoNormal: 'Bexiga urinária, útero e anexos normais à ecografia.',
+    impUteroOvariosNormais: 'Útero e ovários normais à ecografia.',
+    impSemIUGenuina: 'Não há sinais ecográficos de incontinência urinária genuína.',
+    impSemProlapso: 'Não há sinais ecográficos de prolapso genital.',
+    impEsfincterIntegro: 'Esfíncter anal íntegro.',
+    impMiomatose: 'Miomatose uterina.',
+    impSemInversao: 'Ausência de inversão uterina.',
+    impDiverticulose: 'Diverticulose de sigmoide.',
     impNormal: 'Não há sinais ecográficos de prolapso genital e/ou lesões perineais.',
     impHipermob: 'Hipermobilidade do colo vesical.',
     impEspessamento: 'Espessamento discreto das paredes da bexiga urinária (hipertrofia do detrusor?), podendo corresponder a componente de incontinência urinária mista (esforço e urgência).',
@@ -784,6 +931,7 @@
   });
 
   let VR = {
+    medicoNome:'', medicoCRM:'',
     afunilamento:5, espessura:5, mobilidade:10, gap:25,
     slingUretraMin:3, slingUretraMax:5, slingPubis:15,
     hiatoLeve:25, hiatoModerado:30, hiatoAcentuado:35, hiatoSevero:40,
@@ -808,6 +956,8 @@
     updateVRLabels();
   }
   function applyVRToInputs(){
+    $('vr_medicoNome').value = VR.medicoNome;
+    $('vr_medicoCRM').value = VR.medicoCRM;
     $('vr_anguloMin').value = VR.anguloMin;
     $('vr_anguloMax').value = VR.anguloMax;
     $('vr_afunilamento').value = VR.afunilamento;
@@ -870,6 +1020,8 @@
   }
   $('btnSaveVR').addEventListener('click', async ()=>{
     VR = {
+      medicoNome: $('vr_medicoNome').value || '',
+      medicoCRM: $('vr_medicoCRM').value || '',
       anguloMin: pf('vr_anguloMin', 90),
       anguloMax: pf('vr_anguloMax', 120),
       afunilamento: pf('vr_afunilamento', 5),
@@ -913,6 +1065,33 @@
   $('ovD_aspecto').addEventListener('change', e=> toggle('wrap_ovD_descricao', e.target.value==='alterado'));
   $('ovE_aspecto').addEventListener('change', e=> toggle('wrap_ovE_descricao', e.target.value==='alterado'));
   $('chkEndometriose').addEventListener('change', e=> toggle('wrap_endometrioseDescricao', e.target.checked));
+  function updateMiomaSlots(){
+    const n = $('miometrioTextura').value==='heterogenea' ? parseInt($('miomaCount').value||'1',10) : 0;
+    [1,2,3,4].forEach(i=> toggle('wrap_mioma'+i, i<=n));
+  }
+  $('miometrioTextura').addEventListener('change', e=>{
+    toggle('wrap_miomaDetalhes', e.target.value==='heterogenea');
+    updateMiomaSlots();
+  });
+  $('miomaCount').addEventListener('change', updateMiomaSlots);
+  function updateMiomaFigoWraps(i){
+    const val = $('mioma'+i+'Figo').value;
+    toggle('wrap_mioma'+i+'Parede', val!=='F0' && val!=='F8');
+    toggle('wrap_mioma'+i+'Cervical', val==='F8');
+  }
+  [1,2,3,4].forEach(i=>{
+    $('mioma'+i+'Figo').addEventListener('change', ()=> updateMiomaFigoWraps(i));
+    updateMiomaFigoWraps(i);
+  });
+  $('chkDiverticulos').addEventListener('change', e=>{
+    toggle('wrap_diverticulosStatus', e.target.checked);
+    toggle('wrap_diverticulosDescricao', e.target.checked && $('diverticulosStatus').value==='com');
+  });
+  $('diverticulosStatus').addEventListener('change', e=> toggle('wrap_diverticulosDescricao', $('chkDiverticulos').checked && e.target.value==='com'));
+  $('descensoUterino').addEventListener('change', e=>{
+    toggle('wrap_inversaoUterina', e.target.value==='4');
+    if(e.target.value!=='4') $('chkInversaoAusente').checked=false;
+  });
 
 
   // descensoUterino now directly encodes the clinical position criterion — no separate conditional fields needed
@@ -1045,9 +1224,44 @@
       }
     }
 
-    const anyAbnormal = items.some(i=>i.key!=='retocele-ausente' && i.key!=='enterocele-ausente' && i.key!=='sling-ok');
-    if(!anyAbnormal && items.filter(i=>i.auto).length <= 2){
-      items.unshift({key:'normal', label:phraseRaw('impNormal'), auto:true});
+    if(state.miometrioTextura==='heterogenea' && state.miomaTemDados){
+      items.push({key:'miomatose', label:phraseRaw('impMiomatose'), auto:true});
+    }
+    if(state.chkDiverticulos){
+      items.push({key:'diverticulose', label:phraseRaw('impDiverticulose'), auto:true});
+    }
+    if(state.inversaoConfirmada){
+      items.push({key:'sem-inversao', label:phraseRaw('impSemInversao'), auto:true});
+    }
+
+    // "Bladder-abnormal" tracks any anterior-compartment finding (used to decide whether the
+    // uterus/ovary "normal" summary line and the compartment-wide "tudo normal" line apply).
+    const bladderAbnormal = hipermobilidade || espessamento || temCistocele || (state.bexigaAspecto==='alterado');
+    const uterusAbnormal = state.descensoUterino!=='ausente' || (state.miometrioTextura==='heterogenea' && state.miomaTemDados) || state.coloUterinoAspecto==='hipertrofico';
+    const ovariesAbnormal = state.ovD_aspecto==='alterado' || state.ovE_aspecto==='alterado';
+    const posteriorAbnormal = state.chkRetocele || state.chkLesao || state.chkEnterocele || state.chkDiverticulos || state.cascaCebola==='presente' || (state.chkEndometriose && state.endometrioseDescricao);
+    const esfincterAbnormal = state.esfIntStatus==='defeito' || state.esfExtStatus==='defeito';
+    // "Genital prolapse" means actual anatomic descent — cistocele, uterine descensus,
+    // retocele or enterocele — not puborretal lesions, diverticulosis, etc.
+    const prolapseAnywhere = temCistocele || state.descensoUterino!=='ausente' || state.chkRetocele || state.chkEnterocele;
+
+    if(!bladderAbnormal && !uterusAbnormal && !ovariesAbnormal && !posteriorAbnormal && !esfincterAbnormal){
+      items.unshift({key:'tudo-normal', label:phraseRaw('impTudoNormal'), auto:true});
+      items.push({key:'sem-iu', label:phraseRaw('impSemIUGenuina'), auto:true});
+      items.push({key:'sem-prolapso', label:phraseRaw('impSemProlapso'), auto:true});
+    } else {
+      if(!uterusAbnormal && !ovariesAbnormal){
+        items.push({key:'utero-ovarios-normais', label:phraseRaw('impUteroOvariosNormais'), auto:true});
+      }
+      if(!bladderAbnormal){
+        items.push({key:'sem-iu', label:phraseRaw('impSemIUGenuina'), auto:true});
+      }
+      if(!prolapseAnywhere){
+        items.push({key:'sem-prolapso', label:phraseRaw('impSemProlapso'), auto:true});
+      }
+    }
+    if(!esfincterAbnormal){
+      items.push({key:'esfincter-integro', label:phraseRaw('impEsfincterIntegro'), auto:true});
     }
 
     return items;
@@ -1122,6 +1336,33 @@
     const uteroVolume = blankOrValue(v('uteroVolume'));
     flag('uteroVolume', uteroVolumeNum!==null && uteroVolumeNum > vrUteroLimite);
     const endometrio = blankOrValue(req('endometrio'));
+    const endometrioTextura = v('endometrioTextura');
+    const endometrioPadrao = v('endometrioPadrao');
+    const miometrioTextura = v('miometrioTextura');
+    const miomaCountSel = miometrioTextura==='heterogenea' ? parseInt(v('miomaCount')||'1',10) : 0;
+    const figoFrags = [];
+    for(let i=1; i<=miomaCountSel; i++){
+      const figo = v('mioma'+i+'Figo');
+      const medida = v('mioma'+i+'Medida');
+      if(!medida) continue; // untouched slot — the FIGO select always has a default value
+      const parede = v('mioma'+i+'Parede');
+      const detalhe = v('mioma'+i+'CervicalDetalhe');
+      figoFrags.push(phraseRaw('figo'+figo, {PAREDE: parede, MEDIDA: medida, DETALHE: (detalhe ? ' '+detalhe : '')}));
+    }
+    let miomaSentenceHtml = '';
+    if(figoFrags.length===1){
+      miomaSentenceHtml = phrase('miomaIntro1', {F1: figoFrags[0]});
+    } else if(figoFrags.length===2){
+      miomaSentenceHtml = phrase('miomaIntro2', {F1: figoFrags[0], F2: figoFrags[1]});
+    } else if(figoFrags.length>=3){
+      // A nested <ul><li> (rather than <br>-joined lines) survives copy/paste into
+      // Word, Gmail, etc. as separate list lines — <br> inside a single <li> tends
+      // to get flattened by paste sanitizers into one run-on sentence.
+      miomaSentenceHtml = phrase('miomaIntroVarios')+'<ul>'+figoFrags.map((f,i)=>'<li>N'+(i+1)+': '+escapeHtml(f)+'.</li>').join('')+'</ul>';
+    }
+    const miometrioDescricaoExtra = v('miometrioDescricao');
+    const coloUterinoComprimento = blankOrValue(req('coloUterinoComprimento'));
+    const coloUterinoAspecto = v('coloUterinoAspecto');
     const vrOvarioTipo = v('vrOvarioTipo');
     const vrOvarioTexto = escapeHtml(vrOvarioTipo==='menopausa' ? VR.ovarioTexto2 : VR.ovarioTexto1);
     const ovD_L = blankOrValue(req('ovD_L'));
@@ -1154,7 +1395,11 @@
     const cascaCebola = v('cascaCebola');
     const chkEndometriose = $('chkEndometriose').checked;
     const endometrioseDescricao = v('endometrioseDescricao');
+    const chkDiverticulos = $('chkDiverticulos').checked;
+    const diverticulosStatus = v('diverticulosStatus');
+    const diverticulosDescricao = v('diverticulosDescricao');
     const posteriorNenhum = !chkRetocele && !chkLesao && !chkEnterocele;
+    const inversaoConfirmada = descensoUterino==='4' && $('chkInversaoAusente').checked;
 
     const gapDNum = num('gapDireito'); req('gapDireito');
     const gapD = blankOrValue(v('gapDireito'));
@@ -1199,7 +1444,9 @@
       ovD_aspecto, ovD_descricao, ovE_aspecto, ovE_descricao,
       chkEndometriose, endometrioseDescricao,
       mobilidadeColo: mobilidadeNum, posicaoColo, espessuraParede: espessuraNum,
-      descensoParede, descensoUterino,
+      descensoParede, descensoUterino, inversaoConfirmada,
+      miometrioTextura, miomaTemDados: figoFrags.length>0, coloUterinoAspecto,
+      chkDiverticulos, diverticulosStatus,
       chkRetocele, retoceleGrau, chkLesao, lesaoLado, lesaoGrau, chkEnterocele, enteroceleGrau, cascaCebola,
       esfIntStatus, esfIntGrau, esfIntPct, esfExtStatus, esfExtGrau, esfExtPct,
       slingPresente, slingPosicao, slingOutroTexto
@@ -1210,8 +1457,9 @@
 
     // ----- Assemble laudo HTML -----
     let html = '';
-    html += '<h3 class="doctitle">ULTRASSONOGRAFIA PERINEAL</h3>';
+    html += '<h3 class="doctitle">ULTRASSONOGRAFIA TRANSVAGINAL PARA AVALIAÇÃO PERINEAL<br>E DE PROLAPSO GENITAL</h3>';
     html += '<div class="doctitle-sub">Ultrassom direcionado para '+escapeHtml(objetivoTexto)+(dataExame?(' — '+escapeHtml(dataExame)):'')+'</div>';
+    html += '<p>'+phrase('linhaEquipamento')+'</p>';
 
     html += '<h4 class="sec">COMPARTIMENTO ANTERIOR</h4><ul>';
     html += '<li>A uretra apresenta morfologia preservada ao repouso, medindo aproximadamente '+span(uretraComprimento)+' cm de comprimento. À manobra de Valsalva observa-se abertura uretral <strong>'+aberturaUretral+'</strong>, com afunilamento distal medindo '+span(afunilamento)+' mm (VR: até '+VR.afunilamento+' mm).</li>';
@@ -1236,15 +1484,30 @@
     html += '<h4 class="sec">COMPARTIMENTO MÉDIO</h4><ul>';
     html += '<li>O hiato genital apresenta área aproximada de '+span(hiato)+' cm² (VR: &lt; '+VR.hiatoLeve+' cm²)'+(hiatoNum!==null?(' — '+hiatoClass.label):'')+'.</li>';
     html += '<li>A vagina apresenta aspecto ecográfico preservado.</li>';
-    html += '<li>O útero encontra-se em '+uteroPosicao+', medindo '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm (L x AP x T), com volume estimado de '+span(uteroVolume)+' cm³ ('+vrUteroTexto+'). O miométrio apresenta ecotextura homogênea, sem alterações focais. O colo uterino apresenta aspecto habitual.</li>';
-    html += '<li>O endométrio é homogêneo, medindo '+span(endometrio)+' mm de espessura, com interface endomiometrial preservada.</li>';
+    html += '<li>O útero encontra-se em '+uteroPosicao+', medindo '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm (L x AP x T), com volume estimado de '+span(uteroVolume)+' cm³ ('+vrUteroTexto+').</li>';
+    if(miometrioTextura==='heterogenea'){
+      html += '<li>'+phrase('miometrioHeterogeneo')+'</li>';
+      html += '<li>'+(miomaSentenceHtml || '<span class="blank">Preencha ao menos um nódulo (FIGO + medida) acima.</span>')+(miometrioDescricaoExtra ? ' '+escapeHtml(miometrioDescricaoExtra) : '')+'</li>';
+    } else {
+      html += '<li>'+phrase('miometrioHomogeneo')+'</li>';
+    }
+    html += '<li>O endométrio é '+(endometrioTextura==='heterogenea'?'heterogêneo':'homogêneo')+', medindo '+span(endometrio)+' mm de espessura, com padrão '+endometrioPadrao+' e interface miometrial bem definida.</li>';
+    html += '<li>'+(coloUterinoAspecto==='hipertrofico' ? phrase('coloHipertrofico', {COMPRIMENTO: coloUterinoComprimento.text}) : phrase('coloNormal', {COMPRIMENTO: coloUterinoComprimento.text}))+'</li>';
     const ovD_qualitativo = (ovD_aspecto==='alterado' && ovD_descricao) ? escapeHtml(ovD_descricao) : null;
     const ovE_qualitativo = (ovE_aspecto==='alterado' && ovE_descricao) ? escapeHtml(ovE_descricao) : null;
-    if(!ovD_qualitativo && !ovE_qualitativo){
-      html += '<li>Os ovários apresentam dimensões e ecotextura preservadas, medindo: ovário direito '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm (volume '+span(ovD_volume)+' cm³); ovário esquerdo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm (volume '+span(ovE_volume)+' cm³) — '+vrOvarioTexto+'.</li>';
+    if(ovD_aspecto==='nao_identificado'){
+      html += '<li>'+phrase('ovarioNaoIdentificado', {LADO:'direito'})+'</li>';
+    } else if(ovD_qualitativo){
+      html += '<li>Ovário direito medindo '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm (volume '+span(ovD_volume)+' cm³ — '+vrOvarioTexto+') — '+ovD_qualitativo+'.</li>';
     } else {
-      html += '<li>Ovário direito medindo '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm (volume '+span(ovD_volume)+' cm³ — '+vrOvarioTexto+') — '+(ovD_qualitativo || 'dimensões e ecotextura preservadas')+'.</li>';
-      html += '<li>Ovário esquerdo medindo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm (volume '+span(ovE_volume)+' cm³ — '+vrOvarioTexto+') — '+(ovE_qualitativo || 'dimensões e ecotextura preservadas')+'.</li>';
+      html += '<li>Ovário direito apresenta dimensões e ecotextura preservadas, medindo '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm (volume '+span(ovD_volume)+' cm³ — '+vrOvarioTexto+').</li>';
+    }
+    if(ovE_aspecto==='nao_identificado'){
+      html += '<li>'+phrase('ovarioNaoIdentificado', {LADO:'esquerdo'})+'</li>';
+    } else if(ovE_qualitativo){
+      html += '<li>Ovário esquerdo medindo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm (volume '+span(ovE_volume)+' cm³ — '+vrOvarioTexto+') — '+ovE_qualitativo+'.</li>';
+    } else {
+      html += '<li>Ovário esquerdo apresenta dimensões e ecotextura preservadas, medindo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm (volume '+span(ovE_volume)+' cm³ — '+vrOvarioTexto+').</li>';
     }
     if(descensoUterino==='ausente'){
       html += '<li>'+phrase('uteroAusente')+'</li>';
@@ -1256,6 +1519,9 @@
       html += '<li>'+phrase('uteroIII')+'</li>';
     } else if(descensoUterino==='4'){
       html += '<li>'+phrase('uteroIV')+'</li>';
+    }
+    if(inversaoConfirmada){
+      html += '<li>'+phrase('impSemInversao')+'</li>';
     }
     html += '</ul>';
 
@@ -1276,6 +1542,9 @@
       }
     }
     html += '<li>'+(cascaCebola==='presente' ? phrase('cascaCebolaPresente') : phrase('cascaCebolaAusente'))+'</li>';
+    if(chkDiverticulos){
+      html += '<li>'+(diverticulosStatus==='com' ? phrase('diverticulosComInflamacao', {DESCRICAO: (diverticulosDescricao || '____')}) : phrase('diverticulosSemInflamacao'))+'</li>';
+    }
     if(chkEndometriose && endometrioseDescricao){
       html += '<li>Observam-se sinais sugestivos de endometriose profunda: '+escapeHtml(endometrioseDescricao)+'.</li>';
     }
@@ -1313,6 +1582,7 @@
     html += '</ul>';
 
     html += '<p class="footnote">Este laudo segue a padronização do sistema POP-Q, conforme recomendações da International Continence Society (ICS) e da American Urogynecologic Society (AUGS).</p>';
+    html += '<p style="text-align:center;margin-top:36px;">'+(VR.medicoNome ? escapeHtml(VR.medicoNome) : '<span class="blank">____________________</span>')+'<br>'+(VR.medicoCRM ? escapeHtml(VR.medicoCRM) : '<span class="blank">____________________</span>')+'</p>';
 
     $('paper').innerHTML = html;
 
@@ -1344,21 +1614,77 @@
     return ok;
   }
 
+  // Bullets and bold weight in the on-screen laudo come from the page's stylesheet
+  // (list-style, .impressao{font-weight:700}), not from the text itself — a plain
+  // .innerText copy silently drops both. Build a copy payload with those rules
+  // inlined, so the formatting survives when pasted into Word, Gmail, etc.
+  function buildRichClipboard(){
+    const clone = $('paper').cloneNode(true);
+    clone.querySelectorAll('.impressao li').forEach(li=>{ li.style.fontWeight = '700'; });
+    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='600'; });
+    clone.querySelectorAll('.doctitle-sub').forEach(h=>{ h.style.textAlign='center'; h.style.color='#5b5b5e'; });
+    clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
+    clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
+    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; });
+    const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;\">"+clone.innerHTML+'</div>';
+
+    // Plain-text fallback: rebuild manually so list items keep a literal bullet
+    // character, since plain text can't rely on <ul><li> to render one. A nested
+    // <ul> (e.g. the numbered myoma list) is walked one level deep so each nested
+    // item keeps its own line instead of being flattened into the parent li's text.
+    let text = '';
+    clone.childNodes.forEach(node=>{
+      if(node.nodeType===1 && node.tagName==='UL'){
+        node.querySelectorAll(':scope > li').forEach(li=>{
+          const liClone = li.cloneNode(true);
+          const nestedUl = liClone.querySelector(':scope > ul');
+          if(nestedUl) nestedUl.remove();
+          text += '• '+liClone.textContent.trim()+'\n';
+          const nestedOriginal = li.querySelector(':scope > ul');
+          if(nestedOriginal){
+            nestedOriginal.querySelectorAll(':scope > li').forEach(subLi=>{
+              text += '   - '+subLi.textContent.trim()+'\n';
+            });
+          }
+        });
+        text += '\n';
+      } else if(node.nodeType===1){
+        const t = node.textContent.trim();
+        if(t) text += t+'\n\n';
+      }
+    });
+    return {html, text: text.trim()};
+  }
+
   $('btnCopy').addEventListener('click', async ()=>{
-    const text = $('paper').innerText;
+    const {html, text} = buildRichClipboard();
     const btn = $('btnCopy'); const old = btn.textContent;
     let success = false;
     try{
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        await navigator.clipboard.writeText(text);
+      if(navigator.clipboard && window.ClipboardItem){
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/html': new Blob([html], {type:'text/html'}),
+            'text/plain': new Blob([text], {type:'text/plain'})
+          })
+        ]);
         success = true;
       }
     }catch(e){ success = false; }
+    if(!success){
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          await navigator.clipboard.writeText(text);
+          success = true;
+        }
+      }catch(e){ success = false; }
+    }
     if(!success){ success = fallbackCopy(text); }
     if(success){
       btn.textContent = 'Copiado ✓'; setTimeout(()=>btn.textContent=old, 1800);
     } else {
-      // Last resort: select the report text so the user can copy manually with Ctrl/Cmd+C
+      // Last resort: select the report so the user can copy manually with Ctrl/Cmd+C
+      // (a native selection copy preserves the visual formatting on its own).
       const range = document.createRange();
       range.selectNodeContents($('paper'));
       const sel = window.getSelection();
@@ -1368,34 +1694,13 @@
   });
 
   $('btnPrint').addEventListener('click', ()=>{
+    // The @media print rule above already isolates the .paper content on the page
+    // itself, so printing directly (no popup window) is both simpler and works in
+    // contexts that block window.open (popup blockers, sandboxed previews).
     try{
-      const reportHtml = $('paper').innerHTML;
-      const w = window.open('', '_blank');
-      if(!w) throw new Error('popup blocked');
-      w.document.open();
-      w.document.write(
-        '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
-        '<title>Laudo de Ultrassonografia Perineal</title>'+
-        '<style>'+
-        "body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;color:#2b2b2e;padding:20mm 18mm;max-width:800px;margin:0 auto;}"+
-        'h3.doctitle{text-align:center;text-decoration:underline;font-size:14.5pt;margin:0 0 4px;font-weight:600;}'+
-        '.doctitle-sub{text-align:center;font-size:10.5pt;color:#5b5b5e;margin-bottom:20px;}'+
-        'h4.sec{text-decoration:underline;font-size:13pt;margin:20px 0 8px;font-weight:600;}'+
-        'ul{margin:0 0 4px 0;padding-left:20px;} li{margin-bottom:9px;}'+
-        '.impressao li{font-weight:700;} .filled{color:#2b2b2e;} .blank{color:#B4432F;font-weight:600;}'+
-        '.footnote{font-style:italic;font-size:11.5pt;color:#5b5b5e;margin-top:16px;}'+
-        '@media print{ body{padding:0;} }'+
-        '</style></head><body>'+reportHtml+'</body></html>'
-      );
-      w.document.close();
-      w.onload = ()=>{ w.focus(); w.print(); };
-      setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e3){} }, 400);
+      window.print();
     }catch(e){
-      try{
-        window.print();
-      }catch(e2){
-        alert('Não foi possível abrir a impressão automaticamente. Isso costuma acontecer quando a ferramenta está sendo visualizada dentro do chat — baixe o arquivo e abra-o diretamente no navegador, ou use "Baixar .txt" e imprima a partir de lá.');
-      }
+      alert('Não foi possível abrir a impressão automaticamente. Isso costuma acontecer quando a ferramenta está sendo visualizada dentro do chat — baixe o arquivo e abra-o diretamente no navegador, ou use "Baixar .txt" e imprima a partir de lá.');
     }
   });
 
