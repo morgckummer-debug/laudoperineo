@@ -1694,19 +1694,14 @@
   });
 
   $('btnPrint').addEventListener('click', ()=>{
-    // On a normal top-level page (GitHub Pages, or a locally opened file) window.print()
-    // just works and opens the native dialog immediately, using the @media print rules
-    // above. It's only inside a sandboxed embed (the Claude Artifact chat preview) that
-    // the print permission and popups are silently blocked — window===window.top tells
-    // these two cases apart.
-    if(window === window.top){
-      window.print();
-      return;
-    }
-    // Embedded preview fallback: download a standalone print-ready HTML file, the same
-    // mechanism as "Baixar .txt" (an <a download> Blob link), which works in every
-    // context — the user opens it in a regular browser tab, where it auto-opens the
-    // print dialog, and can print or "Salvar como PDF" from there.
+    // window.print() opens the native dialog immediately wherever the environment
+    // allows it (e.g. a normal top-level tab on GitHub Pages), but in restricted
+    // preview contexts (the Claude Artifact chat embed) it's a silent no-op with
+    // no exception to detect. So it's called best-effort here, and a standalone
+    // print-ready HTML file is ALWAYS also generated — the same Blob+<a download>
+    // mechanism already proven to work for "Baixar .txt" — guaranteeing a working
+    // path to print/save as PDF regardless of context.
+    try{ window.print(); }catch(e){}
     try{
       const reportHtml = $('paper').innerHTML;
       const docHtml = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
