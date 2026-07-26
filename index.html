@@ -157,10 +157,10 @@
   ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
 
   @media print{
-    @page{margin:2cm 1.8cm;}
+    @page{margin:0;}
     body *{visibility:hidden;}
     .paper, .paper *{visibility:visible;}
-    .paper{position:absolute;top:0;left:0;width:100%;box-shadow:none;border:none;max-height:none;overflow:visible;padding:0;}
+    .paper{position:absolute;top:0;left:0;width:100%;box-shadow:none;border:none;max-height:none;overflow:visible;padding:20mm 18mm;}
     .preview-actions, .status-pill{display:none !important;}
   }
 </style>
@@ -1424,7 +1424,7 @@
         'ul{margin:0 0 4px 0;padding-left:20px;} li{margin-bottom:9px;}'+
         '.impressao li{font-weight:700;} .filled{color:#2b2b2e;} .blank{color:#B4432F;font-weight:600;}'+
         '.footnote{font-style:italic;font-size:11.5pt;color:#5b5b5e;margin-top:16px;}'+
-        '@media print{ @page{margin:2cm 1.8cm;} body{padding:0;} }'+
+        '@media print{ @page{margin:0;} body{padding:20mm 18mm;max-width:none;} }'+
         '</style></head><body>'+reportHtml+'</body></html>'
       );
       w.document.close();
