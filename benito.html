@@ -826,19 +826,19 @@
     coloHipertrofico: 'O colo uterino apresenta aspecto ecográfico hipertrófico, medindo {COMPRIMENTO} cm, com endocérvix centrada e regular.',
     miometrioHomogeneo: 'A textura miometrial é sólida e homogênea.',
     miometrioHeterogeneo: 'A textura miometrial é sólida e heterogênea.',
-    miomaIntro1: 'Observa-se imagem nodular sólida, hipoecóica e heterogênea, localizada na {F1}.',
-    miomaIntro2: 'Observam-se duas imagens nodulares sólidas, hipoecóicas e heterogêneas, uma localizada na {F1} e outra na {F2}.',
-    miomaIntroVarios: 'Observam-se algumas imagens nodulares sólidas, hipoecogênicas e heterogêneas, de localização e dimensões como descrito abaixo:',
-    figoF0: 'submucosa, inteiramente na cavidade uterina (FIGO 0), medindo {MEDIDA} mm',
-    figoF1: 'parede {PAREDE}, submucosa com menos de 50% do seu componente intramural (FIGO 1), medindo {MEDIDA} mm',
-    figoF2: 'parede {PAREDE}, submucosa com mais de 50% do seu componente intramural (FIGO 2), medindo {MEDIDA} mm',
-    figoF3: 'parede {PAREDE}, intramural, adjacente à cavidade endometrial, sem condicionar abaulamento da mesma (FIGO 3), medindo {MEDIDA} mm',
-    figoF4: 'parede {PAREDE}, totalmente intramural (FIGO 4), medindo {MEDIDA} mm',
-    figoF5: 'parede {PAREDE}, subserosa com mais de 50% do seu componente intramural (FIGO 5), medindo {MEDIDA} mm',
-    figoF6: 'parede {PAREDE}, subserosa com menos de 50% do seu componente intramural (FIGO 6), medindo {MEDIDA} mm',
-    figoF7: 'parede {PAREDE}, totalmente subserosa (FIGO 7), medindo {MEDIDA} mm',
-    figoF8: 'região cervical{DETALHE} (FIGO 8), medindo {MEDIDA} mm',
-    figoF25: 'parede {PAREDE}, transmural (FIGO 2-5), medindo {MEDIDA} mm',
+    miomaIntro1: 'Presença de nódulo, localizado na {F1}.',
+    miomaIntro2: 'Presença de dois nódulos, localizados nas {F1} e {F2}.',
+    miomaIntroVarios: 'Presença de múltiplos nódulos, localizados:',
+    figoF0: 'porção submucosa, FIGO 0, medindo {MEDIDA} mm',
+    figoF1: 'parede {PAREDE}, FIGO 1, medindo {MEDIDA} mm',
+    figoF2: 'parede {PAREDE}, FIGO 2, medindo {MEDIDA} mm',
+    figoF3: 'parede {PAREDE}, FIGO 3, medindo {MEDIDA} mm',
+    figoF4: 'parede {PAREDE}, FIGO 4, medindo {MEDIDA} mm',
+    figoF5: 'parede {PAREDE}, FIGO 5, medindo {MEDIDA} mm',
+    figoF6: 'parede {PAREDE}, FIGO 6, medindo {MEDIDA} mm',
+    figoF7: 'parede {PAREDE}, FIGO 7, medindo {MEDIDA} mm',
+    figoF8: 'região cervical{DETALHE}, FIGO 8, medindo {MEDIDA} mm',
+    figoF25: 'parede {PAREDE}, FIGO 2-5, medindo {MEDIDA} mm',
     ovarioNaoIdentificado: 'Ovário {LADO} não identificado. Não identificadas massas císticas ou tumorais em sua topografia.',
     diverticulosSemInflamacao: 'Presença de divertículos de sigmoide, sem sinais inflamatórios.',
     diverticulosComInflamacao: 'Presença de divertículos de sigmoide, com sinais inflamatórios: {DESCRICAO}.',
@@ -1374,7 +1374,7 @@
       // A nested <ul><li> (rather than <br>-joined lines) survives copy/paste into
       // Word, Gmail, etc. as separate list lines — <br> inside a single <li> tends
       // to get flattened by paste sanitizers into one run-on sentence.
-      miomaSentenceHtml = phrase('miomaIntroVarios')+'<ul>'+figoFrags.map((f,i)=>'<li>N'+(i+1)+': '+escapeHtml(f)+'.</li>').join('')+'</ul>';
+      miomaSentenceHtml = phrase('miomaIntroVarios')+'<ul>'+figoFrags.map(f=>'<li>Na '+escapeHtml(f)+'.</li>').join('')+'</ul>';
     }
     const miometrioDescricaoExtra = v('miometrioDescricao');
     const coloUterinoComprimento = blankOrValue(req('coloUterinoComprimento'));
