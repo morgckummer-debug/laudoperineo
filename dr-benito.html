@@ -243,7 +243,20 @@
   <hr class="sep">
   <h3>Miométrio / miomas</h3>
   <div class="field" style="margin-bottom:8px;"><label>Textura homogênea (sem nódulos)</label><textarea id="ph_miometrioHomogeneo" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Textura heterogênea — use {DESCRICAO} para os nódulos/miomas</label><textarea id="ph_miometrioHeterogeneo" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Textura heterogênea (frase geral, antes da descrição dos nódulos)</label><textarea id="ph_miometrioHeterogeneo" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>1 nódulo — use {F1}</label><textarea id="ph_miomaIntro1" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>2 nódulos — use {F1} e {F2}</label><textarea id="ph_miomaIntro2" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>3 ou mais nódulos (introdução da lista)</label><textarea id="ph_miomaIntroVarios" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 0 — use {MEDIDA}</label><textarea id="ph_figoF0" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 1 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF1" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 2 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF2" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 3 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF3" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 4 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF4" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 5 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF5" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 6 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF6" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 7 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF7" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 8 — use {DETALHE} e {MEDIDA}</label><textarea id="ph_figoF8" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 2-5 (transmural) — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF25" rows="2"></textarea></div>
 
   <hr class="sep">
   <h3>Ovário não identificado</h3>
@@ -451,47 +464,51 @@
           </div>
           <div class="subgroup" id="wrap_mioma1">
             <div class="field-row">
-              <div class="field"><label>Nódulo 1 — localização</label>
-                <select id="mioma1Local"><option value="região fúndica">Região fúndica</option><option value="parede anterior">Parede anterior</option><option value="parede posterior">Parede posterior</option><option value="região cervical">Região cervical</option><option value="outro">Outro (especificar)</option></select>
+              <div class="field"><label>Nódulo 1 — classificação FIGO</label>
+                <select id="mioma1Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F25">FIGO 2-5 — transmural</option><option value="F8">FIGO 8 — cervical</option></select>
               </div>
-              <div class="field"><label>FIGO</label><input type="text" id="mioma1Figo" placeholder="ex: 2, 4, 2-5"></div>
-              <div class="field"><label>Medida 1</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma1M1" placeholder="mm"></div>
-              <div class="field"><label>Medida 2</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma1M2" placeholder="mm"></div>
+              <div class="field conditional" id="wrap_mioma1Parede"><label>Parede</label>
+                <select id="mioma1Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma1Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma1CervicalDetalhe" placeholder="ex: anterior"></div>
+              <div class="field"><label>Medida</label><input type="text" id="mioma1Medida" placeholder="mm"></div>
             </div>
-            <div class="field conditional" id="wrap_mioma1Outro"><label>Especifique a localização</label><input type="text" id="mioma1LocalOutro" placeholder="ex: região ístmica"></div>
           </div>
           <div class="subgroup conditional" id="wrap_mioma2">
             <div class="field-row">
-              <div class="field"><label>Nódulo 2 — localização</label>
-                <select id="mioma2Local"><option value="região fúndica">Região fúndica</option><option value="parede anterior">Parede anterior</option><option value="parede posterior">Parede posterior</option><option value="região cervical">Região cervical</option><option value="outro">Outro (especificar)</option></select>
+              <div class="field"><label>Nódulo 2 — classificação FIGO</label>
+                <select id="mioma2Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F25">FIGO 2-5 — transmural</option><option value="F8">FIGO 8 — cervical</option></select>
               </div>
-              <div class="field"><label>FIGO</label><input type="text" id="mioma2Figo" placeholder="ex: 2, 4, 2-5"></div>
-              <div class="field"><label>Medida 1</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma2M1" placeholder="mm"></div>
-              <div class="field"><label>Medida 2</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma2M2" placeholder="mm"></div>
+              <div class="field conditional" id="wrap_mioma2Parede"><label>Parede</label>
+                <select id="mioma2Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma2Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma2CervicalDetalhe" placeholder="ex: anterior"></div>
+              <div class="field"><label>Medida</label><input type="text" id="mioma2Medida" placeholder="mm"></div>
             </div>
-            <div class="field conditional" id="wrap_mioma2Outro"><label>Especifique a localização</label><input type="text" id="mioma2LocalOutro" placeholder="ex: região ístmica"></div>
           </div>
           <div class="subgroup conditional" id="wrap_mioma3">
             <div class="field-row">
-              <div class="field"><label>Nódulo 3 — localização</label>
-                <select id="mioma3Local"><option value="região fúndica">Região fúndica</option><option value="parede anterior">Parede anterior</option><option value="parede posterior">Parede posterior</option><option value="região cervical">Região cervical</option><option value="outro">Outro (especificar)</option></select>
+              <div class="field"><label>Nódulo 3 — classificação FIGO</label>
+                <select id="mioma3Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F25">FIGO 2-5 — transmural</option><option value="F8">FIGO 8 — cervical</option></select>
               </div>
-              <div class="field"><label>FIGO</label><input type="text" id="mioma3Figo" placeholder="ex: 2, 4, 2-5"></div>
-              <div class="field"><label>Medida 1</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma3M1" placeholder="mm"></div>
-              <div class="field"><label>Medida 2</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma3M2" placeholder="mm"></div>
+              <div class="field conditional" id="wrap_mioma3Parede"><label>Parede</label>
+                <select id="mioma3Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma3Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma3CervicalDetalhe" placeholder="ex: anterior"></div>
+              <div class="field"><label>Medida</label><input type="text" id="mioma3Medida" placeholder="mm"></div>
             </div>
-            <div class="field conditional" id="wrap_mioma3Outro"><label>Especifique a localização</label><input type="text" id="mioma3LocalOutro" placeholder="ex: região ístmica"></div>
           </div>
           <div class="subgroup conditional" id="wrap_mioma4">
             <div class="field-row">
-              <div class="field"><label>Nódulo 4 (e demais) — localização</label>
-                <select id="mioma4Local"><option value="região fúndica">Região fúndica</option><option value="parede anterior">Parede anterior</option><option value="parede posterior">Parede posterior</option><option value="região cervical">Região cervical</option><option value="outro">Outro (especificar)</option></select>
+              <div class="field"><label>Nódulo 4 (e demais) — classificação FIGO</label>
+                <select id="mioma4Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F25">FIGO 2-5 — transmural</option><option value="F8">FIGO 8 — cervical</option></select>
               </div>
-              <div class="field"><label>FIGO</label><input type="text" id="mioma4Figo" placeholder="ex: 2, 4, 2-5"></div>
-              <div class="field"><label>Medida 1</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma4M1" placeholder="mm"></div>
-              <div class="field"><label>Medida 2</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma4M2" placeholder="mm"></div>
+              <div class="field conditional" id="wrap_mioma4Parede"><label>Parede</label>
+                <select id="mioma4Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
+              </div>
+              <div class="field conditional" id="wrap_mioma4Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma4CervicalDetalhe" placeholder="ex: anterior"></div>
+              <div class="field"><label>Medida</label><input type="text" id="mioma4Medida" placeholder="mm"></div>
             </div>
-            <div class="field conditional" id="wrap_mioma4Outro"><label>Especifique a localização</label><input type="text" id="mioma4LocalOutro" placeholder="ex: região ístmica"></div>
           </div>
           <div class="field" style="margin-top:4px;">
             <label>Observações adicionais (opcional)</label>
@@ -812,7 +829,20 @@
     coloNormal: 'O colo uterino apresenta aspecto ecográfico normal, medindo {COMPRIMENTO} cm, com endocérvix centrada e regular.',
     coloHipertrofico: 'O colo uterino apresenta aspecto ecográfico hipertrófico, medindo {COMPRIMENTO} cm, com endocérvix centrada e regular.',
     miometrioHomogeneo: 'A textura miometrial é sólida e homogênea.',
-    miometrioHeterogeneo: 'A textura miometrial é sólida e heterogênea. Presença de nódulos hipoecogênicos, destacando-se: {DESCRICAO}.',
+    miometrioHeterogeneo: 'A textura miometrial é sólida e heterogênea.',
+    miomaIntro1: 'Observa-se imagem nodular sólida, hipoecóica e heterogênea, localizada na {F1}.',
+    miomaIntro2: 'Observam-se duas imagens nodulares sólidas, hipoecóicas e heterogêneas, uma localizada na {F1} e outra na {F2}.',
+    miomaIntroVarios: 'Observam-se algumas imagens nodulares sólidas, hipoecogênicas e heterogêneas, de localização e dimensões como descrito abaixo:',
+    figoF0: 'submucosa, inteiramente na cavidade uterina (FIGO 0), medindo {MEDIDA} mm',
+    figoF1: 'parede {PAREDE}, submucosa com menos de 50% do seu componente intramural (FIGO 1), medindo {MEDIDA} mm',
+    figoF2: 'parede {PAREDE}, submucosa com mais de 50% do seu componente intramural (FIGO 2), medindo {MEDIDA} mm',
+    figoF3: 'parede {PAREDE}, intramural, adjacente à cavidade endometrial, sem condicionar abaulamento da mesma (FIGO 3), medindo {MEDIDA} mm',
+    figoF4: 'parede {PAREDE}, totalmente intramural (FIGO 4), medindo {MEDIDA} mm',
+    figoF5: 'parede {PAREDE}, subserosa com mais de 50% do seu componente intramural (FIGO 5), medindo {MEDIDA} mm',
+    figoF6: 'parede {PAREDE}, subserosa com menos de 50% do seu componente intramural (FIGO 6), medindo {MEDIDA} mm',
+    figoF7: 'parede {PAREDE}, totalmente subserosa (FIGO 7), medindo {MEDIDA} mm',
+    figoF8: 'região cervical{DETALHE} (FIGO 8), medindo {MEDIDA} mm',
+    figoF25: 'parede {PAREDE}, transmural (FIGO 2-5), medindo {MEDIDA} mm',
     ovarioNaoIdentificado: 'Ovário {LADO} não identificado. Não identificadas massas císticas ou tumorais em sua topografia.',
     diverticulosSemInflamacao: 'Presença de divertículos de sigmoide, sem sinais inflamatórios.',
     diverticulosComInflamacao: 'Presença de divertículos de sigmoide, com sinais inflamatórios: {DESCRICAO}.',
@@ -1061,8 +1091,14 @@
     updateMiomaSlots();
   });
   $('miomaCount').addEventListener('change', updateMiomaSlots);
+  function updateMiomaFigoWraps(i){
+    const val = $('mioma'+i+'Figo').value;
+    toggle('wrap_mioma'+i+'Parede', val!=='F0' && val!=='F8');
+    toggle('wrap_mioma'+i+'Cervical', val==='F8');
+  }
   [1,2,3,4].forEach(i=>{
-    $('mioma'+i+'Local').addEventListener('change', e=> toggle('wrap_mioma'+i+'Outro', e.target.value==='outro'));
+    $('mioma'+i+'Figo').addEventListener('change', ()=> updateMiomaFigoWraps(i));
+    updateMiomaFigoWraps(i);
   });
   $('chkDiverticulos').addEventListener('change', e=>{
     toggle('wrap_diverticulosStatus', e.target.checked);
@@ -1205,7 +1241,7 @@
       }
     }
 
-    if(state.miometrioTextura==='heterogenea' && state.miometrioDescricao){
+    if(state.miometrioTextura==='heterogenea' && state.miomaTemDados){
       items.push({key:'miomatose', label:phraseRaw('impMiomatose'), auto:true});
     }
     if(state.chkDiverticulos){
@@ -1218,7 +1254,7 @@
     // "Bladder-abnormal" tracks any anterior-compartment finding (used to decide whether the
     // uterus/ovary "normal" summary line and the compartment-wide "tudo normal" line apply).
     const bladderAbnormal = hipermobilidade || espessamento || temCistocele || (state.bexigaAspecto==='alterado');
-    const uterusAbnormal = state.descensoUterino!=='ausente' || (state.miometrioTextura==='heterogenea' && state.miometrioDescricao) || state.coloUterinoAspecto==='hipertrofico';
+    const uterusAbnormal = state.descensoUterino!=='ausente' || (state.miometrioTextura==='heterogenea' && state.miomaTemDados) || state.coloUterinoAspecto==='hipertrofico';
     const ovariesAbnormal = state.ovD_aspecto==='alterado' || state.ovE_aspecto==='alterado';
     const posteriorAbnormal = state.chkRetocele || state.chkLesao || state.chkEnterocele || state.chkDiverticulos || state.cascaCebola==='presente' || (state.chkEndometriose && state.endometrioseDescricao);
     const esfincterAbnormal = state.esfIntStatus==='defeito' || state.esfExtStatus==='defeito';
@@ -1321,22 +1357,25 @@
     flag('uteroVolume', uteroVolumeNum!==null && uteroVolumeNum > vrUteroLimite);
     const endometrio = blankOrValue(req('endometrio'));
     const miometrioTextura = v('miometrioTextura');
-    const miomaCount = miometrioTextura==='heterogenea' ? parseInt(v('miomaCount')||'1',10) : 0;
-    const miomaFragmentos = [];
-    for(let i=1; i<=miomaCount; i++){
-      const local = v('mioma'+i+'Local');
-      const localTexto = local==='outro' ? (v('mioma'+i+'LocalOutro')||'localização não especificada') : local;
+    const miomaCountSel = miometrioTextura==='heterogenea' ? parseInt(v('miomaCount')||'1',10) : 0;
+    const figoFrags = [];
+    for(let i=1; i<=miomaCountSel; i++){
       const figo = v('mioma'+i+'Figo');
-      const m1 = v('mioma'+i+'M1'), m2 = v('mioma'+i+'M2');
-      if(!figo && !m1 && !m2) continue; // untouched slot — the location select always has a default value
-      let frag = 'em '+(localTexto||'localização não especificada');
-      if(figo) frag += ', FIGO '+figo;
-      if(m1 || m2) frag += ', medindo '+(m1||'__')+(m2?(' x '+m2):'')+' mm';
-      miomaFragmentos.push(frag);
+      const medida = v('mioma'+i+'Medida');
+      if(!medida) continue; // untouched slot — the FIGO select always has a default value
+      const parede = v('mioma'+i+'Parede');
+      const detalhe = v('mioma'+i+'CervicalDetalhe');
+      figoFrags.push(phraseRaw('figo'+figo, {PAREDE: parede, MEDIDA: medida, DETALHE: (detalhe ? ' '+detalhe : '')}));
+    }
+    let miomaSentenceHtml = '';
+    if(figoFrags.length===1){
+      miomaSentenceHtml = phrase('miomaIntro1', {F1: figoFrags[0]});
+    } else if(figoFrags.length===2){
+      miomaSentenceHtml = phrase('miomaIntro2', {F1: figoFrags[0], F2: figoFrags[1]});
+    } else if(figoFrags.length>=3){
+      miomaSentenceHtml = phrase('miomaIntroVarios')+'<br>'+figoFrags.map((f,i)=>'N'+(i+1)+': '+escapeHtml(f)+(i===figoFrags.length-1?'.':';')).join('<br>');
     }
     const miometrioDescricaoExtra = v('miometrioDescricao');
-    let miometrioDescricao = miomaFragmentos.join('; ');
-    if(miometrioDescricaoExtra) miometrioDescricao += (miometrioDescricao ? '; ' : '') + miometrioDescricaoExtra;
     const coloUterinoComprimento = blankOrValue(req('coloUterinoComprimento'));
     const coloUterinoAspecto = v('coloUterinoAspecto');
     const vrOvarioTipo = v('vrOvarioTipo');
@@ -1421,7 +1460,7 @@
       chkEndometriose, endometrioseDescricao,
       mobilidadeColo: mobilidadeNum, posicaoColo, espessuraParede: espessuraNum,
       descensoParede, descensoUterino, inversaoConfirmada,
-      miometrioTextura, miometrioDescricao, coloUterinoAspecto,
+      miometrioTextura, miomaTemDados: figoFrags.length>0, coloUterinoAspecto,
       chkDiverticulos, diverticulosStatus,
       chkRetocele, retoceleGrau, chkLesao, lesaoLado, lesaoGrau, chkEnterocele, enteroceleGrau, cascaCebola,
       esfIntStatus, esfIntGrau, esfIntPct, esfExtStatus, esfExtGrau, esfExtPct,
@@ -1465,7 +1504,8 @@
     html += '<li>A vagina apresenta aspecto ecográfico preservado.</li>';
     html += '<li>O útero encontra-se em '+uteroPosicao+', medindo '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm (L x AP x T), com volume estimado de '+span(uteroVolume)+' cm³ ('+vrUteroTexto+').</li>';
     if(miometrioTextura==='heterogenea'){
-      html += '<li>'+phrase('miometrioHeterogeneo', {DESCRICAO: (miometrioDescricao || '____')})+'</li>';
+      html += '<li>'+phrase('miometrioHeterogeneo')+'</li>';
+      html += '<li>'+(miomaSentenceHtml || '<span class="blank">Preencha ao menos um nódulo (FIGO + medida) acima.</span>')+(miometrioDescricaoExtra ? ' '+escapeHtml(miometrioDescricaoExtra) : '')+'</li>';
     } else {
       html += '<li>'+phrase('miometrioHomogeneo')+'</li>';
     }
