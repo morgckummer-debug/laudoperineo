@@ -552,6 +552,15 @@
         <div class="toggle-line"><input type="checkbox" id="slingPresente"><label for="slingPresente">Paciente possui sling — incluir seção no laudo</label></div>
         <div class="conditional" id="wrap_slingFields">
           <div class="field-row">
+            <div class="field"><label>Terço da uretra</label>
+              <select id="slingTerco">
+                <option value="proximal">Terço proximal</option>
+                <option value="medio" selected>Terço médio</option>
+                <option value="distal">Terço distal</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
             <div class="field"><label>Distância uretra <span class="vr">VR: <span class="vr-slingMin">3</span>–<span class="vr-slingMax">5</span> mm</span></label>
               <input type="text" inputmode="decimal" data-decimals="1" id="slingUretra" placeholder="mm">
               <span class="flag-note" id="flag_slingUretra">Fora do valor de referência</span>
@@ -1179,6 +1188,7 @@
     const esfExtPct = v('esfExtPct');
 
     const slingPresente = $('slingPresente').checked;
+    const slingTercoTexto = {proximal:'terço proximal', medio:'terço médio', distal:'terço distal'}[v('slingTerco')] || 'terço médio';
     const slingUretraNum = num('slingUretra');
     const slingUretra = blankOrValue(v('slingUretra'));
     flag('slingUretra', slingPresente && slingUretraNum!==null && (slingUretraNum < VR.slingUretraMin || slingUretraNum > VR.slingUretraMax));
@@ -1304,7 +1314,7 @@
 
     if(slingPresente){
       html += '<h4 class="sec">AVALIAÇÃO DO "SLING"</h4><ul>';
-      html += '<li>Visualiza-se <em>sling</em> localizado no terço médio da uretra.</li>';
+      html += '<li>Visualiza-se <em>sling</em> localizado no '+slingTercoTexto+' da uretra.</li>';
       html += '<li>As distâncias medidas correspondem a: uretra '+span(slingUretra)+' mm (VR '+VR.slingUretraMin+'–'+VR.slingUretraMax+' mm); púbis '+span(slingPubis)+' mm (VR &lt; '+VR.slingPubis+' mm); meato uretral '+span(slingMeato)+' mm; colo vesical '+span(slingColo)+' mm.</li>';
       html += '<li>'+(slingPosicao==='bem' ? phrase('slingBem') : escapeHtml(slingOutroTexto || 'Posicionamento a descrever.'))+'</li>';
       html += '</ul>';
