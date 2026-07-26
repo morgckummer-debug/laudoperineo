@@ -1428,8 +1428,16 @@
         '</style></head><body>'+reportHtml+'</body></html>'
       );
       w.document.close();
-      w.onload = ()=>{ w.focus(); w.print(); };
-      setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e3){} }, 400);
+      let printed = false;
+      const doPrint = ()=>{
+        if(printed) return;
+        printed = true;
+        w.focus();
+        w.print();
+      };
+      w.onload = doPrint;
+      setTimeout(doPrint, 400);
+      w.onafterprint = ()=>{ w.close(); };
     }catch(e){
       try{
         window.print();
