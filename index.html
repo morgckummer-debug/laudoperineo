@@ -165,7 +165,7 @@
        the printed page, leaving the print preview blank. Clearing it here lets
        .paper anchor to the page itself. */
     .preview-wrap{position:static;}
-    .paper{position:absolute;top:0;left:0;width:100%;box-shadow:none;border:none;max-height:none;overflow:visible;padding:0 10mm;}
+    .paper{position:absolute;top:0;left:0;width:100%;box-shadow:none;border:none;max-height:none;overflow:visible;padding:40mm 10mm 10mm;}
     .preview-actions, .status-pill{display:none !important;}
   }
 </style>
@@ -1700,41 +1700,16 @@
   });
 
   $('btnPrint').addEventListener('click', ()=>{
-    // window.print() opens the native dialog immediately wherever the environment
-    // allows it (e.g. a normal top-level tab on GitHub Pages), but in restricted
-    // preview contexts (the Claude Artifact chat embed) it's a silent no-op with
-    // no exception to detect. So it's called best-effort here, and a standalone
-    // print-ready HTML file is ALWAYS also generated — the same Blob+<a download>
-    // mechanism already proven to work for "Baixar .txt" — guaranteeing a working
-    // path to print/save as PDF regardless of context.
-    try{ window.print(); }catch(e){}
+    // window.print() opens the native dialog directly using the @media print rules
+    // above. An earlier version also auto-downloaded a backup print-ready file on
+    // every click, but that fired unconditionally regardless of what the user did
+    // with the dialog — including hitting "Cancelar" — which looked like canceling
+    // triggered a download. Print works fine wherever this page is actually used
+    // (a normal top-level tab, e.g. GitHub Pages), so just call it.
     try{
-      const reportHtml = $('paper').innerHTML;
-      const docHtml = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
-        '<title>Laudo de Ultrassonografia Perineal</title>'+
-        '<style>'+
-        "body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;color:#2b2b2e;padding:20mm 18mm;max-width:800px;margin:0 auto;}"+
-        'h3.doctitle{text-align:center;text-decoration:underline;font-size:14.5pt;margin:0 0 4px;font-weight:600;}'+
-        '.doctitle-sub{text-align:center;font-size:10.5pt;color:#5b5b5e;margin-bottom:20px;}'+
-        'h4.sec{text-decoration:underline;font-size:13pt;margin:20px 0 8px;font-weight:600;}'+
-        'ul{margin:0 0 4px 0;padding-left:20px;} li{margin-bottom:9px;}'+
-        '.impressao li{font-weight:700;} .filled{color:#2b2b2e;} .blank{color:#B4432F;font-weight:600;}'+
-        '.footnote{font-style:italic;font-size:11.5pt;color:#5b5b5e;margin-top:16px;}'+
-        '@media print{ body{padding:0;} }'+
-        '</style></head><body>'+reportHtml+
-        '<script>window.addEventListener("load",function(){setTimeout(function(){window.print();},300);});<\/script>'+
-        '</body></html>';
-      const blob = new Blob([docHtml], {type:'text/html;charset=utf-8'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'laudo-perineal-impressao.html';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(()=>URL.revokeObjectURL(url), 2000);
+      window.print();
     }catch(e){
-      alert('Não foi possível gerar o arquivo de impressão neste navegador. Use "Baixar .txt" e imprima a partir de lá.');
+      alert('Não foi possível abrir a impressão automaticamente. Use "Baixar .txt" e imprima a partir de lá.');
     }
   });
 
