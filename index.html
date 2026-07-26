@@ -156,6 +156,13 @@
   ::-webkit-scrollbar{width:9px;}
   ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
 
+  /* @page margins repeat on every physical printed page — unlike an element's own
+     padding, which only reserves space once at the start of the (single, tall)
+     .paper box, leaving later pages without top margin and adding a trailing
+     blank page from the extra height. */
+  @page{
+    margin: 4cm 1cm 1cm;
+  }
   @media print{
     body *{visibility:hidden;}
     .paper, .paper *{visibility:visible;}
@@ -165,7 +172,7 @@
        the printed page, leaving the print preview blank. Clearing it here lets
        .paper anchor to the page itself. */
     .preview-wrap{position:static;}
-    .paper{position:absolute;top:0;left:0;width:100%;box-shadow:none;border:none;max-height:none;overflow:visible;padding:40mm 10mm 10mm;}
+    .paper{position:absolute;top:0;left:0;width:100%;box-shadow:none;border:none;max-height:none;overflow:visible;padding:0;}
     .preview-actions, .status-pill{display:none !important;}
   }
 </style>
