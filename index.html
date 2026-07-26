@@ -441,9 +441,60 @@
             <select id="coloUterinoAspecto"><option value="normal">Normal</option><option value="hipertrofico">Hipertrófico</option></select>
           </div>
         </div>
-        <div class="field conditional" id="wrap_miometrioDescricao">
-          <label>Descreva os nódulos/miomas (localização, classificação FIGO, medidas)</label>
-          <textarea id="miometrioDescricao" rows="2" placeholder="ex: em região fúndica, FIGO 2/5, medindo 6,6 x 5,7 mm; em região corporal anterior, FIGO 5, medindo 2,9 x 1,9 mm..."></textarea>
+        <div class="conditional" id="wrap_miomaDetalhes">
+          <div class="field-row">
+            <div class="field"><label>Número de nódulos</label>
+              <select id="miomaCount"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 ou mais</option></select>
+            </div>
+          </div>
+          <div class="subgroup" id="wrap_mioma1">
+            <div class="field-row">
+              <div class="field"><label>Nódulo 1 — localização</label>
+                <select id="mioma1Local"><option value="região fúndica">Região fúndica</option><option value="parede anterior">Parede anterior</option><option value="parede posterior">Parede posterior</option><option value="região cervical">Região cervical</option><option value="outro">Outro (especificar)</option></select>
+              </div>
+              <div class="field"><label>FIGO</label><input type="text" id="mioma1Figo" placeholder="ex: 2, 4, 2-5"></div>
+              <div class="field"><label>Medida 1</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma1M1" placeholder="mm"></div>
+              <div class="field"><label>Medida 2</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma1M2" placeholder="mm"></div>
+            </div>
+            <div class="field conditional" id="wrap_mioma1Outro"><label>Especifique a localização</label><input type="text" id="mioma1LocalOutro" placeholder="ex: região ístmica"></div>
+          </div>
+          <div class="subgroup conditional" id="wrap_mioma2">
+            <div class="field-row">
+              <div class="field"><label>Nódulo 2 — localização</label>
+                <select id="mioma2Local"><option value="região fúndica">Região fúndica</option><option value="parede anterior">Parede anterior</option><option value="parede posterior">Parede posterior</option><option value="região cervical">Região cervical</option><option value="outro">Outro (especificar)</option></select>
+              </div>
+              <div class="field"><label>FIGO</label><input type="text" id="mioma2Figo" placeholder="ex: 2, 4, 2-5"></div>
+              <div class="field"><label>Medida 1</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma2M1" placeholder="mm"></div>
+              <div class="field"><label>Medida 2</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma2M2" placeholder="mm"></div>
+            </div>
+            <div class="field conditional" id="wrap_mioma2Outro"><label>Especifique a localização</label><input type="text" id="mioma2LocalOutro" placeholder="ex: região ístmica"></div>
+          </div>
+          <div class="subgroup conditional" id="wrap_mioma3">
+            <div class="field-row">
+              <div class="field"><label>Nódulo 3 — localização</label>
+                <select id="mioma3Local"><option value="região fúndica">Região fúndica</option><option value="parede anterior">Parede anterior</option><option value="parede posterior">Parede posterior</option><option value="região cervical">Região cervical</option><option value="outro">Outro (especificar)</option></select>
+              </div>
+              <div class="field"><label>FIGO</label><input type="text" id="mioma3Figo" placeholder="ex: 2, 4, 2-5"></div>
+              <div class="field"><label>Medida 1</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma3M1" placeholder="mm"></div>
+              <div class="field"><label>Medida 2</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma3M2" placeholder="mm"></div>
+            </div>
+            <div class="field conditional" id="wrap_mioma3Outro"><label>Especifique a localização</label><input type="text" id="mioma3LocalOutro" placeholder="ex: região ístmica"></div>
+          </div>
+          <div class="subgroup conditional" id="wrap_mioma4">
+            <div class="field-row">
+              <div class="field"><label>Nódulo 4 (e demais) — localização</label>
+                <select id="mioma4Local"><option value="região fúndica">Região fúndica</option><option value="parede anterior">Parede anterior</option><option value="parede posterior">Parede posterior</option><option value="região cervical">Região cervical</option><option value="outro">Outro (especificar)</option></select>
+              </div>
+              <div class="field"><label>FIGO</label><input type="text" id="mioma4Figo" placeholder="ex: 2, 4, 2-5"></div>
+              <div class="field"><label>Medida 1</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma4M1" placeholder="mm"></div>
+              <div class="field"><label>Medida 2</label><input type="text" inputmode="decimal" data-decimals="1" id="mioma4M2" placeholder="mm"></div>
+            </div>
+            <div class="field conditional" id="wrap_mioma4Outro"><label>Especifique a localização</label><input type="text" id="mioma4LocalOutro" placeholder="ex: região ístmica"></div>
+          </div>
+          <div class="field" style="margin-top:4px;">
+            <label>Observações adicionais (opcional)</label>
+            <textarea id="miometrioDescricao" rows="2" placeholder="qualquer detalhe extra sobre os nódulos, ou demais nódulos além dos listados acima..."></textarea>
+          </div>
         </div>
         <div class="field-row">
           <div class="field"><label>Ovário direito — L</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_L" placeholder="cm"></div>
@@ -999,7 +1050,18 @@
   $('ovD_aspecto').addEventListener('change', e=> toggle('wrap_ovD_descricao', e.target.value==='alterado'));
   $('ovE_aspecto').addEventListener('change', e=> toggle('wrap_ovE_descricao', e.target.value==='alterado'));
   $('chkEndometriose').addEventListener('change', e=> toggle('wrap_endometrioseDescricao', e.target.checked));
-  $('miometrioTextura').addEventListener('change', e=> toggle('wrap_miometrioDescricao', e.target.value==='heterogenea'));
+  function updateMiomaSlots(){
+    const n = $('miometrioTextura').value==='heterogenea' ? parseInt($('miomaCount').value||'1',10) : 0;
+    [1,2,3,4].forEach(i=> toggle('wrap_mioma'+i, i<=n));
+  }
+  $('miometrioTextura').addEventListener('change', e=>{
+    toggle('wrap_miomaDetalhes', e.target.value==='heterogenea');
+    updateMiomaSlots();
+  });
+  $('miomaCount').addEventListener('change', updateMiomaSlots);
+  [1,2,3,4].forEach(i=>{
+    $('mioma'+i+'Local').addEventListener('change', e=> toggle('wrap_mioma'+i+'Outro', e.target.value==='outro'));
+  });
   $('chkDiverticulos').addEventListener('change', e=>{
     toggle('wrap_diverticulosStatus', e.target.checked);
     toggle('wrap_diverticulosDescricao', e.target.checked && $('diverticulosStatus').value==='com');
@@ -1254,7 +1316,22 @@
     flag('uteroVolume', uteroVolumeNum!==null && uteroVolumeNum > vrUteroLimite);
     const endometrio = blankOrValue(req('endometrio'));
     const miometrioTextura = v('miometrioTextura');
-    const miometrioDescricao = v('miometrioDescricao');
+    const miomaCount = miometrioTextura==='heterogenea' ? parseInt(v('miomaCount')||'1',10) : 0;
+    const miomaFragmentos = [];
+    for(let i=1; i<=miomaCount; i++){
+      const local = v('mioma'+i+'Local');
+      const localTexto = local==='outro' ? (v('mioma'+i+'LocalOutro')||'localização não especificada') : local;
+      const figo = v('mioma'+i+'Figo');
+      const m1 = v('mioma'+i+'M1'), m2 = v('mioma'+i+'M2');
+      if(!figo && !m1 && !m2) continue; // untouched slot — the location select always has a default value
+      let frag = 'em '+(localTexto||'localização não especificada');
+      if(figo) frag += ', FIGO '+figo;
+      if(m1 || m2) frag += ', medindo '+(m1||'__')+(m2?(' x '+m2):'')+' mm';
+      miomaFragmentos.push(frag);
+    }
+    const miometrioDescricaoExtra = v('miometrioDescricao');
+    let miometrioDescricao = miomaFragmentos.join('; ');
+    if(miometrioDescricaoExtra) miometrioDescricao += (miometrioDescricao ? '; ' : '') + miometrioDescricaoExtra;
     const coloUterinoComprimento = blankOrValue(req('coloUterinoComprimento'));
     const coloUterinoAspecto = v('coloUterinoAspecto');
     const vrOvarioTipo = v('vrOvarioTipo');
@@ -1351,7 +1428,7 @@
 
     // ----- Assemble laudo HTML -----
     let html = '';
-    html += '<h3 class="doctitle">ULTRASSONOGRAFIA PERINEAL</h3>';
+    html += '<h3 class="doctitle">ULTRASSONOGRAFIA TRANSVAGINAL PARA AVALIAÇÃO PERINEAL<br>E DE PROLAPSO GENITAL</h3>';
     html += '<div class="doctitle-sub">Ultrassom direcionado para '+escapeHtml(objetivoTexto)+(dataExame?(' — '+escapeHtml(dataExame)):'')+'</div>';
     html += '<p>'+phrase('linhaEquipamento')+'</p>';
 
