@@ -145,6 +145,12 @@
   }
   .status-pill.pending{background:var(--amber-light);color:var(--amber);}
 
+  .print-alert{
+    display:none;background:#B4432F;color:#fff;font-weight:600;font-size:13px;
+    padding:10px 14px;border-radius:10px;margin-bottom:10px;
+  }
+  .print-alert.show{display:block;}
+
   .settings-panel{display:none;background:var(--rose-light);border-radius:var(--radius-md);padding:16px 18px;margin:0 28px 22px;max-width:1440px;}
   .settings-panel.show{display:block;margin:0 auto 22px;}
   .settings-panel h3{font-family:'Poppins',sans-serif;font-size:14px;margin:0 0 10px;color:var(--rose-dark);font-weight:600;}
@@ -168,7 +174,7 @@
        the printed document well past the end of the report, producing several
        blank trailing pages. .paper is left to flow normally — no more
        position:absolute, so no containing-block quirks either. */
-    .topbar, .settings-panel, #formCol, .preview-actions, .status-pill{display:none !important;}
+    .topbar, .settings-panel, #formCol, .preview-actions, .status-pill, .print-alert{display:none !important;}
     .layout{display:block;padding:0;margin:0;max-width:none;}
     .preview-wrap{position:static;}
     .paper{background:none;border:none;box-shadow:none;border-radius:0;max-height:none;overflow:visible;padding:0;margin:0;}
@@ -307,9 +313,9 @@
   <hr class="sep">
   <h3>Períneo</h3>
   <div class="field" style="margin-bottom:8px;"><label>Esfíncter anal interno preservado</label><textarea id="ph_esfIntPreservado" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Esfíncter anal interno com defeito — use {HORAS} e {PCT}</label><textarea id="ph_esfIntDefeito" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Esfíncter anal interno com defeito — use {HORAS}, {PCT} e {MEDIDA} (mm)</label><textarea id="ph_esfIntDefeito" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Esfíncter anal externo preservado</label><textarea id="ph_esfExtPreservado" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Esfíncter anal externo com defeito — use {HORAS} e {PCT}</label><textarea id="ph_esfExtDefeito" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Esfíncter anal externo com defeito — use {HORAS}, {PCT} e {MEDIDA} (mm)</label><textarea id="ph_esfExtDefeito" rows="2"></textarea></div>
 
   <hr class="sep">
   <h3>Sling</h3>
@@ -655,6 +661,7 @@
           </div>
           <div class="field conditional" id="wrap_esfIntHoras"><label>Localização (horas)</label><input type="text" id="esfIntHoras" placeholder="ex: 10h"></div>
           <div class="field conditional" id="wrap_esfIntPct"><label>% da circunferência</label><input type="text" inputmode="decimal" data-decimals="0" id="esfIntPct" placeholder="%"></div>
+          <div class="field conditional" id="wrap_esfIntExtensao"><label>Extensão da lesão (em mm)</label><input type="text" inputmode="numeric" maxlength="2" data-decimals="0" id="esfIntExtensao" placeholder="mm"></div>
         </div>
         <div class="field-row">
           <div class="field"><label>Esfíncter anal externo</label>
@@ -665,6 +672,7 @@
           </div>
           <div class="field conditional" id="wrap_esfExtHoras"><label>Localização (horas)</label><input type="text" id="esfExtHoras" placeholder="ex: 2h"></div>
           <div class="field conditional" id="wrap_esfExtPct"><label>% da circunferência</label><input type="text" inputmode="decimal" data-decimals="0" id="esfExtPct" placeholder="%"></div>
+          <div class="field conditional" id="wrap_esfExtExtensao"><label>Extensão da lesão (em mm)</label><input type="text" inputmode="numeric" maxlength="2" data-decimals="0" id="esfExtExtensao" placeholder="mm"></div>
         </div>
       </div>
     </div>
@@ -709,6 +717,7 @@
   <!-- PREVIEW COLUMN -->
   <div class="preview-wrap">
     <span class="status-pill" id="statusPill">0 campos pendentes</span>
+    <div class="print-alert" id="printAlert">⚠ Ainda há campos não preenchidos — corrija antes de imprimir.</div>
     <div class="paper" id="paper" contenteditable="true" spellcheck="false"></div>
     <div class="preview-actions">
       <button class="btn-copy" id="btnCopy">Copiar laudo</button>
@@ -858,9 +867,9 @@
     cascaCebolaPresente: 'Presença de imagem em "casca de cebola", compatível com intussuscepção retal.',
     cascaCebolaAusente: 'Ausência de imagem em "casca de cebola", compatível com intussuscepção retal.',
     esfIntPreservado: 'O esfíncter anal interno apresenta integridade preservada.',
-    esfIntDefeito: 'Observa-se defeito do esfíncter anal interno localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência.',
+    esfIntDefeito: 'Observa-se defeito do esfíncter anal interno localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência. Extensão da lesão (em mm): {MEDIDA}.',
     esfExtPreservado: 'O esfíncter anal externo apresenta integridade preservada.',
-    esfExtDefeito: 'Observa-se defeito do esfíncter anal externo localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência.',
+    esfExtDefeito: 'Observa-se defeito do esfíncter anal externo localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência. Extensão da lesão (em mm): {MEDIDA}.',
     slingBem: 'Sling bem posicionado.',
 
     impTudoNormal: 'Bexiga urinária, útero e anexos normais à ecografia.',
@@ -1111,11 +1120,11 @@
   $('chkEnterocele').addEventListener('change', e=> toggle('wrap_enteroceleGrau', e.target.checked));
   $('esfIntStatus').addEventListener('change', e=>{
     const d = e.target.value==='defeito';
-    toggle('wrap_esfIntGrau', d); toggle('wrap_esfIntHoras', d); toggle('wrap_esfIntPct', d);
+    toggle('wrap_esfIntGrau', d); toggle('wrap_esfIntHoras', d); toggle('wrap_esfIntPct', d); toggle('wrap_esfIntExtensao', d);
   });
   $('esfExtStatus').addEventListener('change', e=>{
     const d = e.target.value==='defeito';
-    toggle('wrap_esfExtGrau', d); toggle('wrap_esfExtHoras', d); toggle('wrap_esfExtPct', d);
+    toggle('wrap_esfExtGrau', d); toggle('wrap_esfExtHoras', d); toggle('wrap_esfExtPct', d); toggle('wrap_esfExtExtensao', d);
   });
   $('slingPresente').addEventListener('change', e=>{
     toggle('wrap_slingFields', e.target.checked);
@@ -1423,10 +1432,12 @@
     const esfIntGrau = v('esfIntGrau');
     const esfIntHoras = v('esfIntHoras');
     const esfIntPct = v('esfIntPct');
+    const esfIntExtensao = v('esfIntExtensao');
     const esfExtStatus = v('esfExtStatus');
     const esfExtGrau = v('esfExtGrau');
     const esfExtHoras = v('esfExtHoras');
     const esfExtPct = v('esfExtPct');
+    const esfExtExtensao = v('esfExtExtensao');
 
     const slingPresente = $('slingPresente').checked;
     const slingUretraNum = num('slingUretra');
@@ -1568,12 +1579,12 @@
     if(esfIntStatus==='preservado'){
       html += '<li>'+phrase('esfIntPreservado')+'</li>';
     } else {
-      html += '<li>'+phrase('esfIntDefeito', {HORAS: (esfIntHoras||'____'), PCT: (esfIntPct||'__')})+'</li>';
+      html += '<li>'+phrase('esfIntDefeito', {HORAS: (esfIntHoras||'____'), PCT: (esfIntPct||'__'), MEDIDA: (esfIntExtensao||'__')})+'</li>';
     }
     if(esfExtStatus==='preservado'){
       html += '<li>'+phrase('esfExtPreservado')+'</li>';
     } else {
-      html += '<li>'+phrase('esfExtDefeito', {HORAS: (esfExtHoras||'____'), PCT: (esfExtPct||'__')})+'</li>';
+      html += '<li>'+phrase('esfExtDefeito', {HORAS: (esfExtHoras||'____'), PCT: (esfExtPct||'__'), MEDIDA: (esfExtExtensao||'__')})+'</li>';
     }
     html += '</ul>';
 
@@ -1598,7 +1609,7 @@
     $('paper').innerHTML = html;
 
     const pill = $('statusPill');
-    if(pendingCount===0){ pill.textContent='Laudo completo'; pill.classList.remove('pending'); }
+    if(pendingCount===0){ pill.textContent='Laudo completo'; pill.classList.remove('pending'); $('printAlert').classList.remove('show'); }
     else { pill.textContent = pendingCount+' campo'+(pendingCount>1?'s':'')+' pendente'+(pendingCount>1?'s':''); pill.classList.add('pending'); }
   }
 
@@ -1705,6 +1716,12 @@
   });
 
   $('btnPrint').addEventListener('click', ()=>{
+    if(pendingCount > 0){
+      const alertEl = $('printAlert');
+      alertEl.classList.add('show');
+      alertEl.scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
     // window.print() opens the native dialog directly using the @media print rules
     // above. An earlier version also auto-downloaded a backup print-ready file on
     // every click, but that fired unconditionally regardless of what the user did
