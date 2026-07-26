@@ -397,6 +397,18 @@
           <div class="field"><label>Espessura endometrial</label><input type="text" inputmode="decimal" data-decimals="1" id="endometrio" placeholder="mm"></div>
         </div>
         <div class="field-row">
+          <div class="field"><label>Descenso uterino à Valsalva (em relação à borda inferior da sínfise púbica)</label>
+            <select id="descensoUterino">
+              <option value="ausente">Permanece acima da borda inferior do púbis (sem descenso significativo)</option>
+              <option value="1">Alcança a borda inferior do púbis — prolapso grau I (leve)</option>
+              <option value="2">Alcança o intróito vaginal — prolapso grau II (moderado)</option>
+              <option value="3">Ultrapassa o intróito vaginal — prolapso grau III (acentuado)</option>
+              <option value="4">Exterioriza-se completamente pelo intróito — prolapso grau IV (total)</option>
+            </select>
+          </div>
+        </div>
+        <hr class="sep">
+        <div class="field-row">
           <div class="field"><label>Valor de referência — volume ovariano</label>
             <select id="vrOvarioTipo">
               <option value="padrao">VR: 3,0 a 9,0 cm³</option>
@@ -440,18 +452,6 @@
         <div class="field conditional" id="wrap_ovE_descricao">
           <label>Descreva o achado — ovário esquerdo</label>
           <textarea id="ovE_descricao" rows="2" placeholder="ex: cisto anecoico simples medindo X cm; imagem sugestiva de endometrioma; formação sólida com fluxo ao Doppler..."></textarea>
-        </div>
-        <hr class="sep">
-        <div class="field-row">
-          <div class="field"><label>Descenso uterino à Valsalva (em relação à borda inferior da sínfise púbica)</label>
-            <select id="descensoUterino">
-              <option value="ausente">Permanece acima da borda inferior do púbis (sem descenso significativo)</option>
-              <option value="1">Alcança a borda inferior do púbis — prolapso grau I (leve)</option>
-              <option value="2">Alcança o intróito vaginal — prolapso grau II (moderado)</option>
-              <option value="3">Ultrapassa o intróito vaginal — prolapso grau III (acentuado)</option>
-              <option value="4">Exterioriza-se completamente pelo intróito — prolapso grau IV (total)</option>
-            </select>
-          </div>
         </div>
       </div>
     </div>
