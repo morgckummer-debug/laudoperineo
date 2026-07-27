@@ -1100,7 +1100,9 @@
     }
     if(state.chkIstmocele){
       const pctLabel = state.istmocelePct!==null ? String(state.istmocelePct) : '____';
-      const significadoLabel = state.istmocelePct!==null ? (state.istmoceleUltrapassa ? 'ultrapassa 50%' : 'não ultrapassa 50%') : '____';
+      const significadoLabel = state.istmocelePct!==null
+        ? (state.istmoceleAfilamentoSignificativo ? 'afilamento miometrial significativo, abaixo de 50%' : 'sem afilamento miometrial significativo, igual ou acima de 50%')
+        : '____';
       items.push({key:'istmocele', label:phraseRaw('impIstmocele', {PCT: pctLabel, SIGNIFICADO: significadoLabel}), auto:true});
     }
     if(state.chkPolipoEndocervical){
@@ -1223,7 +1225,10 @@
     const istmoceleResidual = blankOrValue(v('istmoceleResidual'));
     const istmocelePct = (istmoceleAnteriorNum!==null && istmoceleResidualNum!==null && istmoceleAnteriorNum>0)
       ? Math.round((istmoceleResidualNum/istmoceleAnteriorNum)*100) : null;
-    const istmoceleUltrapassa = istmocelePct!==null && istmocelePct > 50;
+    // Clinically significant thinning is when the RESIDUAL wall is less than half the
+    // adjacent wall (e.g. residual 3mm / anterior 15mm = 20% — a marked, significant
+    // reduction), not the other way around.
+    const istmoceleAfilamentoSignificativo = istmocelePct!==null && istmocelePct < 50;
 
     const chkPolipoEndocervical = $('chkPolipoEndocervical').checked;
     const polipoEndocervicalMedida = blankOrValue(reqIf('polipoEndocervicalMedida', chkPolipoEndocervical));
@@ -1284,7 +1289,7 @@
     const state = {
       bexigaAspecto, bexigaDescricao,
       miometrioAspecto, miomaTemDados: miomaFrags.length>0, miomaFrags,
-      chkIstmocele, istmocelePct, istmoceleUltrapassa, chkPolipoEndocervical, chkDIU, diuPosicao,
+      chkIstmocele, istmocelePct, istmoceleAfilamentoSignificativo, chkPolipoEndocervical, chkDIU, diuPosicao,
       endometrioAspecto,
       ovD_aspecto: ovD.aspecto, ovD_descricao: ovD.descricao,
       ovE_aspecto: ovE.aspecto, ovE_descricao: ovE.descricao,
@@ -1331,7 +1336,7 @@
     if(chkIstmocele){
       const pctObj = istmocelePct!==null ? {text: istmocelePct+'%', filled:true} : {text:'____', filled:false};
       const significadoObj = istmocelePct!==null
-        ? {text: (istmoceleUltrapassa ? 'ultrapassando 50% da espessura da parede adjacente' : 'não ultrapassando 50% da espessura da parede adjacente'), filled:true}
+        ? {text: (istmoceleAfilamentoSignificativo ? 'compatível com afilamento miometrial significativo (abaixo de 50%)' : 'sem afilamento miometrial significativo (igual ou acima de 50%)'), filled:true}
         : {text:'preencha as duas espessuras acima', filled:false};
       html += '<p class="linha">'+phraseRaw('istmocele', {ANTERIOR: span(istmoceleAnterior), RESIDUAL: span(istmoceleResidual), PCT: span(pctObj), SIGNIFICADO: span(significadoObj)})+'</p>';
     }
