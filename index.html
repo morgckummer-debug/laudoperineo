@@ -1531,16 +1531,14 @@
     if(ovD_aspecto==='nao_identificado'){
       html += '<li>'+phrase('ovarioNaoIdentificado', {LADO:'direito'})+'</li>';
     } else if(ovD_qualitativo){
-      html += '<li>Ovário direito medindo '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm (volume '+span(ovD_volume)+' cm³ — '+vrOvarioTexto+').</li>';
-      html += '<li>'+ovD_qualitativo+'.</li>';
+      html += '<li>Ovário direito medindo '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm (volume '+span(ovD_volume)+' cm³ — '+vrOvarioTexto+'). '+ovD_qualitativo+'.</li>';
     } else {
       html += '<li>Ovário direito apresenta dimensões e ecotextura preservadas, medindo '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm (volume '+span(ovD_volume)+' cm³ — '+vrOvarioTexto+').</li>';
     }
     if(ovE_aspecto==='nao_identificado'){
       html += '<li>'+phrase('ovarioNaoIdentificado', {LADO:'esquerdo'})+'</li>';
     } else if(ovE_qualitativo){
-      html += '<li>Ovário esquerdo medindo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm (volume '+span(ovE_volume)+' cm³ — '+vrOvarioTexto+').</li>';
-      html += '<li>'+ovE_qualitativo+'.</li>';
+      html += '<li>Ovário esquerdo medindo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm (volume '+span(ovE_volume)+' cm³ — '+vrOvarioTexto+'). '+ovE_qualitativo+'.</li>';
     } else {
       html += '<li>Ovário esquerdo apresenta dimensões e ecotextura preservadas, medindo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm (volume '+span(ovE_volume)+' cm³ — '+vrOvarioTexto+').</li>';
     }
