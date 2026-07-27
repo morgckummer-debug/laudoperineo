@@ -1137,6 +1137,10 @@
   // ---------- Helpers ----------
   function v(id){ const el = $(id); return el ? el.value.trim() : ''; }
   function num(id){ const x = parseFloat(v(id).replace(',', '.')); return isNaN(x) ? null : x; }
+  // Free-text description fields get their own closing period appended when
+  // assembled into a sentence — strip one the user already typed so it doesn't
+  // end up doubled ("..").
+  function vNoDot(id){ return v(id).replace(/\.+\s*$/, ''); }
   function blankOrValue(val, suffix){
     if(val === '' || val === null || val === undefined) return {text:'____', filled:false};
     return {text: val + (suffix||''), filled:true};
@@ -1335,7 +1339,7 @@
     flag('espessuraParede', espessuraNum!==null && espessuraNum > VR.espessura);
 
     const bexigaAspecto = v('bexigaAspecto');
-    const bexigaDescricao = v('bexigaDescricao');
+    const bexigaDescricao = vNoDot('bexigaDescricao');
     const volumePre = blankOrValue(req('volumePre'));
     const residuoPos = blankOrValue(req('residuoPos'));
     const anguloRepousoNum = num('anguloRepouso'); req('anguloRepouso');
@@ -1404,7 +1408,7 @@
     const ovD_volume = blankOrValue(v('ovD_volume'));
     flag('ovD_volume', ovD_volumeNum!==null && (vrOvarioTipo==='menopausa' ? ovD_volumeNum > VR.ovarioMax2 : (ovD_volumeNum < VR.ovarioMin1 || ovD_volumeNum > VR.ovarioMax1)));
     const ovD_aspecto = v('ovD_aspecto');
-    const ovD_descricao = v('ovD_descricao');
+    const ovD_descricao = vNoDot('ovD_descricao');
     const ovE_L = blankOrValue(req('ovE_L'));
     const ovE_AP = blankOrValue(req('ovE_AP'));
     const ovE_T = blankOrValue(req('ovE_T'));
@@ -1412,7 +1416,7 @@
     const ovE_volume = blankOrValue(v('ovE_volume'));
     flag('ovE_volume', ovE_volumeNum!==null && (vrOvarioTipo==='menopausa' ? ovE_volumeNum > VR.ovarioMax2 : (ovE_volumeNum < VR.ovarioMin1 || ovE_volumeNum > VR.ovarioMax1)));
     const ovE_aspecto = v('ovE_aspecto');
-    const ovE_descricao = v('ovE_descricao');
+    const ovE_descricao = vNoDot('ovE_descricao');
 
     const descensoUterino = v('descensoUterino');
 
@@ -1426,7 +1430,7 @@
     const enteroceleGrau = v('enteroceleGrau');
     const cascaCebola = v('cascaCebola');
     const chkEndometriose = $('chkEndometriose').checked;
-    const endometrioseDescricao = v('endometrioseDescricao');
+    const endometrioseDescricao = vNoDot('endometrioseDescricao');
     const chkDiverticulos = $('chkDiverticulos').checked;
     const diverticulosStatus = v('diverticulosStatus');
     const diverticulosDescricao = v('diverticulosDescricao');
@@ -1461,7 +1465,7 @@
     const slingMeato = blankOrValue(v('slingMeato'));
     const slingColo = blankOrValue(v('slingColo'));
     const slingPosicao = v('slingPosicao');
-    const slingOutroTexto = v('slingOutroTexto');
+    const slingOutroTexto = vNoDot('slingOutroTexto');
 
     const dataExame = v('dataExame');
     const objetivos = [];
