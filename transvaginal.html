@@ -118,11 +118,6 @@
     font-family:'Times New Roman', Times, serif;font-size:11.5pt;line-height:1.5;color:var(--ink);
     max-height:calc(100vh - 150px);overflow-y:auto;
   }
-  .paper .headerbox{
-    border:1.5px solid #999;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:11pt;
-  }
-  .paper .headerbox p{margin:0 0 4px;font-weight:700;}
-  .paper .headerbox p:last-child{margin-bottom:0;}
   .paper h3.doctitle{
     text-align:center;text-decoration:underline;font-size:15.5px;letter-spacing:.5px;
     margin:0 0 10px;font-weight:700;
@@ -233,16 +228,7 @@
     <div class="card">
       <div class="card-head"><h2>Dados do exame</h2></div>
       <div class="card-body">
-        <div class="field-row">
-          <div class="field"><label>Nome da paciente</label><input type="text" id="pacienteNome"></div>
-          <div class="field"><label>Data do exame</label><input type="text" inputmode="numeric" id="dataExame" placeholder="dd/mm/aaaa" maxlength="10"></div>
-          <div class="field"><label>Médico solicitante</label><input type="text" id="medicoSolicitante"></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>G (gestações)</label><input type="text" inputmode="numeric" maxlength="2" id="gesta"></div>
-          <div class="field"><label>P (partos)</label><input type="text" inputmode="numeric" maxlength="2" id="para"></div>
-          <div class="field"><label>A (abortos)</label><input type="text" inputmode="numeric" maxlength="2" id="abortos"></div>
-        </div>
+        <p style="font-size:12px;color:var(--ink-soft);margin-top:0;">Sem cabeçalho de identificação — a impressão reserva 4 cm em branco no topo para a folha timbrada.</p>
         <div class="field"><label>Motivo do exame ("Relato de...")</label><textarea id="motivoExame" rows="2" placeholder="ex: dor pélvica; sangramento uterino anormal; controle de mioma..."></textarea></div>
       </div>
     </div>
@@ -322,7 +308,7 @@
                 <select id="mioma1Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
               </div>
               <div class="field conditional" id="wrap_mioma1Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma1CervicalDetalhe" placeholder="ex: anterior"></div>
-              <div class="field"><label>Medida</label><input type="text" id="mioma1Medida" placeholder="mm"></div>
+              <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="mioma1Medida" placeholder="mm"></div>
             </div>
           </div>
           <div class="subgroup conditional" id="wrap_mioma2">
@@ -334,7 +320,7 @@
                 <select id="mioma2Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
               </div>
               <div class="field conditional" id="wrap_mioma2Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma2CervicalDetalhe" placeholder="ex: anterior"></div>
-              <div class="field"><label>Medida</label><input type="text" id="mioma2Medida" placeholder="mm"></div>
+              <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="mioma2Medida" placeholder="mm"></div>
             </div>
           </div>
           <div class="subgroup conditional" id="wrap_mioma3">
@@ -346,7 +332,7 @@
                 <select id="mioma3Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
               </div>
               <div class="field conditional" id="wrap_mioma3Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma3CervicalDetalhe" placeholder="ex: anterior"></div>
-              <div class="field"><label>Medida</label><input type="text" id="mioma3Medida" placeholder="mm"></div>
+              <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="mioma3Medida" placeholder="mm"></div>
             </div>
           </div>
           <div class="field" style="margin-top:4px;">
@@ -358,13 +344,13 @@
         <hr class="sep">
         <div class="toggle-line"><input type="checkbox" id="chkIstmocele"><label for="chkIstmocele">Istmocele (em topografia de cesárea)</label></div>
         <div class="field-row conditional" id="wrap_istmoceleCampos">
-          <div class="field"><label>Largura</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleLargura" placeholder="mm"></div>
-          <div class="field"><label>Profundidade</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleAltura" placeholder="mm"></div>
+          <div class="field"><label>Espessura da parede miometrial anterior adjacente</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="istmoceleAnterior" placeholder="mm"></div>
+          <div class="field"><label>Espessura da parede residual (na istmocele)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="istmoceleResidual" placeholder="mm"></div>
         </div>
 
         <div class="toggle-line"><input type="checkbox" id="chkPolipoEndocervical"><label for="chkPolipoEndocervical">Pólipo endocervical</label></div>
         <div class="field-row conditional" id="wrap_polipoEndocervicalCampos">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="polipoEndocervicalMedida" placeholder="mm"></div>
+          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="polipoEndocervicalMedida" placeholder="mm"></div>
         </div>
 
         <div class="toggle-line"><input type="checkbox" id="chkDIU"><label for="chkDIU">Paciente com DIU</label></div>
@@ -400,7 +386,7 @@
           <div class="field"><label>Pedículo no folheto</label>
             <select id="polipoPediculo"><option value="anterior">Anterior</option><option value="posterior">Posterior</option></select>
           </div>
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="polipoMedida" placeholder="mm"></div>
+          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="polipoMedida" placeholder="mm"></div>
         </div>
       </div>
     </div>
@@ -444,27 +430,24 @@
             </select>
           </div>
         </div>
-        <div class="field-row conditional" id="wrap_ovD_policistico">
-          <div class="field"><label>Diâmetro médio dos folículos antrais</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_diamFolicular" placeholder="mm" value="5"></div>
-        </div>
         <div class="field-row conditional" id="wrap_ovD_cisto1">
-          <div class="field"><label>Medida do cisto</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_cisto1Medida" placeholder="cm"></div>
+          <div class="field"><label>Medida do cisto</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_cisto1Medida" placeholder="mm"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_cisto2">
-          <div class="field"><label>Medida do cisto 1</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_cisto2MedidaA" placeholder="cm"></div>
-          <div class="field"><label>Medida do cisto 2</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_cisto2MedidaB" placeholder="cm"></div>
+          <div class="field"><label>Medida do cisto 1</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_cisto2MedidaA" placeholder="mm"></div>
+          <div class="field"><label>Medida do cisto 2</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_cisto2MedidaB" placeholder="mm"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_corpoluteo">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_corpoLuteoMedida" placeholder="cm"></div>
+          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_corpoLuteoMedida" placeholder="mm"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_foliculo">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_foliculoMedida" placeholder="cm"></div>
+          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_foliculoMedida" placeholder="mm"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_dermoide">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_dermoideMedida" placeholder="cm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_dermoideMedida" placeholder="ex: 35 x 30"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_endometrioma">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_endometriomaMedida" placeholder="cm"></div>
+          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_endometriomaMedida" placeholder="mm"></div>
         </div>
         <div class="field conditional" id="wrap_ovD_descricao">
           <label>Descreva o achado</label>
@@ -498,27 +481,24 @@
             </select>
           </div>
         </div>
-        <div class="field-row conditional" id="wrap_ovE_policistico">
-          <div class="field"><label>Diâmetro médio dos folículos antrais</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_diamFolicular" placeholder="mm" value="5"></div>
-        </div>
         <div class="field-row conditional" id="wrap_ovE_cisto1">
-          <div class="field"><label>Medida do cisto</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_cisto1Medida" placeholder="cm"></div>
+          <div class="field"><label>Medida do cisto</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_cisto1Medida" placeholder="mm"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_cisto2">
-          <div class="field"><label>Medida do cisto 1</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_cisto2MedidaA" placeholder="cm"></div>
-          <div class="field"><label>Medida do cisto 2</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_cisto2MedidaB" placeholder="cm"></div>
+          <div class="field"><label>Medida do cisto 1</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_cisto2MedidaA" placeholder="mm"></div>
+          <div class="field"><label>Medida do cisto 2</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_cisto2MedidaB" placeholder="mm"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_corpoluteo">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_corpoLuteoMedida" placeholder="cm"></div>
+          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_corpoLuteoMedida" placeholder="mm"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_foliculo">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_foliculoMedida" placeholder="cm"></div>
+          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_foliculoMedida" placeholder="mm"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_dermoide">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_dermoideMedida" placeholder="cm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_dermoideMedida" placeholder="ex: 35 x 30"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_endometrioma">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_endometriomaMedida" placeholder="cm"></div>
+          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_endometriomaMedida" placeholder="mm"></div>
         </div>
         <div class="field conditional" id="wrap_ovE_descricao">
           <label>Descreva o achado</label>
@@ -545,8 +525,7 @@
         <div class="field-row conditional" id="wrap_endometrioseCampos">
           <div class="field"><label>Localização (parede intestinal)</label><input type="text" id="endometrioseLocal" placeholder="ex: retossigmoide" value="retossigmoide"></div>
           <div class="field"><label>Região</label><input type="text" id="endometrioseRegiao" placeholder="ex: retrocervical" value="retrocervical"></div>
-          <div class="field"><label>Largura</label><input type="text" inputmode="decimal" data-decimals="1" id="endometrioseLargura" placeholder="mm"></div>
-          <div class="field"><label>Altura</label><input type="text" inputmode="decimal" data-decimals="1" id="endometrioseAltura" placeholder="mm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="endometrioseMedida" placeholder="ex: 35 x 23"></div>
         </div>
 
         <hr class="sep">
@@ -555,9 +534,11 @@
             <select id="liquidoLivre"><option value="ausente">Ausente</option><option value="presente">Presente</option></select>
           </div>
         </div>
-        <div class="field conditional" id="wrap_liquidoLivreDescricao">
-          <label>Quantidade (opcional)</label>
-          <input type="text" id="liquidoLivreDescricao" placeholder="ex: em pequena quantidade">
+        <div class="field-row conditional" id="wrap_liquidoLivreCampos">
+          <div class="field"><label>L</label><input type="text" inputmode="decimal" data-decimals="1" id="liquidoLivre_L" placeholder="cm"></div>
+          <div class="field"><label>AP</label><input type="text" inputmode="decimal" data-decimals="1" id="liquidoLivre_AP" placeholder="cm"></div>
+          <div class="field"><label>T</label><input type="text" inputmode="decimal" data-decimals="1" id="liquidoLivre_T" placeholder="cm"></div>
+          <div class="field"><label>Volume</label><input type="text" inputmode="decimal" data-decimals="1" id="liquidoLivre_Volume" placeholder="mL"></div>
         </div>
 
         <hr class="sep">
@@ -646,18 +627,23 @@
   }
   function isValidDecimal(el){
     const maxDecimals = parseInt(el.dataset.decimals || '0', 10);
+    const maxInt = parseInt(el.dataset.maxint || '0', 10);
     const normalized = el.value.replace(/\./g, ',');
     if(normalized === '') return true;
+    const intPart = maxInt > 0 ? ('\\d{1,'+maxInt+'}') : '\\d+';
     return maxDecimals <= 0
-      ? /^\d+$/.test(normalized)
-      : new RegExp('^\\d+(,\\d{1,'+maxDecimals+'})?$').test(normalized);
+      ? new RegExp('^'+intPart+'$').test(normalized)
+      : new RegExp('^'+intPart+'(,\\d{1,'+maxDecimals+'})?$').test(normalized);
   }
   function checkDecimalFormat(el){
     sanitizeChars(el);
     const maxDecimals = parseInt(el.dataset.decimals || '0', 10);
+    const maxInt = parseInt(el.dataset.maxint || '0', 10);
     const message = maxDecimals <= 0
       ? 'Revise o número — apenas dígitos, sem vírgula.'
-      : 'Revise o número — precisa de um algarismo antes da vírgula (ex: 1,2).';
+      : (maxInt > 0
+        ? 'Revise o número — até '+maxInt+' algarismos antes da vírgula e '+maxDecimals+' depois (ex: 35,0).'
+        : 'Revise o número — precisa de um algarismo antes da vírgula (ex: 1,2).');
     showFormatWarning(el, !isValidDecimal(el), message);
   }
   function wireDecimalInputs(){
@@ -671,22 +657,6 @@
   }
   wireDecimalInputs();
 
-  // ---------- Date mask: auto-insert "/" as dd/mm/aaaa, digits only ----------
-  function enforceDateMask(el){
-    let digits = el.value.replace(/\D/g, '').slice(0, 8);
-    let out = digits;
-    if(digits.length > 4){
-      out = digits.slice(0,2) + '/' + digits.slice(2,4) + '/' + digits.slice(4);
-    } else if(digits.length > 2){
-      out = digits.slice(0,2) + '/' + digits.slice(2);
-    }
-    el.value = out;
-  }
-  const dataExameEl = $('dataExame');
-  if(dataExameEl){
-    dataExameEl.addEventListener('input', ()=> enforceDateMask(dataExameEl));
-  }
-
   // ---------- Reference values ----------
   let VR = {
     medicoNome:'Dra. Morgana Fialho Caldas Kummer',
@@ -695,14 +665,6 @@
     medicoCRM:'CRMMG: 45.304 - RQE: 39.156',
     uteroNenhum:90, utero1a2:140, utero3:160, utero4mais:180, uteroInfancia:10, uteroAdolescencia:40,
     ovarioMin:3, ovarioMax:9, ovarioMenopausa:5
-  };
-  const UTERO_VR_TEXT = {
-    nenhum: v=>'nenhum filho, até '+v.uteroNenhum+' cm³',
-    '1a2': v=>'1 ou 2 filhos, até '+v.utero1a2+' cm³',
-    '3': v=>'3 filhos, até '+v.utero3+' cm³',
-    '4mais': v=>'4 ou mais filhos, até '+v.utero4mais+' cm³',
-    infancia: v=>'infância, até '+v.uteroInfancia+' cm³',
-    adolescencia: v=>'adolescência, até '+v.uteroAdolescencia+' cm³'
   };
   const UTERO_VR_LIMIT = {
     nenhum: v=>v.uteroNenhum, '1a2': v=>v.utero1a2, '3': v=>v.utero3,
@@ -815,7 +777,6 @@
     const sel = $(prefix+'_aspecto');
     sel.addEventListener('change', e=>{
       const val = e.target.value;
-      toggle('wrap_'+prefix+'_policistico', val==='policistico');
       toggle('wrap_'+prefix+'_cisto1', val==='cisto1');
       toggle('wrap_'+prefix+'_cisto2', val==='cisto2');
       toggle('wrap_'+prefix+'_corpoluteo', val==='corpoluteo');
@@ -830,7 +791,7 @@
 
   $('chkHidrossalpinge').addEventListener('change', e=> toggle('wrap_hidrossalpingeCampos', e.target.checked));
   $('chkEndometriose').addEventListener('change', e=> toggle('wrap_endometrioseCampos', e.target.checked));
-  $('liquidoLivre').addEventListener('change', e=> toggle('wrap_liquidoLivreDescricao', e.target.value==='presente'));
+  $('liquidoLivre').addEventListener('change', e=> toggle('wrap_liquidoLivreCampos', e.target.value==='presente'));
   $('mobilidade').addEventListener('change', e=> toggle('wrap_mobilidadeDescricao', e.target.value==='reduzida'));
 
   // ---------- Helpers ----------
@@ -867,13 +828,13 @@
   };
 
   const OVARIO_ACHADO_TEXT = {
-    policistico: (lado, diam)=> 'Ovário '+lado+' de forma globosa, volume aumentado, apresentando folículos antrais de distribuição predominantemente periférica, com diâmetro médio de '+diam+' mm, associado a aumento da ecogenicidade do estroma.',
-    cisto1: (lado, m)=> 'Ovário '+lado+', em seu interior observa-se imagem cística anecoica, uniloculada, de paredes finas e regulares, medindo '+m+' cm.',
-    cisto2: (lado, m1, m2)=> 'Ovário '+lado+', em seu interior observam-se duas imagens císticas uniloculares, de paredes finas e regulares, medindo '+m1+' cm e '+m2+' cm, respectivamente.',
-    corpoluteo: (lado, m)=> 'Ovário '+lado+', em seu interior nota-se imagem cística heterogênea, de paredes espessadas e irregulares, conteúdo ecogênico e captação de fluxo periférico ao mapeamento Doppler colorido, medindo '+m+' cm (corpo lúteo).',
-    foliculo: (lado, m)=> 'Ovário '+lado+', em seu interior observa-se imagem folicular com discreta captação de fluxo periférico, medindo '+m+' cm.',
-    dermoide: (lado, m)=> 'Ovário '+lado+', em seu interior observa-se imagem nodular ecogênica, bem delimitada, sem captação de fluxo periférico, medindo '+m+' cm.',
-    endometrioma: (lado, m)=> 'Ovário '+lado+', nota-se imagem cística regular e unilocular, com conteúdo de textura em "vidro fosco", com mínima captação de fluxo periférico, medindo '+m+' cm.'
+    policistico: (lado)=> 'Ovário '+lado+' de forma globosa, volume aumentado, apresentando folículos antrais de distribuição predominantemente periférica, com diâmetro médio de 5 mm, associado a aumento da ecogenicidade do estroma.',
+    cisto1: (lado, m)=> 'Ovário '+lado+', em seu interior observa-se imagem cística anecoica, uniloculada, de paredes finas e regulares, medindo '+m+' mm.',
+    cisto2: (lado, m1, m2)=> 'Ovário '+lado+', em seu interior observam-se duas imagens císticas uniloculares, de paredes finas e regulares, medindo '+m1+' mm e '+m2+' mm, respectivamente.',
+    corpoluteo: (lado, m)=> 'Ovário '+lado+', em seu interior nota-se imagem cística heterogênea, de paredes espessadas e irregulares, conteúdo ecogênico e captação de fluxo periférico ao mapeamento Doppler colorido, medindo '+m+' mm (corpo lúteo).',
+    foliculo: (lado, m)=> 'Ovário '+lado+', em seu interior observa-se imagem folicular com discreta captação de fluxo periférico, medindo '+m+' mm.',
+    dermoide: (lado, m)=> 'Ovário '+lado+', em seu interior observa-se imagem nodular ecogênica, bem delimitada, sem captação de fluxo periférico, medindo '+m+' mm.',
+    endometrioma: (lado, m)=> 'Ovário '+lado+', nota-se imagem cística regular e unilocular, com conteúdo de textura em "vidro fosco", com mínima captação de fluxo periférico, medindo '+m+' mm.'
   };
   const OVARIO_HD_TEXT = {
     policistico: (lado)=> 'Ovário '+lado+' com aspecto sugestivo de ovários policísticos.',
@@ -989,10 +950,6 @@
       return req(id);
     }
 
-    const pacienteNome = v('pacienteNome'); req('pacienteNome');
-    const dataExame = v('dataExame'); req('dataExame');
-    const medicoSolicitante = v('medicoSolicitante');
-    const gesta = v('gesta'), para = v('para'), abortos = v('abortos');
     const motivoExame = vNoDot('motivoExame');
 
     const bexigaAspecto = v('bexigaAspecto');
@@ -1002,7 +959,7 @@
     const uteroPosicaoTexto = {AVF:'em anteversoflexão', RVF:'em retroversoflexão', MVF:'em posição intermediária (medioversão)'}[uteroPosicaoVal];
     const vrUteroCategoria = v('vrUteroCategoria');
     const vrUteroLimite = UTERO_VR_LIMIT[vrUteroCategoria](VR);
-    const vrUteroTexto = UTERO_VR_TEXT[vrUteroCategoria](VR);
+    const vrUteroTexto = 'até '+vrUteroLimite.toString().replace('.',',')+' cm³';
     const uteroL = blankOrValue(req('uteroL'));
     const uteroAP = blankOrValue(req('uteroAP'));
     const uteroT = blankOrValue(req('uteroT'));
@@ -1025,8 +982,13 @@
     const miometrioDescricaoExtra = vNoDot('miometrioDescricao');
 
     const chkIstmocele = $('chkIstmocele').checked;
-    const istmoceleLargura = blankOrValue(reqIf('istmoceleLargura', chkIstmocele));
-    const istmoceleAltura = blankOrValue(reqIf('istmoceleAltura', chkIstmocele));
+    const istmoceleAnteriorNum = num('istmoceleAnterior'); reqIf('istmoceleAnterior', chkIstmocele);
+    const istmoceleResidualNum = num('istmoceleResidual'); reqIf('istmoceleResidual', chkIstmocele);
+    const istmoceleAnterior = blankOrValue(v('istmoceleAnterior'));
+    const istmoceleResidual = blankOrValue(v('istmoceleResidual'));
+    const istmocelePct = (istmoceleAnteriorNum!==null && istmoceleResidualNum!==null && istmoceleAnteriorNum>0)
+      ? Math.round((istmoceleResidualNum/istmoceleAnteriorNum)*100) : null;
+    const istmoceleUltrapassa = istmocelePct!==null && istmocelePct > 50;
 
     const chkPolipoEndocervical = $('chkPolipoEndocervical').checked;
     const polipoEndocervicalMedida = blankOrValue(reqIf('polipoEndocervicalMedida', chkPolipoEndocervical));
@@ -1056,7 +1018,6 @@
       flag(prefix+'_volume', volNum!==null && (vrOvarioTipo==='menopausa' ? volNum > VR.ovarioMenopausa : (volNum < VR.ovarioMin || volNum > VR.ovarioMax)));
       const aspecto = v(prefix+'_aspecto');
       const descricao = vNoDot(prefix+'_descricao');
-      const diamFolicular = v(prefix+'_diamFolicular') || '5';
       const cisto1Medida = reqIf(prefix+'_cisto1Medida', aspecto==='cisto1');
       const cisto2MedidaA = reqIf(prefix+'_cisto2MedidaA', aspecto==='cisto2');
       const cisto2MedidaB = reqIf(prefix+'_cisto2MedidaB', aspecto==='cisto2');
@@ -1064,7 +1025,7 @@
       const foliculoMedida = reqIf(prefix+'_foliculoMedida', aspecto==='foliculo');
       const dermoideMedida = reqIf(prefix+'_dermoideMedida', aspecto==='dermoide');
       const endometriomaMedida = reqIf(prefix+'_endometriomaMedida', aspecto==='endometrioma');
-      return {L, AP, T, volume, volNum, aspecto, descricao, diamFolicular, cisto1Medida, cisto2MedidaA, cisto2MedidaB, corpoLuteoMedida, foliculoMedida, dermoideMedida, endometriomaMedida};
+      return {L, AP, T, volume, volNum, aspecto, descricao, cisto1Medida, cisto2MedidaA, cisto2MedidaB, corpoLuteoMedida, foliculoMedida, dermoideMedida, endometriomaMedida};
     }
     const ovD = readOvario('ovD');
     const ovE = readOvario('ovE');
@@ -1076,10 +1037,13 @@
     const chkEndometriose = $('chkEndometriose').checked;
     const endometrioseLocal = v('endometrioseLocal') || 'retossigmoide';
     const endometrioseRegiao = v('endometrioseRegiao') || 'retrocervical';
-    const endometrioseLargura = blankOrValue(reqIf('endometrioseLargura', chkEndometriose));
-    const endometrioseAltura = blankOrValue(reqIf('endometrioseAltura', chkEndometriose));
+    const endometrioseMedida = reqIf('endometrioseMedida', chkEndometriose);
     const liquidoLivre = v('liquidoLivre');
-    const liquidoLivreDescricao = v('liquidoLivreDescricao');
+    const liquidoLivrePresente = liquidoLivre==='presente';
+    const liquidoLivre_L = blankOrValue(reqIf('liquidoLivre_L', liquidoLivrePresente));
+    const liquidoLivre_AP = blankOrValue(reqIf('liquidoLivre_AP', liquidoLivrePresente));
+    const liquidoLivre_T = blankOrValue(reqIf('liquidoLivre_T', liquidoLivrePresente));
+    const liquidoLivre_Volume = blankOrValue(reqIf('liquidoLivre_Volume', liquidoLivrePresente));
     const mobilidade = v('mobilidade');
     const mobilidadeDescricao = v('mobilidadeDescricao');
 
@@ -1100,12 +1064,6 @@
 
     // ----- Assemble laudo HTML -----
     let html = '';
-    html += '<div class="headerbox">';
-    html += '<p>Nome: '+span(blankOrValue(pacienteNome))+' &nbsp;&nbsp;&nbsp; Data: '+span(blankOrValue(dataExame))+'</p>';
-    html += '<p>Médico: '+span(blankOrValue(medicoSolicitante))+'</p>';
-    html += '<p>G: '+(gesta||'__')+' &nbsp; P: '+(para||'__')+' &nbsp; A: '+(abortos||'__')+'</p>';
-    html += '</div>';
-
     html += '<h3 class="doctitle">ULTRASSOM TRANSVAGINAL</h3>';
     if(motivoExame){
       html += '<p class="relato">Relato de '+escapeHtml(motivoExame)+'.</p>';
@@ -1118,7 +1076,7 @@
     html += '<p class="linha"><strong>Bexiga:</strong> de topografia usual, '+bexigaTexto+'.</p>';
 
     html += '<p class="linha"><strong>Útero:</strong> '+uteroPosicaoTexto+', situado na linha mediana, de configuração anatômica, textura homogênea e contornos regulares, sem identificação de nódulos sólidos.</p>';
-    html += '<p class="linha">Dimensões: '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm, com volume de '+span(uteroVolume)+' cm³ (VR — '+escapeHtml(vrUteroTexto)+').</p>';
+    html += '<p class="linha">Dimensões: '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm, com volume de '+span(uteroVolume)+' cm³ (VR '+escapeHtml(vrUteroTexto)+').</p>';
 
     if(miometrioAspecto==='mioma'){
       if(miomaFrags.length===1){
@@ -1137,13 +1095,17 @@
     }
 
     if(chkIstmocele){
-      html += '<p class="linha">Em topografia de cesárea, observa-se descontinuidade miometrial de aspecto triangular, anecoica, localizada na parede anterior, medindo '+span(istmoceleLargura)+' x '+span(istmoceleAltura)+' mm.</p>';
+      const pctTexto = istmocelePct!==null ? (istmocelePct+'%') : '____';
+      const significadoTexto = istmocelePct!==null ? (istmoceleUltrapassa ? 'ultrapassando 50% da espessura da parede adjacente' : 'não ultrapassando 50% da espessura da parede adjacente') : '<span class="blank">preencha as duas espessuras acima</span>';
+      html += '<p class="linha">Em topografia de cesárea, observa-se istmocele, com espessura da parede miometrial anterior adjacente de '+span(istmoceleAnterior)+' mm e espessura da parede residual de '+span(istmoceleResidual)+' mm, correspondendo a '+pctTexto+' da parede adjacente — '+significadoTexto+'.</p>';
     }
     if(chkPolipoEndocervical){
       html += '<p class="linha">Em canal endocervical, nota-se imagem elipsoide sólida, ecogênica, com pedículo vascular identificado ao mapeamento colorido, medindo '+span(polipoEndocervicalMedida)+' mm.</p>';
     }
     if(chkDIU){
-      html += '<p class="linha">Presença de imagem linear ecogênica que condiciona sombra acústica posterior, compatível com DIU, localizada acima do orifício interno do colo uterino, cuja haste se encontra no fundo da cavidade endometrial e dista '+span(diuDistancia)+' mm do fundo da serosa uterina.</p>';
+      html += diuPosicao==='baixa'
+        ? ('<p class="linha">Presença de imagem linear ecogênica que condiciona sombra acústica posterior, compatível com DIU, cuja extremidade distal se encontra no interior do orifício interno do colo uterino (e não acima dele), distando '+span(diuDistancia)+' mm do fundo da serosa uterina.</p>')
+        : ('<p class="linha">Presença de imagem linear ecogênica que condiciona sombra acústica posterior, compatível com DIU, localizada acima do orifício interno do colo uterino, cuja haste se encontra no fundo da cavidade endometrial e dista '+span(diuDistancia)+' mm do fundo da serosa uterina.</p>');
     }
 
     if(endometrioAspecto==='polipo'){
@@ -1161,7 +1123,7 @@
       const base = '<p class="linha"><strong>Ovário '+ladoM+':</strong> de topografia e forma usuais, medindo '+span(ov.L)+' x '+span(ov.AP)+' x '+span(ov.T)+' cm, com volume de '+span(ov.volume)+' cm³ ('+escapeHtml(vrOvarioTexto)+').</p>';
       let extra = '';
       if(ov.aspecto==='policistico'){
-        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.policistico(ladoM, ov.diamFolicular)+'</p>';
+        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.policistico(ladoM)+'</p>';
       } else if(ov.aspecto==='cisto1'){
         extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.cisto1(ladoM, ov.cisto1Medida||'____')+'</p>';
       } else if(ov.aspecto==='cisto2'){
@@ -1171,9 +1133,9 @@
       } else if(ov.aspecto==='foliculo'){
         extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.foliculo(ladoM, ov.foliculoMedida||'____')+'</p>';
       } else if(ov.aspecto==='dermoide'){
-        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.dermoide(ladoF, ov.dermoideMedida||'____')+'</p>';
+        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.dermoide(ladoM, ov.dermoideMedida||'____')+'</p>';
       } else if(ov.aspecto==='endometrioma'){
-        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.endometrioma(ladoF, ov.endometriomaMedida||'____')+'</p>';
+        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.endometrioma(ladoM, ov.endometriomaMedida||'____')+'</p>';
       } else if(ov.aspecto==='alterado' && ov.descricao){
         extra = '<p class="linha">'+escapeHtml(ov.descricao)+'.</p>';
       }
@@ -1193,11 +1155,11 @@
     }
 
     if(chkEndometriose){
-      html += '<p class="linha">Observa-se imagem nodular irregular, hipoecoica, localizada na muscular da mucosa do '+escapeHtml(endometrioseLocal)+', medindo '+span(endometrioseLargura)+' x '+span(endometrioseAltura)+' mm, em região '+escapeHtml(endometrioseRegiao)+'.</p>';
+      html += '<p class="linha">Observa-se imagem nodular irregular, hipoecoica, localizada na muscular da mucosa do '+escapeHtml(endometrioseLocal)+', medindo '+span(blankOrValue(endometrioseMedida))+' mm, em região '+escapeHtml(endometrioseRegiao)+'.</p>';
     }
 
-    html += '<p class="linha">'+(liquidoLivre==='presente'
-      ? ('Presença de líquido livre em fundo de saco posterior'+(liquidoLivreDescricao?', '+escapeHtml(liquidoLivreDescricao):'')+'.')
+    html += '<p class="linha">'+(liquidoLivrePresente
+      ? ('Presença de líquido livre em fundo de saco posterior, medindo '+span(liquidoLivre_L)+' x '+span(liquidoLivre_AP)+' x '+span(liquidoLivre_T)+' cm, com volume estimado de '+span(liquidoLivre_Volume)+' mL.')
       : 'Ausência de líquido livre em fundo de saco posterior.')+'</p>';
 
     html += '<p class="linha">'+(mobilidade==='reduzida'
@@ -1310,6 +1272,10 @@
     }
   });
 
+  // Printing from inside a sandboxed preview (e.g. a Claude Artifact iframe) can make
+  // window.print() a silent no-op — no dialog, no error. Opening the report in its own
+  // top-level tab and printing from there sidesteps that, and still works perfectly
+  // fine when this page is hosted normally (GitHub Pages, a local file, etc).
   $('btnPrint').addEventListener('click', ()=>{
     if(pendingCount > 0){
       printAttempted = true;
@@ -1319,11 +1285,33 @@
       alertEl.scrollIntoView({behavior:'smooth', block:'center'});
       return;
     }
-    try{
-      window.print();
-    }catch(e){
-      alert('Não foi possível abrir a impressão automaticamente. Use "Baixar .txt" e imprima a partir de lá.');
+    const printDoc = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Laudo transvaginal</title><style>'
+      + "body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;color:#2b2b2e;margin:0;padding:34px 36px;}"
+      + 'h3.doctitle{text-align:center;text-decoration:underline;font-size:15.5px;letter-spacing:.5px;margin:0 0 10px;font-weight:700;}'
+      + '.relato{color:#C0392B;font-weight:700;margin:0 0 12px;}'
+      + 'h4.sec{text-decoration:underline;font-size:13px;letter-spacing:.4px;margin:16px 0 8px;font-weight:600;}'
+      + 'p.linha{margin:0 0 9px;} p.linha strong{font-weight:700;}'
+      + '.blank{color:#B4432F;font-weight:600;}'
+      + 'ul.impressao{margin:0;padding-left:0;list-style:none;} ul.impressao li{margin-bottom:6px;font-weight:700;}'
+      + '.footnote{font-style:italic;font-size:9pt;color:#5b5b5e;margin-top:16px;}'
+      + '.assinatura{margin-top:26px;font-size:11pt;} .assinatura .linha-assinatura{border-top:1px solid #2b2b2e;width:280px;margin-bottom:6px;}'
+      + '@page{margin:4cm 2cm 2cm;}'
+      + '</style></head><body>'+$('paper').innerHTML+'</body></html>';
+
+    let printWin = null;
+    try{ printWin = window.open('', '_blank'); }catch(e){ printWin = null; }
+    if(!printWin){
+      alert('Não foi possível abrir a janela de impressão (bloqueador de pop-up?). Use "Copiar laudo" ou "Baixar .txt" e imprima a partir de lá.');
+      return;
     }
+    printWin.document.open();
+    printWin.document.write(printDoc);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(()=>{
+      try{ printWin.print(); }
+      catch(e){ alert('A aba do laudo abriu, mas não foi possível disparar a impressão automaticamente. Use Ctrl+P (ou Cmd+P) nela.'); }
+    }, 300);
   });
 
   $('btnDownload').addEventListener('click', ()=>{
