@@ -231,7 +231,8 @@
 
   <hr class="sep">
   <h3>Útero</h3>
-  <div class="field" style="margin-bottom:8px;"><label>Frase-base — use {POSICAO}</label><textarea id="ph_uteroBase" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Frase-base (sem miomas) — use {POSICAO}</label><textarea id="ph_uteroBase" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Frase-base (com miomas) — use {POSICAO}</label><textarea id="ph_uteroBaseComNodulos" rows="2"></textarea></div>
 
   <hr class="sep">
   <h3>Miométrio / miomas</h3>
@@ -281,7 +282,7 @@
   <div class="field" style="margin-bottom:8px;"><label>Varizes pélvicas</label><textarea id="ph_varizes" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Endometriose profunda intestinal — use {LOCAL}, {MEDIDA} e {REGIAO}</label><textarea id="ph_endometrioseIntestinal" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Líquido livre ausente</label><textarea id="ph_liquidoLivreAusente" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Líquido livre presente — use {L}, {AP}, {T} e {VOLUME}</label><textarea id="ph_liquidoLivrePresente" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Líquido livre presente — use {MEDIDAS} e {VOLUME}</label><textarea id="ph_liquidoLivrePresente" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Mobilidade preservada</label><textarea id="ph_mobilidadePreservada" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Mobilidade reduzida — use {DESCRICAO}</label><textarea id="ph_mobilidadeReduzida" rows="2"></textarea></div>
 
@@ -293,7 +294,7 @@
   <div class="field" style="margin-bottom:8px;"><label>2 ou mais miomas</label><textarea id="ph_impMiomaVarios" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Útero miomatoso (3 ou mais nódulos)</label><textarea id="ph_impUteroMiomatoso" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Adenomiose</label><textarea id="ph_impAdenomiose" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Istmocele</label><textarea id="ph_impIstmocele" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Istmocele — use {PCT} e {SIGNIFICADO}</label><textarea id="ph_impIstmocele" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Pólipo endocervical</label><textarea id="ph_impPolipoEndocervical" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>DIU normoposicionado</label><textarea id="ph_impDiuNormo" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>DIU de baixa implantação</label><textarea id="ph_impDiuBaixa" rows="2"></textarea></div>
@@ -411,7 +412,7 @@
                 <select id="mioma1Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
               </div>
               <div class="field conditional" id="wrap_mioma1Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma1CervicalDetalhe" placeholder="ex: anterior"></div>
-              <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="mioma1Medida" placeholder="mm"></div>
+              <div class="field"><label>Medida (mm)</label><input type="text" id="mioma1Medida" placeholder="ex: 22 x 20"></div>
             </div>
           </div>
           <div class="subgroup conditional" id="wrap_mioma2">
@@ -423,7 +424,7 @@
                 <select id="mioma2Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
               </div>
               <div class="field conditional" id="wrap_mioma2Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma2CervicalDetalhe" placeholder="ex: anterior"></div>
-              <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="mioma2Medida" placeholder="mm"></div>
+              <div class="field"><label>Medida (mm)</label><input type="text" id="mioma2Medida" placeholder="ex: 22 x 20"></div>
             </div>
           </div>
           <div class="subgroup conditional" id="wrap_mioma3">
@@ -435,7 +436,7 @@
                 <select id="mioma3Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
               </div>
               <div class="field conditional" id="wrap_mioma3Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma3CervicalDetalhe" placeholder="ex: anterior"></div>
-              <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="mioma3Medida" placeholder="mm"></div>
+              <div class="field"><label>Medida (mm)</label><input type="text" id="mioma3Medida" placeholder="ex: 22 x 20"></div>
             </div>
           </div>
           <div class="field" style="margin-top:4px;">
@@ -638,9 +639,7 @@
           </div>
         </div>
         <div class="field-row conditional" id="wrap_liquidoLivreCampos">
-          <div class="field"><label>L</label><input type="text" inputmode="decimal" data-decimals="1" id="liquidoLivre_L" placeholder="cm"></div>
-          <div class="field"><label>AP</label><input type="text" inputmode="decimal" data-decimals="1" id="liquidoLivre_AP" placeholder="cm"></div>
-          <div class="field"><label>T</label><input type="text" inputmode="decimal" data-decimals="1" id="liquidoLivre_T" placeholder="cm"></div>
+          <div class="field"><label>Medidas (L x AP x T, cm)</label><input type="text" id="liquidoLivreMedidas" placeholder="ex: 4 x 2 x 3"></div>
           <div class="field"><label>Volume</label><input type="text" inputmode="decimal" data-decimals="1" id="liquidoLivre_Volume" placeholder="mL"></div>
         </div>
 
@@ -764,6 +763,7 @@
   const PHRASE_DEFAULTS = {
     bexigaNormal: 'apresentando-se vazia durante a realização do exame',
     uteroBase: '{POSICAO}, situado na linha mediana, de configuração anatômica, textura homogênea e contornos regulares, sem identificação de nódulos sólidos.',
+    uteroBaseComNodulos: '{POSICAO}, situado na linha mediana, de configuração anatômica e contornos regulares.',
 
     miomaIntro1: 'Observa-se imagem nodular sólida, hipoecoica e heterogênea, localizada na {F1}.',
     miomaIntro2: 'Observam-se duas imagens nodulares sólidas, hipoecogênicas e heterogêneas, uma localizada na {F1} e outra na {F2}.',
@@ -803,7 +803,7 @@
     varizes: 'Regiões anexiais apresentando dilatação de vasos para-uterinos, bilateralmente, sob a serosa uterina — varizes pélvicas.',
     endometrioseIntestinal: 'Observa-se imagem nodular irregular, hipoecoica, localizada na muscular da mucosa do {LOCAL}, medindo {MEDIDA} mm, em região {REGIAO}.',
     liquidoLivreAusente: 'Ausência de líquido livre em fundo de saco posterior.',
-    liquidoLivrePresente: 'Presença de líquido livre em fundo de saco posterior, medindo {L} x {AP} x {T} cm, com volume estimado de {VOLUME} mL.',
+    liquidoLivrePresente: 'Presença de líquido livre em fundo de saco posterior, medindo {MEDIDAS} cm, com volume estimado de {VOLUME} mL.',
     mobilidadePreservada: 'Mobilidade uterina e ovariana preservadas.',
     mobilidadeReduzida: 'Mobilidade uterina e ovariana reduzida{DESCRICAO}.',
 
@@ -813,7 +813,7 @@
     impMiomaVarios: 'Nódulos sólidos sugestivos de miomas.',
     impUteroMiomatoso: 'Útero de volume aumentado, miomatoso.',
     impAdenomiose: 'Alteração difusa da ecotextura miometrial sugestiva de adenomiose.',
-    impIstmocele: 'Istmocele.',
+    impIstmocele: 'Istmocele, com espessura residual correspondendo a {PCT}% da parede adjacente ({SIGNIFICADO}).',
     impPolipoEndocervical: 'Imagem sugestiva de pólipo endocervical.',
     impDiuNormo: 'DIU normoposicionado.',
     impDiuBaixa: 'DIU de baixa implantação.',
@@ -1099,7 +1099,9 @@
       items.push({key:'adenomiose', label:phraseRaw('impAdenomiose'), auto:true});
     }
     if(state.chkIstmocele){
-      items.push({key:'istmocele', label:phraseRaw('impIstmocele'), auto:true});
+      const pctLabel = state.istmocelePct!==null ? String(state.istmocelePct) : '____';
+      const significadoLabel = state.istmocelePct!==null ? (state.istmoceleUltrapassa ? 'ultrapassa 50%' : 'não ultrapassa 50%') : '____';
+      items.push({key:'istmocele', label:phraseRaw('impIstmocele', {PCT: pctLabel, SIGNIFICADO: significadoLabel}), auto:true});
     }
     if(state.chkPolipoEndocervical){
       items.push({key:'polipo-endocervical', label:phraseRaw('impPolipoEndocervical'), auto:true});
@@ -1273,9 +1275,7 @@
     const endometrioseMedida = reqIf('endometrioseMedida', chkEndometriose);
     const liquidoLivre = v('liquidoLivre');
     const liquidoLivrePresente = liquidoLivre==='presente';
-    const liquidoLivre_L = blankOrValue(reqIf('liquidoLivre_L', liquidoLivrePresente));
-    const liquidoLivre_AP = blankOrValue(reqIf('liquidoLivre_AP', liquidoLivrePresente));
-    const liquidoLivre_T = blankOrValue(reqIf('liquidoLivre_T', liquidoLivrePresente));
+    const liquidoLivreMedidas = blankOrValue(reqIf('liquidoLivreMedidas', liquidoLivrePresente));
     const liquidoLivre_Volume = blankOrValue(reqIf('liquidoLivre_Volume', liquidoLivrePresente));
     const mobilidade = v('mobilidade');
     const mobilidadeDescricao = v('mobilidadeDescricao');
@@ -1284,7 +1284,7 @@
     const state = {
       bexigaAspecto, bexigaDescricao,
       miometrioAspecto, miomaTemDados: miomaFrags.length>0, miomaFrags,
-      chkIstmocele, chkPolipoEndocervical, chkDIU, diuPosicao,
+      chkIstmocele, istmocelePct, istmoceleUltrapassa, chkPolipoEndocervical, chkDIU, diuPosicao,
       endometrioAspecto,
       ovD_aspecto: ovD.aspecto, ovD_descricao: ovD.descricao,
       ovE_aspecto: ovE.aspecto, ovE_descricao: ovE.descricao,
@@ -1308,7 +1308,8 @@
       : phrase('bexigaNormal');
     html += '<p class="linha"><strong>Bexiga:</strong> de topografia usual, '+bexigaTexto+'.</p>';
 
-    html += '<p class="linha"><strong>Útero:</strong> '+phrase('uteroBase', {POSICAO: uteroPosicaoTexto})+'</p>';
+    const uteroTemNodulos = miometrioAspecto==='mioma' && miomaFrags.length>0;
+    html += '<p class="linha"><strong>Útero:</strong> '+phrase(uteroTemNodulos ? 'uteroBaseComNodulos' : 'uteroBase', {POSICAO: uteroPosicaoTexto})+'</p>';
     html += '<p class="linha">Dimensões: '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm, com volume de '+span(uteroVolume)+' cm³ (VR '+escapeHtml(vrUteroTexto)+').</p>';
 
     if(miometrioAspecto==='mioma'){
@@ -1392,7 +1393,7 @@
     }
 
     html += '<p class="linha">'+(liquidoLivrePresente
-      ? phraseRaw('liquidoLivrePresente', {L: span(liquidoLivre_L), AP: span(liquidoLivre_AP), T: span(liquidoLivre_T), VOLUME: span(liquidoLivre_Volume)})
+      ? phraseRaw('liquidoLivrePresente', {MEDIDAS: span(liquidoLivreMedidas), VOLUME: span(liquidoLivre_Volume)})
       : phrase('liquidoLivreAusente'))+'</p>';
 
     html += '<p class="linha">'+(mobilidade==='reduzida'
