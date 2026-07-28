@@ -284,8 +284,8 @@
 
   <hr class="sep">
   <h3>Istmocele / pólipos / hidrossalpinge / endometriose (nódulo)</h3>
-  <div class="field" style="margin-bottom:8px;"><label>Istmocele — use {ANTERIOR}, {RESIDUAL}, {PCT} e {SIGNIFICADO}</label><textarea id="ph_istmocele" rows="3"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Istmocele — impressão — use {SIGNIFICADO}</label><textarea id="ph_impIstmocele" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Istmocele — use {MEDIDA} e {PCT}</label><textarea id="ph_istmocele" rows="3"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Istmocele — impressão (frase fixa, exibida sempre que a istmocele estiver marcada)</label><textarea id="ph_impIstmocele" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Pólipo endocervical — use {MEDIDA}</label><textarea id="ph_polipoEndocervical" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Pólipo endocervical — impressão</label><textarea id="ph_impPolipoEndocervical" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Pólipo endometrial — use {LOCAL}, {PEDICULO} e {MEDIDA}</label><textarea id="ph_polipoEndometrial" rows="3"></textarea></div>
@@ -558,8 +558,9 @@
 
         <div class="toggle-line"><input type="checkbox" id="chkIstmocele"><label for="chkIstmocele">Istmocele (em topografia de cesárea)</label></div>
         <div class="field-row conditional" id="wrap_istmoceleCampos">
-          <div class="field"><label>Espessura da parede miometrial anterior adjacente</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleAnterior" placeholder="mm"></div>
-          <div class="field"><label>Espessura da parede residual (na istmocele)</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleResidual" placeholder="mm"></div>
+          <div class="field"><label>Medida da istmocele (mm)</label><input type="text" id="istmoceleMedida" placeholder="ex: 9 x 5 x 8"></div>
+          <div class="field"><label>Espessura do miométrio adjacente — EMA</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleAnterior" placeholder="mm"></div>
+          <div class="field"><label>Espessura do miométrio residual — EMR</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleResidual" placeholder="mm"></div>
         </div>
 
         <div class="field-row">
@@ -936,7 +937,7 @@
     esfExtDefeito: 'Observa-se defeito do esfíncter anal externo localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência, medindo {MEDIDA} mm.',
     slingBem: 'Sling bem posicionado.',
 
-    istmocele: 'Em topografia de cesárea, observa-se istmocele, com espessura da parede miometrial anterior adjacente de {ANTERIOR} mm e espessura da parede residual de {RESIDUAL} mm, correspondendo a {PCT} da parede adjacente — {SIGNIFICADO}.',
+    istmocele: 'Presença de istmocele, medindo {MEDIDA} mm. Relação entre o miométrio residual e o adjacente: {PCT}%.',
     polipoEndocervical: 'Em canal endocervical, nota-se imagem elipsoide sólida, ecogênica, com pedículo vascular identificado ao mapeamento colorido, medindo {MEDIDA} mm.',
     polipoEndometrial: 'No interior da cavidade uterina, em região {LOCAL}, observa-se imagem elipsoide sólida, ecogênica e heterogênea, de limites pouco precisos, sem sombra acústica posterior, com pedículo vascular identificado ao mapeamento colorido no folheto endometrial {PEDICULO}, medindo {MEDIDA} mm.',
     hidrossalpingeLi: 'Nota-se imagem tubular anecoica, sem captação de fluxo ao Doppler, localizada em região anexial {LADO}, medindo {MEDIDA} cm.',
@@ -962,7 +963,7 @@
     impLesaoPuborretal: 'Presença de lesão da musculatura puborretal em grau {GRAU} à {LADO}.',
     impEsfIntDefeito: 'Presença de lesão do esfíncter interno do ânus em grau {GRAU} ({PCT}% da circunferência){SIGNIF}.',
     impEsfExtDefeito: 'Presença de lesão do esfíncter externo do ânus em grau {GRAU} ({PCT}% da circunferência){SIGNIF}.',
-    impIstmocele: 'Istmocele {SIGNIFICADO}.',
+    impIstmocele: 'Istmocele associada a importante afilamento do miométrio - Recomenda-se avaliação especializada quando houver desejo reprodutivo.',
     impPolipoEndocervical: 'Imagem sugestiva de pólipo endocervical.',
     impPolipoEndometrial: 'Nódulo ecogênico intracavitário sugestivo de pólipo.',
     impHidrossalpinge: 'Hidrossalpinge à {LADO}.',
@@ -1268,10 +1269,7 @@
       items.push({key:'endometriose-nodulo', label:phraseRaw('impEndometrioseNodulo', {REGIAO:state.endometrioseRegiao}), auto:true});
     }
     if(state.chkIstmocele){
-      const significadoLabel = state.istmocelePct!==null
-        ? (state.istmoceleAfilamentoSignificativo ? 'apresentando afilamento miometrial significativo' : 'sem afilamento miometrial significativo')
-        : '____';
-      items.push({key:'istmocele', label:phraseRaw('impIstmocele', {SIGNIFICADO: significadoLabel}), auto:true});
+      items.push({key:'istmocele', label:phraseRaw('impIstmocele'), auto:true});
     }
     if(state.chkPolipoEndocervical){
       items.push({key:'polipo-endocervical', label:phraseRaw('impPolipoEndocervical'), auto:true});
@@ -1507,15 +1505,16 @@
     const miometrioDescricaoExtra = v('miometrioDescricao');
 
     const chkIstmocele = $('chkIstmocele').checked;
+    const istmoceleMedida = blankOrValue(reqIf('istmoceleMedida', chkIstmocele));
     const istmoceleAnteriorNum = num('istmoceleAnterior');
     const istmoceleResidualNum = num('istmoceleResidual');
-    const istmoceleAnterior = blankOrValue(reqIf('istmoceleAnterior', chkIstmocele));
-    const istmoceleResidual = blankOrValue(reqIf('istmoceleResidual', chkIstmocele));
+    reqIf('istmoceleAnterior', chkIstmocele);
+    reqIf('istmoceleResidual', chkIstmocele);
+    // EMR/EMA (%) = (espessura do miométrio residual ÷ espessura do miométrio adjacente) × 100.
+    // Reported as a plain measurement of thinning severity only — not a uterine rupture risk
+    // classification.
     const istmocelePct = (istmoceleAnteriorNum!==null && istmoceleResidualNum!==null && istmoceleAnteriorNum>0)
       ? Math.round((istmoceleResidualNum/istmoceleAnteriorNum)*100) : null;
-    // Significant myometrial thinning is when the RESIDUAL wall is less than half the
-    // adjacent wall (e.g. residual 3mm / anterior 15mm = 20%), not the other way around.
-    const istmoceleAfilamentoSignificativo = istmocelePct!==null && istmocelePct < 50;
 
     const chkPolipoEndocervical = $('chkPolipoEndocervical').checked;
     const polipoEndocervicalMedida = blankOrValue(reqIf('polipoEndocervicalMedida', chkPolipoEndocervical));
@@ -1619,7 +1618,7 @@
       chkEndometriose, endometrioseDescricao,
       chkEndometrioseNodulo, endometrioseRegiao,
       chkAdenomiose,
-      chkIstmocele, istmocelePct, istmoceleAfilamentoSignificativo,
+      chkIstmocele, istmocelePct,
       chkPolipoEndocervical, chkPolipoEndometrial,
       chkHidrossalpinge, hidrossalpingeLado,
       mobilidadeColo: mobilidadeNum, posicaoColo, espessuraParede: espessuraNum,
@@ -1677,11 +1676,8 @@
       html += '<li>'+phrase('miometrioHomogeneo')+'</li>';
     }
     if(chkIstmocele){
-      const pctObj = istmocelePct!==null ? {text: istmocelePct+'%', filled:true} : {text:'____', filled:false};
-      const significadoObj = istmocelePct!==null
-        ? {text: (istmoceleAfilamentoSignificativo ? 'compatível com afilamento miometrial significativo (abaixo de 50%)' : 'sem afilamento miometrial significativo (igual ou acima de 50%)'), filled:true}
-        : {text:'preencha as duas espessuras acima', filled:false};
-      html += '<li>'+phraseRaw('istmocele', {ANTERIOR: span(istmoceleAnterior), RESIDUAL: span(istmoceleResidual), PCT: span(pctObj), SIGNIFICADO: span(significadoObj)})+'</li>';
+      const pctObj = istmocelePct!==null ? {text: String(istmocelePct), filled:true} : {text:'____', filled:false};
+      html += '<li>'+phraseRaw('istmocele', {MEDIDA: span(istmoceleMedida), PCT: span(pctObj)})+'</li>';
     }
     html += '<li>O endométrio é '+(endometrioTextura==='heterogenea'?'heterogêneo':'homogêneo')+', medindo '+span(endometrio)+' mm de espessura, com padrão '+endometrioPadrao+' e interface miometrial bem definida.</li>';
     if(chkPolipoEndometrial){
