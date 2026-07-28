@@ -281,6 +281,19 @@
   <div class="field" style="margin-bottom:8px;"><label>Ovário não identificado — use {LADO}</label><textarea id="ph_ovarioNaoIdentificado" rows="2"></textarea></div>
 
   <hr class="sep">
+  <h3>Istmocele / pólipos / hidrossalpinge / endometriose (nódulo)</h3>
+  <div class="field" style="margin-bottom:8px;"><label>Istmocele — use {ANTERIOR}, {RESIDUAL}, {PCT} e {SIGNIFICADO}</label><textarea id="ph_istmocele" rows="3"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Istmocele — impressão — use {SIGNIFICADO}</label><textarea id="ph_impIstmocele" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Pólipo endocervical — use {MEDIDA}</label><textarea id="ph_polipoEndocervical" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Pólipo endocervical — impressão</label><textarea id="ph_impPolipoEndocervical" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Pólipo endometrial — use {LOCAL}, {PEDICULO} e {MEDIDA}</label><textarea id="ph_polipoEndometrial" rows="3"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Pólipo endometrial — impressão</label><textarea id="ph_impPolipoEndometrial" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Hidrossalpinge — use {LADO} e {MEDIDA}</label><textarea id="ph_hidrossalpingeLi" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Hidrossalpinge — impressão — use {LADO}</label><textarea id="ph_impHidrossalpinge" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Nódulo de endometriose profunda (intestinal) — use {LOCAL}, {MEDIDA} e {REGIAO}</label><textarea id="ph_endometrioseNodulo" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Nódulo de endometriose profunda — impressão — use {REGIAO}</label><textarea id="ph_impEndometrioseNodulo" rows="2"></textarea></div>
+
+  <hr class="sep">
   <h3>Divertículos de sigmoide</h3>
   <div class="field" style="margin-bottom:8px;"><label>Sem sinais inflamatórios</label><textarea id="ph_diverticulosSemInflamacao" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Com sinais inflamatórios</label><textarea id="ph_diverticulosComInflamacao" rows="2"></textarea></div>
@@ -448,6 +461,18 @@
             <select id="endometrioPadrao"><option value="trilaminar">Trilaminar</option><option value="secretor">Secretor</option><option value="laminar">Laminar</option></select>
           </div>
         </div>
+
+        <div class="toggle-line"><input type="checkbox" id="chkPolipoEndometrial"><label for="chkPolipoEndometrial">Pólipo endometrial</label></div>
+        <div class="field-row conditional" id="wrap_polipoEndometrialCampos">
+          <div class="field"><label>Localização</label>
+            <select id="polipoLocalizacao"><option value="corporal">Corporal</option><option value="fúndica">Fúndica</option></select>
+          </div>
+          <div class="field"><label>Pedículo no folheto</label>
+            <select id="polipoPediculo"><option value="anterior">Anterior</option><option value="posterior">Posterior</option></select>
+          </div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="polipoMedida" placeholder="ex: 15 x 12,2"></div>
+        </div>
+
         <div class="field-row">
           <div class="field"><label>Textura miometrial</label>
             <select id="miometrioTextura"><option value="homogenea">Sólida e homogênea (sem nódulos)</option><option value="heterogenea">Sólida e heterogênea (nódulos/miomas)</option></select>
@@ -456,6 +481,11 @@
           <div class="field"><label>Aspecto do colo uterino</label>
             <select id="coloUterinoAspecto"><option value="normal">Normal</option><option value="hipertrofico">Hipertrófico</option></select>
           </div>
+        </div>
+
+        <div class="toggle-line"><input type="checkbox" id="chkPolipoEndocervical"><label for="chkPolipoEndocervical">Pólipo endocervical</label></div>
+        <div class="field-row conditional" id="wrap_polipoEndocervicalCampos">
+          <div class="field"><label>Medida (mm)</label><input type="text" id="polipoEndocervicalMedida" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="conditional" id="wrap_miomaDetalhes">
           <div class="field-row">
@@ -516,6 +546,13 @@
             <textarea id="miometrioDescricao" rows="2" placeholder="qualquer detalhe extra sobre os nódulos, ou demais nódulos além dos listados acima..."></textarea>
           </div>
         </div>
+
+        <div class="toggle-line"><input type="checkbox" id="chkIstmocele"><label for="chkIstmocele">Istmocele (em topografia de cesárea)</label></div>
+        <div class="field-row conditional" id="wrap_istmoceleCampos">
+          <div class="field"><label>Espessura da parede miometrial anterior adjacente</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleAnterior" placeholder="mm"></div>
+          <div class="field"><label>Espessura da parede residual (na istmocele)</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleResidual" placeholder="mm"></div>
+        </div>
+
         <div class="field-row">
           <div class="field"><label>Ovário direito — L</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_L" placeholder="cm"></div>
           <div class="field"><label>Ovário direito — AP</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_AP" placeholder="cm"></div>
@@ -560,6 +597,15 @@
           <label>Descreva o achado — ovário esquerdo</label>
           <textarea id="ovE_descricao" rows="2" placeholder="ex: cisto anecoico simples medindo X cm; imagem sugestiva de endometrioma; formação sólida com fluxo ao Doppler..."></textarea>
         </div>
+
+        <div class="toggle-line"><input type="checkbox" id="chkHidrossalpinge"><label for="chkHidrossalpinge">Hidrossalpinge</label></div>
+        <div class="field-row conditional" id="wrap_hidrossalpingeCampos">
+          <div class="field"><label>Lado</label>
+            <select id="hidrossalpingeLado"><option value="direita">Direita</option><option value="esquerda">Esquerda</option></select>
+          </div>
+          <div class="field"><label>Medida (cm)</label><input type="text" id="hidrossalpingeMedida" placeholder="ex: 5,5 x 2,1"></div>
+        </div>
+
         <hr class="sep">
         <div class="field-row">
           <div class="field"><label>Descenso uterino à Valsalva (em relação à borda inferior da sínfise púbica)</label>
@@ -635,6 +681,13 @@
         <div class="field conditional" id="wrap_endometrioseDescricao">
           <label>Descreva o achado (localização, tamanho, estruturas acometidas)</label>
           <textarea id="endometrioseDescricao" rows="2" placeholder="ex: nódulo endometriótico em septo retovaginal medindo X cm; acometimento de ligamento uterossacro direito; aderência entre reto e parede vaginal posterior..."></textarea>
+        </div>
+
+        <div class="toggle-line"><input type="checkbox" id="chkEndometrioseNodulo"><label for="chkEndometrioseNodulo">Nódulo de endometriose profunda (intestinal)</label></div>
+        <div class="field-row conditional" id="wrap_endometrioseNoduloCampos">
+          <div class="field"><label>Localização (parede intestinal)</label><input type="text" id="endometrioseLocal" placeholder="ex: retossigmoide" value="retossigmoide"></div>
+          <div class="field"><label>Região</label><input type="text" id="endometrioseRegiao" placeholder="ex: retrocervical" value="retrocervical"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="endometrioseMedida" placeholder="ex: 35 x 23"></div>
         </div>
       </div>
     </div>
@@ -830,23 +883,23 @@
   // ---------- Customizable report phrases (editable by the doctor, no code needed) ----------
   const PHRASE_DEFAULTS = {
     linhaEquipamento: 'Exame realizado com transdutor setorial, de 3,5 MHz e endocavitário tridimensional, multifrequencial, por via abdominal e endovaginal.',
-    coloNormal: 'O colo uterino apresenta aspecto ecográfico normal, medindo {COMPRIMENTO} cm, com endocérvix centrada e regular.',
-    coloHipertrofico: 'O colo uterino apresenta aspecto ecográfico hipertrófico, medindo {COMPRIMENTO} cm, com endocérvix centrada e regular.',
+    coloNormal: 'O colo uterino apresenta aspecto ecográfico normal, medindo {COMPRIMENTO} cm, com endocérvix centrada e regular.',
+    coloHipertrofico: 'O colo uterino apresenta aspecto ecográfico hipertrófico, medindo {COMPRIMENTO} cm, com endocérvix centrada e regular.',
     miometrioHomogeneo: 'A textura miometrial é sólida e homogênea.',
     miometrioHeterogeneo: 'A textura miometrial é sólida e heterogênea.',
     miomaIntro1: 'Observa-se imagem nodular sólida, hipoecóica e heterogênea, localizada na {F1}.',
     miomaIntro2: 'Observam-se duas imagens nodulares sólidas, hipoecóicas e heterogêneas, uma localizada na {F1} e outra na {F2}.',
     miomaIntroVarios: 'Observam-se algumas imagens nodulares sólidas, hipoecogênicas e heterogêneas, de localização e dimensões como descrito abaixo:',
-    figoF0: 'submucosa, inteiramente na cavidade uterina (FIGO 0), medindo {MEDIDA} mm',
-    figoF1: 'parede {PAREDE}, submucosa com menos de 50% do seu componente intramural (FIGO 1), medindo {MEDIDA} mm',
-    figoF2: 'parede {PAREDE}, submucosa com mais de 50% do seu componente intramural (FIGO 2), medindo {MEDIDA} mm',
-    figoF3: 'parede {PAREDE}, intramural, adjacente à cavidade endometrial, sem condicionar abaulamento da mesma (FIGO 3), medindo {MEDIDA} mm',
-    figoF4: 'parede {PAREDE}, totalmente intramural (FIGO 4), medindo {MEDIDA} mm',
-    figoF5: 'parede {PAREDE}, subserosa com mais de 50% do seu componente intramural (FIGO 5), medindo {MEDIDA} mm',
-    figoF6: 'parede {PAREDE}, subserosa com menos de 50% do seu componente intramural (FIGO 6), medindo {MEDIDA} mm',
-    figoF7: 'parede {PAREDE}, totalmente subserosa (FIGO 7), medindo {MEDIDA} mm',
-    figoF8: 'região cervical{DETALHE} (FIGO 8), medindo {MEDIDA} mm',
-    figoF25: 'parede {PAREDE}, transmural (FIGO 2-5), medindo {MEDIDA} mm',
+    figoF0: 'submucosa, inteiramente na cavidade uterina (FIGO 0), medindo {MEDIDA} mm',
+    figoF1: 'parede {PAREDE}, submucosa com menos de 50% do seu componente intramural (FIGO 1), medindo {MEDIDA} mm',
+    figoF2: 'parede {PAREDE}, submucosa com mais de 50% do seu componente intramural (FIGO 2), medindo {MEDIDA} mm',
+    figoF3: 'parede {PAREDE}, intramural, adjacente à cavidade endometrial, sem condicionar abaulamento da mesma (FIGO 3), medindo {MEDIDA} mm',
+    figoF4: 'parede {PAREDE}, totalmente intramural (FIGO 4), medindo {MEDIDA} mm',
+    figoF5: 'parede {PAREDE}, subserosa com mais de 50% do seu componente intramural (FIGO 5), medindo {MEDIDA} mm',
+    figoF6: 'parede {PAREDE}, subserosa com menos de 50% do seu componente intramural (FIGO 6), medindo {MEDIDA} mm',
+    figoF7: 'parede {PAREDE}, totalmente subserosa (FIGO 7), medindo {MEDIDA} mm',
+    figoF8: 'região cervical{DETALHE} (FIGO 8), medindo {MEDIDA} mm',
+    figoF25: 'parede {PAREDE}, transmural (FIGO 2-5), medindo {MEDIDA} mm',
     ovarioNaoIdentificado: 'Ovário {LADO} não identificado. Não identificadas massas císticas ou tumorais em sua topografia.',
     diverticulosSemInflamacao: 'Presença de divertículos de sigmoide, sem sinais inflamatórios.',
     diverticulosComInflamacao: 'Presença de divertículos de sigmoide, com sinais inflamatórios: {DESCRICAO}.',
@@ -863,15 +916,21 @@
     canalAnalNormal: 'O canal anal apresenta morfologia preservada, com junção anorretal e ampola retal sem alterações ecográficas. À manobra de Valsalva, não se observa protrusão da parede retal anterior.',
     retocele: 'À manobra de Valsalva observa-se protrusão da parede retal anterior compatível com retocele grau {GRAU}.',
     puborretalPreservada: 'A musculatura puborretal apresenta aspecto preservado.',
-    lesaoPuborretal: 'Observa-se descontinuidade da musculatura puborretal à {LADO}, medindo aproximadamente {MEDIDA} cm, compatível com lesão muscular.',
+    lesaoPuborretal: 'Observa-se descontinuidade da musculatura puborretal à {LADO}, medindo aproximadamente {MEDIDA} cm, compatível com lesão muscular.',
     enterocele: 'Observa-se enterocele grau {GRAU}, atingindo o intróito vaginal durante o esforço.',
     cascaCebolaPresente: 'Presença de imagem em "casca de cebola", compatível com intussuscepção retal.',
     cascaCebolaAusente: 'Ausência de imagem em "casca de cebola", compatível com intussuscepção retal.',
     esfIntPreservado: 'O esfíncter anal interno apresenta integridade preservada.',
-    esfIntDefeito: 'Observa-se defeito do esfíncter anal interno localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência, medindo {MEDIDA} mm.',
+    esfIntDefeito: 'Observa-se defeito do esfíncter anal interno localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência, medindo {MEDIDA} mm.',
     esfExtPreservado: 'O esfíncter anal externo apresenta integridade preservada.',
-    esfExtDefeito: 'Observa-se defeito do esfíncter anal externo localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência, medindo {MEDIDA} mm.',
+    esfExtDefeito: 'Observa-se defeito do esfíncter anal externo localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência, medindo {MEDIDA} mm.',
     slingBem: 'Sling bem posicionado.',
+
+    istmocele: 'Em topografia de cesárea, observa-se istmocele, com espessura da parede miometrial anterior adjacente de {ANTERIOR} mm e espessura da parede residual de {RESIDUAL} mm, correspondendo a {PCT} da parede adjacente — {SIGNIFICADO}.',
+    polipoEndocervical: 'Em canal endocervical, nota-se imagem elipsoide sólida, ecogênica, com pedículo vascular identificado ao mapeamento colorido, medindo {MEDIDA} mm.',
+    polipoEndometrial: 'No interior da cavidade uterina, em região {LOCAL}, observa-se imagem elipsoide sólida, ecogênica e heterogênea, de limites pouco precisos, sem sombra acústica posterior, com pedículo vascular identificado ao mapeamento colorido no folheto endometrial {PEDICULO}, medindo {MEDIDA} mm.',
+    hidrossalpingeLi: 'Nota-se imagem tubular anecoica, sem captação de fluxo ao Doppler, localizada em região anexial {LADO}, medindo {MEDIDA} cm.',
+    endometrioseNodulo: 'Observa-se imagem nodular irregular, hipoecoica, localizada na muscular da mucosa do {LOCAL}, medindo {MEDIDA} mm, em região {REGIAO}.',
 
     impTudoNormal: 'Bexiga urinária, útero e anexos normais à ecografia.',
     impUteroOvariosNormais: 'Útero e ovários normais à ecografia.',
@@ -891,7 +950,12 @@
     impProlapsoUterino: 'Prolapso uterino grau {GRAU}{POPQ}.',
     impLesaoPuborretal: 'Presença de lesão da musculatura puborretal em grau {GRAU} à {LADO}.',
     impEsfIntDefeito: 'Presença de lesão do esfíncter interno do ânus em grau {GRAU} ({PCT}% da circunferência){SIGNIF}.',
-    impEsfExtDefeito: 'Presença de lesão do esfíncter externo do ânus em grau {GRAU} ({PCT}% da circunferência){SIGNIF}.'
+    impEsfExtDefeito: 'Presença de lesão do esfíncter externo do ânus em grau {GRAU} ({PCT}% da circunferência){SIGNIF}.',
+    impIstmocele: 'Istmocele {SIGNIFICADO}.',
+    impPolipoEndocervical: 'Imagem sugestiva de pólipo endocervical.',
+    impPolipoEndometrial: 'Nódulo ecogênico intracavitário sugestivo de pólipo.',
+    impHidrossalpinge: 'Hidrossalpinge à {LADO}.',
+    impEndometrioseNodulo: 'Nódulo em região {REGIAO} sugestivo de implante endometriótico.'
   };
   let PHRASES = Object.assign({}, PHRASE_DEFAULTS);
 
@@ -1086,6 +1150,11 @@
   $('ovD_aspecto').addEventListener('change', e=> toggle('wrap_ovD_descricao', e.target.value==='alterado'));
   $('ovE_aspecto').addEventListener('change', e=> toggle('wrap_ovE_descricao', e.target.value==='alterado'));
   $('chkEndometriose').addEventListener('change', e=> toggle('wrap_endometrioseDescricao', e.target.checked));
+  $('chkEndometrioseNodulo').addEventListener('change', e=> toggle('wrap_endometrioseNoduloCampos', e.target.checked));
+  $('chkIstmocele').addEventListener('change', e=> toggle('wrap_istmoceleCampos', e.target.checked));
+  $('chkPolipoEndocervical').addEventListener('change', e=> toggle('wrap_polipoEndocervicalCampos', e.target.checked));
+  $('chkPolipoEndometrial').addEventListener('change', e=> toggle('wrap_polipoEndometrialCampos', e.target.checked));
+  $('chkHidrossalpinge').addEventListener('change', e=> toggle('wrap_hidrossalpingeCampos', e.target.checked));
   function updateMiomaSlots(){
     const n = $('miometrioTextura').value==='heterogenea' ? parseInt($('miomaCount').value||'1',10) : 0;
     [1,2,3,4].forEach(i=> toggle('wrap_mioma'+i, i<=n));
@@ -1183,6 +1252,24 @@
     if(state.chkEndometriose && state.endometrioseDescricao){
       items.push({key:'endometriose', label:'Sinais sugestivos de endometriose profunda: '+state.endometrioseDescricao+'.', auto:true});
     }
+    if(state.chkEndometrioseNodulo){
+      items.push({key:'endometriose-nodulo', label:phraseRaw('impEndometrioseNodulo', {REGIAO:state.endometrioseRegiao}), auto:true});
+    }
+    if(state.chkIstmocele){
+      const significadoLabel = state.istmocelePct!==null
+        ? (state.istmoceleAfilamentoSignificativo ? 'apresentando afilamento miometrial significativo' : 'sem afilamento miometrial significativo')
+        : '____';
+      items.push({key:'istmocele', label:phraseRaw('impIstmocele', {SIGNIFICADO: significadoLabel}), auto:true});
+    }
+    if(state.chkPolipoEndocervical){
+      items.push({key:'polipo-endocervical', label:phraseRaw('impPolipoEndocervical'), auto:true});
+    }
+    if(state.chkPolipoEndometrial){
+      items.push({key:'polipo-endometrial', label:phraseRaw('impPolipoEndometrial'), auto:true});
+    }
+    if(state.chkHidrossalpinge){
+      items.push({key:'hidrossalpinge', label:phraseRaw('impHidrossalpinge', {LADO:state.hidrossalpingeLado}), auto:true});
+    }
 
     const hipermobilidade = (state.mobilidadeColo!==null && state.mobilidadeColo > VR.mobilidade) || state.posicaoColo==='extra';
     const espessamento = state.espessuraParede!==null && state.espessuraParede > VR.espessura;
@@ -1262,9 +1349,9 @@
     // "Bladder-abnormal" tracks any anterior-compartment finding (used to decide whether the
     // uterus/ovary "normal" summary line and the compartment-wide "tudo normal" line apply).
     const bladderAbnormal = hipermobilidade || espessamento || temCistocele || (state.bexigaAspecto==='alterado');
-    const uterusAbnormal = state.descensoUterino!=='ausente' || (state.miometrioTextura==='heterogenea' && state.miomaTemDados) || state.coloUterinoAspecto==='hipertrofico';
-    const ovariesAbnormal = state.ovD_aspecto==='alterado' || state.ovE_aspecto==='alterado';
-    const posteriorAbnormal = state.chkRetocele || state.chkLesao || state.chkEnterocele || state.chkDiverticulos || state.cascaCebola==='presente' || (state.chkEndometriose && state.endometrioseDescricao);
+    const uterusAbnormal = state.descensoUterino!=='ausente' || (state.miometrioTextura==='heterogenea' && state.miomaTemDados) || state.coloUterinoAspecto==='hipertrofico' || state.chkIstmocele || state.chkPolipoEndocervical || state.chkPolipoEndometrial;
+    const ovariesAbnormal = state.ovD_aspecto==='alterado' || state.ovE_aspecto==='alterado' || state.chkHidrossalpinge;
+    const posteriorAbnormal = state.chkRetocele || state.chkLesao || state.chkEnterocele || state.chkDiverticulos || state.cascaCebola==='presente' || (state.chkEndometriose && state.endometrioseDescricao) || state.chkEndometrioseNodulo;
     const esfincterAbnormal = state.esfIntStatus==='defeito' || state.esfExtStatus==='defeito';
     // "Genital prolapse" means actual anatomic descent — cistocele, uterine descensus,
     // retocele or enterocele — not puborretal lesions, diverticulosis, etc.
@@ -1326,6 +1413,10 @@
       if(el) el.classList.toggle('field-missing', printAttempted && empty);
       if(empty) pendingCount++;
       return val;
+    }
+    function reqIf(id, cond){
+      if(!cond) return v(id);
+      return req(id);
     }
 
     const uretraComprimento = blankOrValue(req('uretraComprimento'));
@@ -1397,6 +1488,26 @@
       miomaSentenceHtml = phrase('miomaIntroVarios')+'<ul>'+figoFrags.map((f,i)=>'<li>N'+(i+1)+': '+escapeHtml(f)+'.</li>').join('')+'</ul>';
     }
     const miometrioDescricaoExtra = v('miometrioDescricao');
+
+    const chkIstmocele = $('chkIstmocele').checked;
+    const istmoceleAnteriorNum = num('istmoceleAnterior');
+    const istmoceleResidualNum = num('istmoceleResidual');
+    const istmoceleAnterior = blankOrValue(reqIf('istmoceleAnterior', chkIstmocele));
+    const istmoceleResidual = blankOrValue(reqIf('istmoceleResidual', chkIstmocele));
+    const istmocelePct = (istmoceleAnteriorNum!==null && istmoceleResidualNum!==null && istmoceleAnteriorNum>0)
+      ? Math.round((istmoceleResidualNum/istmoceleAnteriorNum)*100) : null;
+    // Significant myometrial thinning is when the RESIDUAL wall is less than half the
+    // adjacent wall (e.g. residual 3mm / anterior 15mm = 20%), not the other way around.
+    const istmoceleAfilamentoSignificativo = istmocelePct!==null && istmocelePct < 50;
+
+    const chkPolipoEndocervical = $('chkPolipoEndocervical').checked;
+    const polipoEndocervicalMedida = blankOrValue(reqIf('polipoEndocervicalMedida', chkPolipoEndocervical));
+
+    const chkPolipoEndometrial = $('chkPolipoEndometrial').checked;
+    const polipoLocalizacao = v('polipoLocalizacao');
+    const polipoPediculo = v('polipoPediculo');
+    const polipoMedida = blankOrValue(reqIf('polipoMedida', chkPolipoEndometrial));
+
     const coloUterinoComprimento = blankOrValue(req('coloUterinoComprimento'));
     const coloUterinoAspecto = v('coloUterinoAspecto');
     const vrOvarioTipo = v('vrOvarioTipo');
@@ -1418,6 +1529,10 @@
     const ovE_aspecto = v('ovE_aspecto');
     const ovE_descricao = vNoDot('ovE_descricao');
 
+    const chkHidrossalpinge = $('chkHidrossalpinge').checked;
+    const hidrossalpingeLado = v('hidrossalpingeLado')==='esquerda' ? 'esquerda' : 'direita';
+    const hidrossalpingeMedida = blankOrValue(reqIf('hidrossalpingeMedida', chkHidrossalpinge));
+
     const descensoUterino = v('descensoUterino');
 
     const chkRetocele = $('chkRetocele').checked;
@@ -1431,6 +1546,10 @@
     const cascaCebola = v('cascaCebola');
     const chkEndometriose = $('chkEndometriose').checked;
     const endometrioseDescricao = vNoDot('endometrioseDescricao');
+    const chkEndometrioseNodulo = $('chkEndometrioseNodulo').checked;
+    const endometrioseLocal = v('endometrioseLocal') || 'retossigmoide';
+    const endometrioseRegiao = v('endometrioseRegiao') || 'retrocervical';
+    const endometrioseMedida = reqIf('endometrioseMedida', chkEndometrioseNodulo);
     const chkDiverticulos = $('chkDiverticulos').checked;
     const diverticulosStatus = v('diverticulosStatus');
     const diverticulosDescricao = v('diverticulosDescricao');
@@ -1481,6 +1600,10 @@
       bexigaAspecto, bexigaDescricao,
       ovD_aspecto, ovD_descricao, ovE_aspecto, ovE_descricao,
       chkEndometriose, endometrioseDescricao,
+      chkEndometrioseNodulo, endometrioseRegiao,
+      chkIstmocele, istmocelePct, istmoceleAfilamentoSignificativo,
+      chkPolipoEndocervical, chkPolipoEndometrial,
+      chkHidrossalpinge, hidrossalpingeLado,
       mobilidadeColo: mobilidadeNum, posicaoColo, espessuraParede: espessuraNum,
       descensoParede, descensoUterino, inversaoConfirmada,
       miometrioTextura, miomaTemDados: figoFrags.length>0, coloUterinoAspecto,
@@ -1499,12 +1622,12 @@
     html += '<div class="doctitle-sub">Ultrassom direcionado para '+escapeHtml(objetivoTexto)+(dataExame?(' — '+escapeHtml(dataExame)):'')+'</div>';
 
     html += '<h4 class="sec">COMPARTIMENTO ANTERIOR</h4><ul>';
-    html += '<li>A uretra apresenta morfologia preservada ao repouso, medindo aproximadamente '+span(uretraComprimento)+' cm de comprimento. À manobra de Valsalva observa-se abertura uretral <strong>'+aberturaUretral+'</strong>, com afunilamento distal medindo '+span(afunilamento)+' mm (VR: até '+VR.afunilamento+' mm).</li>';
+    html += '<li>A uretra apresenta morfologia preservada ao repouso, medindo aproximadamente '+span(uretraComprimento)+' cm de comprimento. À manobra de Valsalva observa-se abertura uretral <strong>'+aberturaUretral+'</strong>, com afunilamento distal medindo '+span(afunilamento)+' mm (VR: até '+VR.afunilamento+' mm).</li>';
     const bexigaQualitativo = (bexigaAspecto==='alterado' && bexigaDescricao)
       ? escapeHtml(bexigaDescricao)
       : 'paredes finas e regulares e conteúdo anecoico';
-    html += '<li>A bexiga encontra-se adequadamente repleta, com espessura parietal de '+span(espessuraParede)+' mm (VR: até '+VR.espessura+' mm), '+bexigaQualitativo+'. Os meatos ureterais são identificados bilateralmente, sem alterações ecográficas. O volume vesical pré-miccional é de '+span(volumePre)+' mL e o resíduo pós-miccional corresponde a '+span(residuoPos)+' mL.</li>';
-    html += '<li>O ângulo retrovesical mede '+span(anguloRepouso)+'° ao repouso e '+span(anguloValsalva)+'° durante a manobra de Valsalva. O colo vesical apresenta mobilidade de '+span(mobilidadeColo)+' mm (VR: até '+VR.mobilidade+' mm), permanecendo '+(posicaoColo==='extra' ? 'em posição extra-abdominal durante o esforço' : 'em posição intra-abdominal')+'.</li>';
+    html += '<li>A bexiga encontra-se adequadamente repleta, com espessura parietal de '+span(espessuraParede)+' mm (VR: até '+VR.espessura+' mm), '+bexigaQualitativo+'. Os meatos ureterais são identificados bilateralmente, sem alterações ecográficas. O volume vesical pré-miccional é de '+span(volumePre)+' mL e o resíduo pós-miccional corresponde a '+span(residuoPos)+' mL.</li>';
+    html += '<li>O ângulo retrovesical mede '+span(anguloRepouso)+'° ao repouso e '+span(anguloValsalva)+'° durante a manobra de Valsalva. O colo vesical apresenta mobilidade de '+span(mobilidadeColo)+' mm (VR: até '+VR.mobilidade+' mm), permanecendo '+(posicaoColo==='extra' ? 'em posição extra-abdominal durante o esforço' : 'em posição intra-abdominal')+'.</li>';
     if(descensoParede==='ausente'){
       html += '<li>'+phrase('cistoceleAusente')+'</li>';
     } else if(descensoParede==='1'){
@@ -1519,32 +1642,48 @@
     html += '</ul>';
 
     html += '<h4 class="sec">COMPARTIMENTO MÉDIO</h4><ul>';
-    html += '<li>O hiato genital apresenta área aproximada de '+span(hiato)+' cm² (VR: &lt; '+VR.hiatoLeve+' cm²)'+(hiatoNum!==null?(' — '+hiatoClass.label):'')+'.</li>';
+    html += '<li>O hiato genital apresenta área aproximada de '+span(hiato)+' cm² (VR: &lt; '+VR.hiatoLeve+' cm²)'+(hiatoNum!==null?(' — '+hiatoClass.label):'')+'.</li>';
     html += '<li>A vagina apresenta aspecto ecográfico preservado.</li>';
-    html += '<li>O útero encontra-se em '+uteroPosicao+', medindo '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm (L x AP x T), com volume estimado de '+span(uteroVolume)+' cm³ ('+vrUteroTexto+').</li>';
+    html += '<li>O útero encontra-se em '+uteroPosicao+', medindo '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm (L x AP x T), com volume estimado de '+span(uteroVolume)+' cm³ ('+vrUteroTexto+').</li>';
     if(miometrioTextura==='heterogenea'){
       html += '<li>'+phrase('miometrioHeterogeneo')+'</li>';
       html += '<li>'+(miomaSentenceHtml || '<span class="blank">Preencha ao menos um nódulo (FIGO + medida) acima.</span>')+(miometrioDescricaoExtra ? ' '+escapeHtml(miometrioDescricaoExtra) : '')+'</li>';
     } else {
       html += '<li>'+phrase('miometrioHomogeneo')+'</li>';
     }
-    html += '<li>O endométrio é '+(endometrioTextura==='heterogenea'?'heterogêneo':'homogêneo')+', medindo '+span(endometrio)+' mm de espessura, com padrão '+endometrioPadrao+' e interface miometrial bem definida.</li>';
+    if(chkIstmocele){
+      const pctObj = istmocelePct!==null ? {text: istmocelePct+'%', filled:true} : {text:'____', filled:false};
+      const significadoObj = istmocelePct!==null
+        ? {text: (istmoceleAfilamentoSignificativo ? 'compatível com afilamento miometrial significativo (abaixo de 50%)' : 'sem afilamento miometrial significativo (igual ou acima de 50%)'), filled:true}
+        : {text:'preencha as duas espessuras acima', filled:false};
+      html += '<li>'+phraseRaw('istmocele', {ANTERIOR: span(istmoceleAnterior), RESIDUAL: span(istmoceleResidual), PCT: span(pctObj), SIGNIFICADO: span(significadoObj)})+'</li>';
+    }
+    html += '<li>O endométrio é '+(endometrioTextura==='heterogenea'?'heterogêneo':'homogêneo')+', medindo '+span(endometrio)+' mm de espessura, com padrão '+endometrioPadrao+' e interface miometrial bem definida.</li>';
+    if(chkPolipoEndometrial){
+      html += '<li>'+phraseRaw('polipoEndometrial', {LOCAL: polipoLocalizacao, PEDICULO: polipoPediculo, MEDIDA: span(polipoMedida)})+'</li>';
+    }
     html += '<li>'+(coloUterinoAspecto==='hipertrofico' ? phrase('coloHipertrofico', {COMPRIMENTO: coloUterinoComprimento.text}) : phrase('coloNormal', {COMPRIMENTO: coloUterinoComprimento.text}))+'</li>';
+    if(chkPolipoEndocervical){
+      html += '<li>'+phraseRaw('polipoEndocervical', {MEDIDA: span(polipoEndocervicalMedida)})+'</li>';
+    }
     const ovD_qualitativo = (ovD_aspecto==='alterado' && ovD_descricao) ? escapeHtml(ovD_descricao) : null;
     const ovE_qualitativo = (ovE_aspecto==='alterado' && ovE_descricao) ? escapeHtml(ovE_descricao) : null;
     if(ovD_aspecto==='nao_identificado'){
       html += '<li>'+phrase('ovarioNaoIdentificado', {LADO:'direito'})+'</li>';
     } else if(ovD_qualitativo){
-      html += '<li>Ovário direito medindo '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm, com volume de '+span(ovD_volume)+' cm³ ('+vrOvarioTexto+'). '+ovD_qualitativo+'.</li>';
+      html += '<li>Ovário direito medindo '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm, com volume de '+span(ovD_volume)+' cm³ ('+vrOvarioTexto+'). '+ovD_qualitativo+'.</li>';
     } else {
-      html += '<li>Ovário direito apresenta dimensões e ecotextura preservadas, medindo '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm, com volume de '+span(ovD_volume)+' cm³ ('+vrOvarioTexto+').</li>';
+      html += '<li>Ovário direito apresenta dimensões e ecotextura preservadas, medindo '+span(ovD_L)+' x '+span(ovD_AP)+' x '+span(ovD_T)+' cm, com volume de '+span(ovD_volume)+' cm³ ('+vrOvarioTexto+').</li>';
     }
     if(ovE_aspecto==='nao_identificado'){
       html += '<li>'+phrase('ovarioNaoIdentificado', {LADO:'esquerdo'})+'</li>';
     } else if(ovE_qualitativo){
-      html += '<li>Ovário esquerdo medindo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm, com volume de '+span(ovE_volume)+' cm³ ('+vrOvarioTexto+'). '+ovE_qualitativo+'.</li>';
+      html += '<li>Ovário esquerdo medindo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm, com volume de '+span(ovE_volume)+' cm³ ('+vrOvarioTexto+'). '+ovE_qualitativo+'.</li>';
     } else {
-      html += '<li>Ovário esquerdo apresenta dimensões e ecotextura preservadas, medindo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm, com volume de '+span(ovE_volume)+' cm³ ('+vrOvarioTexto+').</li>';
+      html += '<li>Ovário esquerdo apresenta dimensões e ecotextura preservadas, medindo '+span(ovE_L)+' x '+span(ovE_AP)+' x '+span(ovE_T)+' cm, com volume de '+span(ovE_volume)+' cm³ ('+vrOvarioTexto+').</li>';
+    }
+    if(chkHidrossalpinge){
+      html += '<li>'+phraseRaw('hidrossalpingeLi', {LADO: hidrossalpingeLado, MEDIDA: span(hidrossalpingeMedida)})+'</li>';
     }
     if(descensoUterino==='ausente'){
       html += '<li>'+phrase('uteroAusente')+'</li>';
@@ -1585,11 +1724,14 @@
     if(chkEndometriose && endometrioseDescricao){
       html += '<li>Observam-se sinais sugestivos de endometriose profunda: '+escapeHtml(endometrioseDescricao)+'.</li>';
     }
+    if(chkEndometrioseNodulo){
+      html += '<li>'+phraseRaw('endometrioseNodulo', {LOCAL: escapeHtml(endometrioseLocal), MEDIDA: span(blankOrValue(endometrioseMedida)), REGIAO: escapeHtml(endometrioseRegiao)})+'</li>';
+    }
     html += '</ul>';
 
     html += '<h4 class="sec">PERÍNEO</h4><ul>';
     html += '<li>O complexo esfincteriano anal apresenta espessura e ecogenicidade preservadas.</li>';
-    html += '<li>O gap uretral mede '+span(gapD)+' mm à direita e '+span(gapE)+' mm à esquerda (VR &lt; '+VR.gap+' mm).</li>';
+    html += '<li>O gap uretral mede '+span(gapD)+' mm à direita e '+span(gapE)+' mm à esquerda (VR &lt; '+VR.gap+' mm).</li>';
     if(esfIntStatus==='preservado'){
       html += '<li>'+phrase('esfIntPreservado')+'</li>';
     } else {
@@ -1605,7 +1747,7 @@
     if(slingPresente){
       html += '<h4 class="sec">AVALIAÇÃO DO "SLING"</h4><ul>';
       html += '<li>Visualiza-se <em>sling</em> localizado no terço médio da uretra.</li>';
-      html += '<li>As distâncias medidas correspondem a: uretra '+span(slingUretra)+' mm (VR '+VR.slingUretraMin+'–'+VR.slingUretraMax+' mm); púbis '+span(slingPubis)+' mm (VR &lt; '+VR.slingPubis+' mm); meato uretral '+span(slingMeato)+' mm; colo vesical '+span(slingColo)+' mm.</li>';
+      html += '<li>As distâncias medidas correspondem a: uretra '+span(slingUretra)+' mm (VR '+VR.slingUretraMin+'–'+VR.slingUretraMax+' mm); púbis '+span(slingPubis)+' mm (VR &lt; '+VR.slingPubis+' mm); meato uretral '+span(slingMeato)+' mm; colo vesical '+span(slingColo)+' mm.</li>';
       html += '<li>'+(slingPosicao==='bem' ? phrase('slingBem') : escapeHtml(slingOutroTexto || 'Posicionamento a descrever.'))+'</li>';
       html += '</ul>';
     }
