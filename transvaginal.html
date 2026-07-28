@@ -248,7 +248,8 @@
   <div class="field" style="margin-bottom:8px;"><label>FIGO 6 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF6" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>FIGO 7 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF7" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>FIGO 8 — use {DETALHE} e {MEDIDA}</label><textarea id="ph_figoF8" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Adenomiose — use {SIMETRIA}</label><textarea id="ph_adenomiose" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Adenomiose (isolada, sem mioma) — use {SIMETRIA}</label><textarea id="ph_adenomiose" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Adenomiose (junto com mioma — sem a cláusula "sem nódulos") — use {SIMETRIA}</label><textarea id="ph_adenomioseComMioma" rows="2"></textarea></div>
 
   <hr class="sep">
   <h3>Istmocele / colo / DIU</h3>
@@ -790,6 +791,7 @@
     figoF7: 'parede {PAREDE}, totalmente subserosa (FIGO 7), medindo {MEDIDA} mm',
     figoF8: 'região cervical{DETALHE} (FIGO 8), medindo {MEDIDA} mm',
     adenomiose: 'Miométrio com paredes {SIMETRIA}, difusamente heterogêneo, entremeado por diminutas áreas anecoicas de permeio e em região justaendometrial, condicionando sombra acústica posterior em "leque", sem identificação de nódulos sólidos.',
+    adenomioseComMioma: 'Miométrio com paredes {SIMETRIA}, difusamente heterogêneo, entremeado por diminutas áreas anecoicas de permeio e em região justaendometrial, condicionando sombra acústica posterior em "leque".',
 
     istmocele: 'Presença de istmocele, medindo {MEDIDA} mm. Relação entre o miométrio residual e o adjacente: {PCT}%.',
     polipoEndocervical: 'Em canal endocervical, nota-se imagem elipsoide sólida, ecogênica, com pedículo vascular identificado ao mapeamento colorido, medindo {MEDIDA} mm.',
@@ -1352,7 +1354,9 @@
       }
     }
     if(chkAdenomiose){
-      uteroLinha += ' '+phrase('adenomiose', {SIMETRIA: adenomioseSimetria});
+      // When a myoma is also present, "sem identificação de nódulos sólidos" would
+      // contradict the nodule just described above, so drop that closing clause.
+      uteroLinha += ' '+phrase(miometrioAspecto==='mioma' ? 'adenomioseComMioma' : 'adenomiose', {SIMETRIA: adenomioseSimetria});
     }
     html += '<p class="linha"><strong>Útero:</strong> '+uteroLinha+'</p>';
     if(miometrioAspecto==='mioma' && miomaFrags.length>=3){
