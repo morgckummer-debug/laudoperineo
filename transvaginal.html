@@ -316,7 +316,7 @@
   <div class="field" style="margin-bottom:8px;"><label>Endometrioma — use {LADO}</label><textarea id="ph_impOvarioEndometrioma" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Hidrossalpinge — use {LADO}</label><textarea id="ph_impHidrossalpinge" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Varizes pélvicas</label><textarea id="ph_impVarizes" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Endometriose profunda — use {LOCAL}</label><textarea id="ph_impEndometriose" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Endometriose profunda — use {REGIAO}</label><textarea id="ph_impEndometriose" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovário com mobilidade reduzida — use {LADO}</label><textarea id="ph_impMobilidadeOvarioReduzida" rows="2"></textarea></div>
 
   <hr class="sep">
@@ -776,42 +776,42 @@
     miomaIntro1: 'Observa-se imagem nodular sólida, hipoecoica e heterogênea, localizada na {F1}.',
     miomaIntro2: 'Observam-se duas imagens nodulares sólidas, hipoecogênicas e heterogêneas, uma localizada na {F1} e outra na {F2}.',
     miomaIntroVarios: 'Observam-se algumas imagens nodulares sólidas, hipoecogênicas e heterogêneas, de localização e dimensões como descrito abaixo:',
-    figoF0: 'submucosa, inteiramente na cavidade uterina (FIGO 0), medindo {MEDIDA} mm',
-    figoF1: 'parede {PAREDE}, submucosa com menos de 50% do componente intramural (FIGO 1), medindo {MEDIDA} mm',
-    figoF2: 'parede {PAREDE}, submucosa com mais de 50% do componente intramural (FIGO 2), medindo {MEDIDA} mm',
-    figoF3: 'parede {PAREDE}, intramural, adjacente à cavidade endometrial, sem condicionar abaulamento da mesma (FIGO 3), medindo {MEDIDA} mm',
-    figoF4: 'parede {PAREDE}, totalmente intramural (FIGO 4), medindo {MEDIDA} mm',
-    figoF5: 'parede {PAREDE}, subserosa com mais de 50% do componente intramural (FIGO 5), medindo {MEDIDA} mm',
-    figoF6: 'parede {PAREDE}, subserosa com menos de 50% do componente intramural (FIGO 6), medindo {MEDIDA} mm',
-    figoF7: 'parede {PAREDE}, totalmente subserosa (FIGO 7), medindo {MEDIDA} mm',
-    figoF8: 'região cervical{DETALHE} (FIGO 8), medindo {MEDIDA} mm',
+    figoF0: 'submucosa, inteiramente na cavidade uterina (FIGO 0), medindo {MEDIDA} mm',
+    figoF1: 'parede {PAREDE}, submucosa com menos de 50% do componente intramural (FIGO 1), medindo {MEDIDA} mm',
+    figoF2: 'parede {PAREDE}, submucosa com mais de 50% do componente intramural (FIGO 2), medindo {MEDIDA} mm',
+    figoF3: 'parede {PAREDE}, intramural, adjacente à cavidade endometrial, sem condicionar abaulamento da mesma (FIGO 3), medindo {MEDIDA} mm',
+    figoF4: 'parede {PAREDE}, totalmente intramural (FIGO 4), medindo {MEDIDA} mm',
+    figoF5: 'parede {PAREDE}, subserosa com mais de 50% do componente intramural (FIGO 5), medindo {MEDIDA} mm',
+    figoF6: 'parede {PAREDE}, subserosa com menos de 50% do componente intramural (FIGO 6), medindo {MEDIDA} mm',
+    figoF7: 'parede {PAREDE}, totalmente subserosa (FIGO 7), medindo {MEDIDA} mm',
+    figoF8: 'região cervical{DETALHE} (FIGO 8), medindo {MEDIDA} mm',
     adenomiose: 'Miométrio com paredes {SIMETRIA}, difusamente heterogêneo, entremeado por diminutas áreas anecoicas de permeio e em região justaendometrial, condicionando sombra acústica posterior em "leque", sem identificação de nódulos sólidos.',
 
-    istmocele: 'Em topografia de cesárea, observa-se istmocele, com espessura da parede miometrial anterior adjacente de {ANTERIOR} mm e espessura da parede residual de {RESIDUAL} mm, correspondendo a {PCT} da parede adjacente — {SIGNIFICADO}.',
-    polipoEndocervical: 'Em canal endocervical, nota-se imagem elipsoide sólida, ecogênica, com pedículo vascular identificado ao mapeamento colorido, medindo {MEDIDA} mm.',
-    diuNormo: 'Presença de imagem linear ecogênica que condiciona sombra acústica posterior, compatível com DIU, localizada acima do orifício interno do colo uterino, cuja haste se encontra no fundo da cavidade endometrial e dista {MEDIDA} mm do fundo da serosa uterina.',
-    diuBaixa: 'Presença de imagem linear ecogênica que condiciona sombra acústica posterior, compatível com DIU, cuja extremidade distal se encontra no interior do orifício interno do colo uterino (e não acima dele), distando {MEDIDA} mm do fundo da serosa uterina.',
+    istmocele: 'Em topografia de cesárea, observa-se istmocele, com espessura da parede miometrial anterior adjacente de {ANTERIOR} mm e espessura da parede residual de {RESIDUAL} mm, correspondendo a {PCT} da parede adjacente — {SIGNIFICADO}.',
+    polipoEndocervical: 'Em canal endocervical, nota-se imagem elipsoide sólida, ecogênica, com pedículo vascular identificado ao mapeamento colorido, medindo {MEDIDA} mm.',
+    diuNormo: 'Presença de imagem linear ecogênica que condiciona sombra acústica posterior, compatível com DIU, localizada acima do orifício interno do colo uterino, cuja haste se encontra no fundo da cavidade endometrial e dista {MEDIDA} mm do fundo da serosa uterina.',
+    diuBaixa: 'Presença de imagem linear ecogênica que condiciona sombra acústica posterior, compatível com DIU, cuja extremidade distal se encontra no interior do orifício interno do colo uterino (e não acima dele), distando {MEDIDA} mm do fundo da serosa uterina.',
 
-    endometrioNormal: 'de aspecto uniforme, padrão {PADRAO}, apresentando eco endometrial linear e espessura de {ESPESSURA} mm. Cavidade uterina virtual.',
-    endometrioPolipo: 'de aspecto uniforme, padrão {PADRAO}, com espessura de {ESPESSURA} mm. Observa-se, no interior da cavidade uterina, em região {LOCAL}, imagem elipsoide sólida, ecogênica e heterogênea, de limites pouco precisos, sem sombra acústica posterior, com pedículo vascular identificado ao mapeamento colorido no folheto endometrial {PEDICULO}, medindo {MEDIDA} mm.',
-    endometrioEspessado: 'centrado, regular, ecogênico e heterogêneo, contendo diminutas áreas císticas de permeio, com pedículo vascular identificado ao mapeamento colorido, medindo {ESPESSURA} mm em seu diâmetro ântero-posterior.',
+    endometrioNormal: 'de aspecto uniforme, padrão {PADRAO}, apresentando eco endometrial linear e espessura de {ESPESSURA} mm. Cavidade uterina virtual.',
+    endometrioPolipo: 'de aspecto uniforme, padrão {PADRAO}, com espessura de {ESPESSURA} mm. Observa-se, no interior da cavidade uterina, em região {LOCAL}, imagem elipsoide sólida, ecogênica e heterogênea, de limites pouco precisos, sem sombra acústica posterior, com pedículo vascular identificado ao mapeamento colorido no folheto endometrial {PEDICULO}, medindo {MEDIDA} mm.',
+    endometrioEspessado: 'centrado, regular, ecogênico e heterogêneo, contendo diminutas áreas císticas de permeio, com pedículo vascular identificado ao mapeamento colorido, medindo {ESPESSURA} mm em seu diâmetro ântero-posterior.',
 
-    ovarioNormal: 'de topografia e forma usuais, medindo {L} x {AP} x {T} cm, com volume de {VOLUME} cm³ ({VR}).',
+    ovarioNormal: 'de topografia e forma usuais, medindo {L} x {AP} x {T} cm, com volume de {VOLUME} cm³ ({VR}).',
     ovarioNaoIdentificado: 'não identificado no presente estudo. Não são identificadas massas císticas ou sólidas em sua topografia.',
     ovarioPolicistico: 'Ovário {LADO} de forma globosa, volume aumentado, apresentando folículos antrais de distribuição predominantemente periférica, com diâmetro médio de 5 mm, associado a aumento da ecogenicidade do estroma.',
-    ovarioCisto1: 'Ovário {LADO}, em seu interior observa-se imagem cística anecoica, uniloculada, de paredes finas e regulares, medindo {MEDIDA} mm.',
-    ovarioCisto2: 'Ovário {LADO}, em seu interior observam-se duas imagens císticas uniloculares, de paredes finas e regulares, medindo {MEDIDA1} mm e {MEDIDA2} mm, respectivamente.',
-    ovarioCorpoLuteo: 'Ovário {LADO}, em seu interior nota-se imagem cística heterogênea, de paredes espessadas e irregulares, conteúdo ecogênico e captação de fluxo periférico ao mapeamento Doppler colorido, medindo {MEDIDA} mm (corpo lúteo).',
-    ovarioFoliculo: 'Ovário {LADO}, em seu interior observa-se imagem folicular com discreta captação de fluxo periférico, medindo {MEDIDA} mm.',
-    ovarioDermoide: 'Ovário {LADO}, em seu interior observa-se imagem nodular ecogênica, bem delimitada, sem captação de fluxo periférico, medindo {MEDIDA} mm.',
-    ovarioEndometrioma: 'Ovário {LADO}, nota-se imagem cística regular e unilocular, com conteúdo de textura em "vidro fosco", com mínima captação de fluxo periférico, medindo {MEDIDA} mm.',
+    ovarioCisto1: 'Ovário {LADO}, em seu interior observa-se imagem cística anecoica, uniloculada, de paredes finas e regulares, medindo {MEDIDA} mm.',
+    ovarioCisto2: 'Ovário {LADO}, em seu interior observam-se duas imagens císticas uniloculares, de paredes finas e regulares, medindo {MEDIDA1} mm e {MEDIDA2} mm, respectivamente.',
+    ovarioCorpoLuteo: 'Ovário {LADO}, em seu interior nota-se imagem cística heterogênea, de paredes espessadas e irregulares, conteúdo ecogênico e captação de fluxo periférico ao mapeamento Doppler colorido, medindo {MEDIDA} mm (corpo lúteo).',
+    ovarioFoliculo: 'Ovário {LADO}, em seu interior observa-se imagem folicular com discreta captação de fluxo periférico, medindo {MEDIDA} mm.',
+    ovarioDermoide: 'Ovário {LADO}, em seu interior observa-se imagem nodular ecogênica, bem delimitada, sem captação de fluxo periférico, medindo {MEDIDA} mm.',
+    ovarioEndometrioma: 'Ovário {LADO}, nota-se imagem cística regular e unilocular, com conteúdo de textura em "vidro fosco", com mínima captação de fluxo periférico, medindo {MEDIDA} mm.',
 
     anexiaisNormais: 'Regiões anexiais sem evidência de lesões expansivas sólidas ou císticas.',
-    hidrossalpinge: 'Nota-se imagem tubular anecoica, sem captação de fluxo ao Doppler, localizada em região anexial {LADO}, medindo {MEDIDA} cm.',
+    hidrossalpinge: 'Nota-se imagem tubular anecoica, sem captação de fluxo ao Doppler, localizada em região anexial {LADO}, medindo {MEDIDA} cm.',
     varizes: 'Regiões anexiais apresentando dilatação de vasos para-uterinos, bilateralmente, sob a serosa uterina — varizes pélvicas.',
-    endometrioseIntestinal: 'Observa-se imagem nodular irregular, hipoecoica, localizada na muscular da mucosa do {LOCAL}, medindo {MEDIDA} mm, em região {REGIAO}.',
+    endometrioseIntestinal: 'Observa-se imagem nodular irregular, hipoecoica, localizada na muscular da mucosa do {LOCAL}, medindo {MEDIDA} mm, em região {REGIAO}.',
     liquidoLivreAusente: 'Ausência de líquido livre em fundo de saco posterior.',
-    liquidoLivrePresente: 'Presença de líquido livre em fundo de saco posterior, medindo {MEDIDAS} cm, com volume estimado de {VOLUME} mL.',
+    liquidoLivrePresente: 'Presença de líquido livre em fundo de saco posterior, medindo {MEDIDAS} cm, com volume estimado de {VOLUME} mL.',
     mobilidadeUterinaPreservada: 'Mobilidade uterina preservada.',
     mobilidadeUterinaReduzida: 'Mobilidade uterina reduzida.',
     slidingSignNegativo: 'Sinal do "sliding" negativo.',
@@ -843,7 +843,7 @@
     impOvarioEndometrioma: 'Imagem sugestiva de endometrioma à {LADO}.',
     impHidrossalpinge: 'Hidrossalpinge à {LADO}.',
     impVarizes: 'Sinais de congestão pélvica.',
-    impEndometriose: 'Nódulo sugestivo de endometriose profunda em {LOCAL}.',
+    impEndometriose: 'Nódulo em região {REGIAO} sugestivo de implante endometriótico.',
     impMobilidadeOvarioReduzida: 'Ovário {LADO} de mobilidade reduzida - Considerar processo aderencial.',
 
     footerImagens: 'Imagens em anexo.'
@@ -1154,7 +1154,7 @@
       items.push({key:'varizes', label:phraseRaw('impVarizes'), auto:true});
     }
     if(state.chkEndometriose){
-      items.push({key:'endometriose', label:phraseRaw('impEndometriose', {LOCAL:state.endometrioseLocal}), auto:true});
+      items.push({key:'endometriose', label:phraseRaw('impEndometriose', {REGIAO:state.endometrioseRegiao}), auto:true});
     }
     if(state.chkMobilidadeOvD){
       items.push({key:'mobilidade-ov-d', label:phraseRaw('impMobilidadeOvarioReduzida', {LADO:'direito'}), auto:true});
@@ -1217,7 +1217,7 @@
     const uteroPosicaoTexto = {AVF:'em anteversoflexão', RVF:'em retroversoflexão', MVF:'em posição intermediária (medioversão)'}[uteroPosicaoVal];
     const vrUteroCategoria = v('vrUteroCategoria');
     const vrUteroLimite = UTERO_VR_LIMIT[vrUteroCategoria](VR);
-    const vrUteroTexto = 'até '+vrUteroLimite.toString().replace('.',',')+' cm³';
+    const vrUteroTexto = 'até '+vrUteroLimite.toString().replace('.',',')+' cm³';
     const uteroL = blankOrValue(req('uteroL'));
     const uteroAP = blankOrValue(req('uteroAP'));
     const uteroT = blankOrValue(req('uteroT'));
@@ -1267,8 +1267,8 @@
 
     const vrOvarioTipo = v('vrOvarioTipo');
     const vrOvarioTexto = vrOvarioTipo==='menopausa'
-      ? ('VR: até '+VR.ovarioMenopausa.toString().replace('.',',')+' cm³')
-      : ('VR: '+VR.ovarioMin.toString().replace('.',',')+' a '+VR.ovarioMax.toString().replace('.',',')+' cm³');
+      ? ('VR: até '+VR.ovarioMenopausa.toString().replace('.',',')+' cm³')
+      : ('VR: '+VR.ovarioMin.toString().replace('.',',')+' a '+VR.ovarioMax.toString().replace('.',',')+' cm³');
 
     function readOvario(prefix){
       const L = blankOrValue(req(prefix+'_L'));
@@ -1316,7 +1316,7 @@
       ovD_aspecto: ovD.aspecto, ovD_descricao: ovD.descricao,
       ovE_aspecto: ovE.aspecto, ovE_descricao: ovE.descricao,
       chkHidrossalpinge, hidrossalpingeLado, chkVarizes,
-      chkEndometriose, endometrioseLocal,
+      chkEndometriose, endometrioseLocal, endometrioseRegiao,
       chkMobilidadeOvD, chkMobilidadeOvE
     };
     const impressaoItems = buildImpressao(state);
@@ -1360,7 +1360,7 @@
       html += '<p class="linha">'+phrase('adenomiose', {SIMETRIA: adenomioseSimetria})+'</p>';
     }
 
-    html += '<p class="linha">Dimensões: '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm, com volume de '+span(uteroVolume)+' cm³ (VR '+escapeHtml(vrUteroTexto)+').</p>';
+    html += '<p class="linha">Dimensões: '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm, com volume de '+span(uteroVolume)+' cm³ (VR '+escapeHtml(vrUteroTexto)+').</p>';
 
     if(chkIstmocele){
       const pctObj = istmocelePct!==null ? {text: istmocelePct+'%', filled:true} : {text:'____', filled:false};
