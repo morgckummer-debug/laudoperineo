@@ -1336,8 +1336,10 @@
       : phrase('bexigaNormal');
     html += '<p class="linha"><strong>Bexiga:</strong> de topografia usual, '+bexigaTexto+'.</p>';
 
-    const uteroTemMioma = miometrioAspecto==='mioma' && miomaFrags.length>0;
-    let uteroLinha = phrase((uteroTemMioma || chkAdenomiose) ? 'uteroBaseComNodulos' : 'uteroBase', {POSICAO: uteroPosicaoTexto});
+    // "sem identificação de nódulos sólidos" must disappear as soon as mioma is selected —
+    // even before a measurement is filled in — since the placeholder warning below already
+    // says a nodule is pending; asserting "no nodules" at the same time is a contradiction.
+    let uteroLinha = phrase((miometrioAspecto==='mioma' || chkAdenomiose) ? 'uteroBaseComNodulos' : 'uteroBase', {POSICAO: uteroPosicaoTexto});
     if(miometrioAspecto==='mioma'){
       if(miomaFrags.length===1){
         uteroLinha += ' '+phrase('miomaIntro1', {F1: miomaFrags[0]});
