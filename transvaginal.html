@@ -395,10 +395,13 @@
             <select id="miometrioAspecto">
               <option value="homogeneo">Textura homogênea (sem nódulos)</option>
               <option value="mioma">Heterogêneo — nódulo(s) sólido(s) (mioma)</option>
-              <option value="adenomiose">Heterogêneo — sugestivo de adenomiose</option>
             </select>
           </div>
-          <div class="field conditional" id="wrap_adenomioseSimetria"><label>Paredes miometriais</label>
+        </div>
+
+        <div class="toggle-line"><input type="checkbox" id="chkAdenomiose"><label for="chkAdenomiose">Adenomiose (pode coexistir com mioma)</label></div>
+        <div class="field-row conditional" id="wrap_adenomioseSimetria">
+          <div class="field"><label>Paredes miometriais</label>
             <select id="adenomioseSimetria"><option value="simetricas">Simétricas</option><option value="assimetricas">Assimétricas</option></select>
           </div>
         </div>
@@ -992,10 +995,10 @@
   $('bexigaAspecto').addEventListener('change', e=> toggle('wrap_bexigaDescricao', e.target.value==='alterado'));
 
   $('miometrioAspecto').addEventListener('change', e=>{
-    toggle('wrap_adenomioseSimetria', e.target.value==='adenomiose');
     toggle('wrap_miomaDetalhes', e.target.value==='mioma');
     updateMiomaSlots();
   });
+  $('chkAdenomiose').addEventListener('change', e=> toggle('wrap_adenomioseSimetria', e.target.checked));
   function updateMiomaSlots(){
     const n = $('miometrioAspecto').value==='mioma' ? parseInt($('miomaCount').value||'1',10) : 0;
     [1,2,3].forEach(i=> toggle('wrap_mioma'+i, i<=n));
@@ -1111,7 +1114,7 @@
         items.push({key:'miomatose', label: state.miomaFrags.length>1 ? phraseRaw('impMiomaVarios') : phraseRaw('impMioma1'), auto:true});
       }
     }
-    if(state.miometrioAspecto==='adenomiose'){
+    if(state.chkAdenomiose){
       items.push({key:'adenomiose', label:phraseRaw('impAdenomiose'), auto:true});
     }
     if(state.chkIstmocele){
@@ -1226,6 +1229,7 @@
     flag('uteroVolume', uteroVolumeNum!==null && uteroVolumeNum > vrUteroLimite);
 
     const miometrioAspecto = v('miometrioAspecto');
+    const chkAdenomiose = $('chkAdenomiose').checked;
     const adenomioseSimetria = v('adenomioseSimetria')==='assimetricas' ? 'assimétricas' : 'simétricas';
     const miomaCountSel = miometrioAspecto==='mioma' ? parseInt(v('miomaCount')||'1',10) : 0;
     const miomaFrags = [];
@@ -1310,7 +1314,7 @@
     // ----- Impressão -----
     const state = {
       bexigaAspecto, bexigaDescricao,
-      miometrioAspecto, miomaTemDados: miomaFrags.length>0, miomaFrags,
+      miometrioAspecto, miomaTemDados: miomaFrags.length>0, miomaFrags, chkAdenomiose,
       chkIstmocele, istmocelePct, istmoceleAfilamentoSignificativo, chkPolipoEndocervical, chkDIU, diuPosicao,
       endometrioAspecto,
       ovD_aspecto: ovD.aspecto, ovD_descricao: ovD.descricao,
@@ -1336,8 +1340,8 @@
       : phrase('bexigaNormal');
     html += '<p class="linha"><strong>Bexiga:</strong> de topografia usual, '+bexigaTexto+'.</p>';
 
-    const uteroTemNodulos = miometrioAspecto==='mioma' && miomaFrags.length>0;
-    let uteroLinha = phrase(uteroTemNodulos ? 'uteroBaseComNodulos' : 'uteroBase', {POSICAO: uteroPosicaoTexto});
+    const uteroTemMioma = miometrioAspecto==='mioma' && miomaFrags.length>0;
+    let uteroLinha = phrase((uteroTemMioma || chkAdenomiose) ? 'uteroBaseComNodulos' : 'uteroBase', {POSICAO: uteroPosicaoTexto});
     if(miometrioAspecto==='mioma'){
       if(miomaFrags.length===1){
         uteroLinha += ' '+phrase('miomaIntro1', {F1: miomaFrags[0]});
@@ -1349,15 +1353,15 @@
         uteroLinha += ' <span class="blank">Preencha ao menos um nódulo (FIGO + medida) acima.</span>';
       }
     }
+    if(chkAdenomiose){
+      uteroLinha += ' '+phrase('adenomiose', {SIMETRIA: adenomioseSimetria});
+    }
     html += '<p class="linha"><strong>Útero:</strong> '+uteroLinha+'</p>';
     if(miometrioAspecto==='mioma' && miomaFrags.length>=3){
       html += '<p class="linha">'+miomaFrags.map((f,i)=>'N'+(i+1)+': '+escapeHtml(f)).join('<br>')+'</p>';
     }
     if(miometrioAspecto==='mioma' && miometrioDescricaoExtra){
       html += '<p class="linha">'+escapeHtml(miometrioDescricaoExtra)+'.</p>';
-    }
-    if(miometrioAspecto==='adenomiose'){
-      html += '<p class="linha">'+phrase('adenomiose', {SIMETRIA: adenomioseSimetria})+'</p>';
     }
 
     html += '<p class="linha">Dimensões: '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm, com volume de '+span(uteroVolume)+' cm³ (VR '+escapeHtml(vrUteroTexto)+').</p>';
