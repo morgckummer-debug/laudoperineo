@@ -263,6 +263,7 @@
   <div class="field" style="margin-bottom:8px;"><label>Textura homogênea (sem nódulos)</label><textarea id="ph_miometrioHomogeneo" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Textura heterogênea (frase geral, antes da descrição dos nódulos)</label><textarea id="ph_miometrioHeterogeneo" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Adenomiose (substitui a frase de textura homogênea quando não há mioma junto) — use {SIMETRIA}</label><textarea id="ph_miometrioAdenomiose" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Adenomiose junto com mioma (sem a cláusula "sem nódulos") — use {SIMETRIA}</label><textarea id="ph_miometrioAdenomioseComMioma" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Adenomiose — impressão</label><textarea id="ph_impAdenomiose" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>1 nódulo — use {F1}</label><textarea id="ph_miomaIntro1" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>2 nódulos — use {F1} e {F2}</label><textarea id="ph_miomaIntro2" rows="2"></textarea></div>
@@ -900,6 +901,7 @@
     miometrioHomogeneo: 'A textura miometrial é sólida e homogênea.',
     miometrioHeterogeneo: 'A textura miometrial é sólida e heterogênea.',
     miometrioAdenomiose: 'Miométrio com paredes {SIMETRIA}, difusamente heterogêneo, entremeado por diminutas áreas anecoicas de permeio e em região justaendometrial, condicionando sombra acústica posterior em "leque", sem identificação de nódulos sólidos.',
+    miometrioAdenomioseComMioma: 'Miométrio com paredes {SIMETRIA}, difusamente heterogêneo, entremeado por diminutas áreas anecoicas de permeio e em região justaendometrial, condicionando sombra acústica posterior em "leque".',
     miomaIntro1: 'Presença de nódulo, localizado na {F1}.',
     miomaIntro2: 'Presença de dois nódulos, localizados nas {F1} e {F2}.',
     miomaIntroVarios: 'Presença de múltiplos nódulos, localizados:',
@@ -1675,7 +1677,7 @@
       html += '<li>'+phrase('miometrioHeterogeneo')+'</li>';
       html += '<li>'+(miomaSentenceHtml || '<span class="blank">Preencha ao menos um nódulo (FIGO + medida) acima.</span>')+(miometrioDescricaoExtra ? ' '+escapeHtml(miometrioDescricaoExtra) : '')+'</li>';
       if(chkAdenomiose){
-        html += '<li>'+phrase('miometrioAdenomiose', {SIMETRIA: adenomioseSimetria})+'</li>';
+        html += '<li>'+phrase('miometrioAdenomioseComMioma', {SIMETRIA: adenomioseSimetria})+'</li>';
       }
     } else if(chkAdenomiose){
       // Adenomiose replaces the "textura homogênea, sem nódulos" claim — the two are
