@@ -260,7 +260,7 @@
   <hr class="sep">
   <h3>Endométrio</h3>
   <div class="field" style="margin-bottom:8px;"><label>Normal — use {PADRAO} e {ESPESSURA}</label><textarea id="ph_endometrioNormal" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Pólipo endometrial — use {LOCAL}, {PEDICULO}, {MEDIDA} e {ESPESSURA}</label><textarea id="ph_endometrioPolipo" rows="3"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Pólipo endometrial — use {PADRAO}, {ESPESSURA}, {LOCAL}, {PEDICULO} e {MEDIDA}</label><textarea id="ph_endometrioPolipo" rows="3"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Espessado e heterogêneo (menopausa) — use {ESPESSURA}</label><textarea id="ph_endometrioEspessado" rows="2"></textarea></div>
 
   <hr class="sep">
@@ -283,8 +283,13 @@
   <div class="field" style="margin-bottom:8px;"><label>Endometriose profunda intestinal — use {LOCAL}, {MEDIDA} e {REGIAO}</label><textarea id="ph_endometrioseIntestinal" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Líquido livre ausente</label><textarea id="ph_liquidoLivreAusente" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Líquido livre presente — use {MEDIDAS} e {VOLUME}</label><textarea id="ph_liquidoLivrePresente" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Mobilidade preservada</label><textarea id="ph_mobilidadePreservada" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Mobilidade reduzida — use {DESCRICAO}</label><textarea id="ph_mobilidadeReduzida" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Mobilidade uterina preservada</label><textarea id="ph_mobilidadeUterinaPreservada" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Mobilidade uterina reduzida</label><textarea id="ph_mobilidadeUterinaReduzida" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Sinal do "sliding" negativo (mobilidade uterina reduzida)</label><textarea id="ph_slidingSignNegativo" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Mobilidade ovariana — ambos preservados</label><textarea id="ph_mobilidadeOvarianaAmbosPreservados" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Mobilidade ovariana — só direito reduzido</label><textarea id="ph_mobilidadeOvarianaDireitaReduzida" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Mobilidade ovariana — só esquerdo reduzido</label><textarea id="ph_mobilidadeOvarianaEsquerdaReduzida" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Mobilidade ovariana — ambos reduzidos</label><textarea id="ph_mobilidadeOvarianaAmbosReduzidos" rows="2"></textarea></div>
 
   <hr class="sep">
   <h3>Impressão diagnóstica</h3>
@@ -312,6 +317,7 @@
   <div class="field" style="margin-bottom:8px;"><label>Hidrossalpinge — use {LADO}</label><textarea id="ph_impHidrossalpinge" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Varizes pélvicas</label><textarea id="ph_impVarizes" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Endometriose profunda — use {LOCAL}</label><textarea id="ph_impEndometriose" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Ovário com mobilidade reduzida — use {LADO}</label><textarea id="ph_impMobilidadeOvarioReduzida" rows="2"></textarea></div>
 
   <hr class="sep">
   <h3>Rodapé</h3>
@@ -454,7 +460,7 @@
 
         <div class="toggle-line"><input type="checkbox" id="chkPolipoEndocervical"><label for="chkPolipoEndocervical">Pólipo endocervical</label></div>
         <div class="field-row conditional" id="wrap_polipoEndocervicalCampos">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="polipoEndocervicalMedida" placeholder="mm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="polipoEndocervicalMedida" placeholder="ex: 15 x 12,2"></div>
         </div>
 
         <div class="toggle-line"><input type="checkbox" id="chkDIU"><label for="chkDIU">Paciente com DIU</label></div>
@@ -490,7 +496,7 @@
           <div class="field"><label>Pedículo no folheto</label>
             <select id="polipoPediculo"><option value="anterior">Anterior</option><option value="posterior">Posterior</option></select>
           </div>
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="polipoMedida" placeholder="mm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="polipoMedida" placeholder="ex: 15 x 12,2"></div>
         </div>
       </div>
     </div>
@@ -535,23 +541,23 @@
           </div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_cisto1">
-          <div class="field"><label>Medida do cisto</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_cisto1Medida" placeholder="mm"></div>
+          <div class="field"><label>Medida do cisto (mm)</label><input type="text" id="ovD_cisto1Medida" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_cisto2">
-          <div class="field"><label>Medida do cisto 1</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_cisto2MedidaA" placeholder="mm"></div>
-          <div class="field"><label>Medida do cisto 2</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_cisto2MedidaB" placeholder="mm"></div>
+          <div class="field"><label>Medida do cisto 1 (mm)</label><input type="text" id="ovD_cisto2MedidaA" placeholder="ex: 15 x 12,2"></div>
+          <div class="field"><label>Medida do cisto 2 (mm)</label><input type="text" id="ovD_cisto2MedidaB" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_corpoluteo">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_corpoLuteoMedida" placeholder="mm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_corpoLuteoMedida" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_foliculo">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_foliculoMedida" placeholder="mm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_foliculoMedida" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_dermoide">
           <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_dermoideMedida" placeholder="ex: 35 x 30"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovD_endometrioma">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovD_endometriomaMedida" placeholder="mm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_endometriomaMedida" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="field conditional" id="wrap_ovD_descricao">
           <label>Descreva o achado</label>
@@ -586,23 +592,23 @@
           </div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_cisto1">
-          <div class="field"><label>Medida do cisto</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_cisto1Medida" placeholder="mm"></div>
+          <div class="field"><label>Medida do cisto (mm)</label><input type="text" id="ovE_cisto1Medida" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_cisto2">
-          <div class="field"><label>Medida do cisto 1</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_cisto2MedidaA" placeholder="mm"></div>
-          <div class="field"><label>Medida do cisto 2</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_cisto2MedidaB" placeholder="mm"></div>
+          <div class="field"><label>Medida do cisto 1 (mm)</label><input type="text" id="ovE_cisto2MedidaA" placeholder="ex: 15 x 12,2"></div>
+          <div class="field"><label>Medida do cisto 2 (mm)</label><input type="text" id="ovE_cisto2MedidaB" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_corpoluteo">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_corpoLuteoMedida" placeholder="mm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_corpoLuteoMedida" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_foliculo">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_foliculoMedida" placeholder="mm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_foliculoMedida" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_dermoide">
           <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_dermoideMedida" placeholder="ex: 35 x 30"></div>
         </div>
         <div class="field-row conditional" id="wrap_ovE_endometrioma">
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="2" id="ovE_endometriomaMedida" placeholder="mm"></div>
+          <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_endometriomaMedida" placeholder="ex: 15 x 12,2"></div>
         </div>
         <div class="field conditional" id="wrap_ovE_descricao">
           <label>Descreva o achado</label>
@@ -619,7 +625,7 @@
           <div class="field"><label>Lado</label>
             <select id="hidrossalpingeLado"><option value="direita">Direita</option><option value="esquerda">Esquerda</option></select>
           </div>
-          <div class="field"><label>Medida</label><input type="text" inputmode="decimal" data-decimals="1" id="hidrossalpingeMedida" placeholder="cm"></div>
+          <div class="field"><label>Medida (cm)</label><input type="text" id="hidrossalpingeMedida" placeholder="ex: 5,5 x 2,1"></div>
         </div>
 
         <div class="toggle-line"><input type="checkbox" id="chkVarizes"><label for="chkVarizes">Varizes pélvicas (congestão pélvica)</label></div>
@@ -645,13 +651,15 @@
 
         <hr class="sep">
         <div class="field-row">
-          <div class="field"><label>Mobilidade uterina e ovariana</label>
-            <select id="mobilidade"><option value="preservada">Preservada</option><option value="reduzida">Reduzida (descrever)</option></select>
+          <div class="field"><label>Mobilidade uterina</label>
+            <select id="mobilidadeUterina"><option value="preservada">Preservada</option><option value="reduzida">Reduzida (sinal do "sliding" negativo)</option></select>
           </div>
         </div>
-        <div class="field conditional" id="wrap_mobilidadeDescricao">
-          <label>Descreva (opcional)</label>
-          <input type="text" id="mobilidadeDescricao" placeholder="ex: aderências pélvicas">
+        <div class="field-row">
+          <div class="field"><label>Mobilidade ovariana</label>
+            <div class="toggle-line" style="margin:6px 0 0;"><input type="checkbox" id="chkMobilidadeOvD"><label for="chkMobilidadeOvD">Ovário direito com mobilidade reduzida</label></div>
+            <div class="toggle-line" style="margin:0;"><input type="checkbox" id="chkMobilidadeOvE"><label for="chkMobilidadeOvE">Ovário esquerdo com mobilidade reduzida</label></div>
+          </div>
         </div>
       </div>
     </div>
@@ -785,7 +793,7 @@
     diuBaixa: 'Presença de imagem linear ecogênica que condiciona sombra acústica posterior, compatível com DIU, cuja extremidade distal se encontra no interior do orifício interno do colo uterino (e não acima dele), distando {MEDIDA} mm do fundo da serosa uterina.',
 
     endometrioNormal: 'de aspecto uniforme, padrão {PADRAO}, apresentando eco endometrial linear e espessura de {ESPESSURA} mm. Cavidade uterina virtual.',
-    endometrioPolipo: 'no interior da cavidade uterina, em região {LOCAL}, observa-se imagem elipsoide sólida, ecogênica e heterogênea, de limites pouco precisos, sem sombra acústica posterior, com pedículo vascular identificado ao mapeamento colorido no folheto endometrial {PEDICULO}, medindo {MEDIDA} mm. Espessura endometrial de {ESPESSURA} mm.',
+    endometrioPolipo: 'de aspecto uniforme, padrão {PADRAO}, com espessura de {ESPESSURA} mm. Observa-se, no interior da cavidade uterina, em região {LOCAL}, imagem elipsoide sólida, ecogênica e heterogênea, de limites pouco precisos, sem sombra acústica posterior, com pedículo vascular identificado ao mapeamento colorido no folheto endometrial {PEDICULO}, medindo {MEDIDA} mm.',
     endometrioEspessado: 'centrado, regular, ecogênico e heterogêneo, contendo diminutas áreas císticas de permeio, com pedículo vascular identificado ao mapeamento colorido, medindo {ESPESSURA} mm em seu diâmetro ântero-posterior.',
 
     ovarioNormal: 'de topografia e forma usuais, medindo {L} x {AP} x {T} cm, com volume de {VOLUME} cm³ ({VR}).',
@@ -804,8 +812,13 @@
     endometrioseIntestinal: 'Observa-se imagem nodular irregular, hipoecoica, localizada na muscular da mucosa do {LOCAL}, medindo {MEDIDA} mm, em região {REGIAO}.',
     liquidoLivreAusente: 'Ausência de líquido livre em fundo de saco posterior.',
     liquidoLivrePresente: 'Presença de líquido livre em fundo de saco posterior, medindo {MEDIDAS} cm, com volume estimado de {VOLUME} mL.',
-    mobilidadePreservada: 'Mobilidade uterina e ovariana preservadas.',
-    mobilidadeReduzida: 'Mobilidade uterina e ovariana reduzida{DESCRICAO}.',
+    mobilidadeUterinaPreservada: 'Mobilidade uterina preservada.',
+    mobilidadeUterinaReduzida: 'Mobilidade uterina reduzida.',
+    slidingSignNegativo: 'Sinal do "sliding" negativo.',
+    mobilidadeOvarianaAmbosPreservados: 'Mobilidade ovariana preservada bilateralmente.',
+    mobilidadeOvarianaDireitaReduzida: 'Mobilidade ovariana preservada à esquerda e reduzida à direita.',
+    mobilidadeOvarianaEsquerdaReduzida: 'Mobilidade ovariana preservada à direita e reduzida à esquerda.',
+    mobilidadeOvarianaAmbosReduzidos: 'Mobilidade ovariana reduzida bilateralmente.',
 
     impNormal: 'Exame ecográfico dentro da normalidade.',
     impBexigaAlterada: 'Alteração vesical: {DESCRICAO}.',
@@ -831,6 +844,7 @@
     impHidrossalpinge: 'Hidrossalpinge à {LADO}.',
     impVarizes: 'Sinais de congestão pélvica.',
     impEndometriose: 'Nódulo sugestivo de endometriose profunda em {LOCAL}.',
+    impMobilidadeOvarioReduzida: 'Ovário {LADO} de mobilidade reduzida - Considerar processo aderencial.',
 
     footerImagens: 'Imagens em anexo.'
   };
@@ -1001,10 +1015,13 @@
   $('chkPolipoEndocervical').addEventListener('change', e=> toggle('wrap_polipoEndocervicalCampos', e.target.checked));
   $('chkDIU').addEventListener('change', e=> toggle('wrap_diuCampos', e.target.checked));
 
-  $('endometrioAspecto').addEventListener('change', e=>{
-    toggle('wrap_endometrioPadrao', e.target.value==='normal');
-    toggle('wrap_polipoCampos', e.target.value==='polipo');
-  });
+  function updateEndometrioWraps(){
+    const val = $('endometrioAspecto').value;
+    toggle('wrap_endometrioPadrao', val==='normal' || val==='polipo');
+    toggle('wrap_polipoCampos', val==='polipo');
+  }
+  $('endometrioAspecto').addEventListener('change', updateEndometrioWraps);
+  updateEndometrioWraps();
 
   function wireOvario(prefix){
     const sel = $(prefix+'_aspecto');
@@ -1025,7 +1042,6 @@
   $('chkHidrossalpinge').addEventListener('change', e=> toggle('wrap_hidrossalpingeCampos', e.target.checked));
   $('chkEndometriose').addEventListener('change', e=> toggle('wrap_endometrioseCampos', e.target.checked));
   $('liquidoLivre').addEventListener('change', e=> toggle('wrap_liquidoLivreCampos', e.target.value==='presente'));
-  $('mobilidade').addEventListener('change', e=> toggle('wrap_mobilidadeDescricao', e.target.value==='reduzida'));
 
   // ---------- Helpers ----------
   function v(id){ const el = $(id); return el ? el.value.trim() : ''; }
@@ -1139,6 +1155,12 @@
     }
     if(state.chkEndometriose){
       items.push({key:'endometriose', label:phraseRaw('impEndometriose', {LOCAL:state.endometrioseLocal}), auto:true});
+    }
+    if(state.chkMobilidadeOvD){
+      items.push({key:'mobilidade-ov-d', label:phraseRaw('impMobilidadeOvarioReduzida', {LADO:'direito'}), auto:true});
+    }
+    if(state.chkMobilidadeOvE){
+      items.push({key:'mobilidade-ov-e', label:phraseRaw('impMobilidadeOvarioReduzida', {LADO:'esquerdo'}), auto:true});
     }
 
     const anythingAbnormal = items.length>0;
@@ -1281,8 +1303,9 @@
     const liquidoLivrePresente = liquidoLivre==='presente';
     const liquidoLivreMedidas = blankOrValue(reqIf('liquidoLivreMedidas', liquidoLivrePresente));
     const liquidoLivre_Volume = blankOrValue(reqIf('liquidoLivre_Volume', liquidoLivrePresente));
-    const mobilidade = v('mobilidade');
-    const mobilidadeDescricao = v('mobilidadeDescricao');
+    const mobilidadeUterina = v('mobilidadeUterina');
+    const chkMobilidadeOvD = $('chkMobilidadeOvD').checked;
+    const chkMobilidadeOvE = $('chkMobilidadeOvE').checked;
 
     // ----- Impressão -----
     const state = {
@@ -1293,7 +1316,8 @@
       ovD_aspecto: ovD.aspecto, ovD_descricao: ovD.descricao,
       ovE_aspecto: ovE.aspecto, ovE_descricao: ovE.descricao,
       chkHidrossalpinge, hidrossalpingeLado, chkVarizes,
-      chkEndometriose, endometrioseLocal
+      chkEndometriose, endometrioseLocal,
+      chkMobilidadeOvD, chkMobilidadeOvE
     };
     const impressaoItems = buildImpressao(state);
     renderChecklist(impressaoItems);
@@ -1353,7 +1377,7 @@
     }
 
     if(endometrioAspecto==='polipo'){
-      html += '<p class="linha"><strong>Endométrio:</strong> '+phraseRaw('endometrioPolipo', {LOCAL: polipoLocalizacao, PEDICULO: polipoPediculo, MEDIDA: span(polipoMedida), ESPESSURA: span(endometrioEspessura)})+'</p>';
+      html += '<p class="linha"><strong>Endométrio:</strong> '+phraseRaw('endometrioPolipo', {PADRAO: endometrioPadrao, LOCAL: polipoLocalizacao, PEDICULO: polipoPediculo, MEDIDA: span(polipoMedida), ESPESSURA: span(endometrioEspessura)})+'</p>';
     } else if(endometrioAspecto==='espessado'){
       html += '<p class="linha"><strong>Endométrio:</strong> '+phraseRaw('endometrioEspessado', {ESPESSURA: span(endometrioEspessura)})+'</p>';
     } else {
@@ -1406,9 +1430,15 @@
       ? phraseRaw('liquidoLivrePresente', {MEDIDAS: span(liquidoLivreMedidas), VOLUME: span(liquidoLivre_Volume)})
       : phrase('liquidoLivreAusente'))+'</p>';
 
-    html += '<p class="linha">'+(mobilidade==='reduzida'
-      ? phrase('mobilidadeReduzida', {DESCRICAO: (mobilidadeDescricao ? ', '+mobilidadeDescricao : '')})
-      : phrase('mobilidadePreservada'))+'</p>';
+    html += '<p class="linha">'+(mobilidadeUterina==='reduzida'
+      ? (phrase('mobilidadeUterinaReduzida')+' '+phrase('slidingSignNegativo'))
+      : phrase('mobilidadeUterinaPreservada'))+'</p>';
+
+    let mobilidadeOvarianaKey = 'mobilidadeOvarianaAmbosPreservados';
+    if(chkMobilidadeOvD && chkMobilidadeOvE) mobilidadeOvarianaKey = 'mobilidadeOvarianaAmbosReduzidos';
+    else if(chkMobilidadeOvD) mobilidadeOvarianaKey = 'mobilidadeOvarianaDireitaReduzida';
+    else if(chkMobilidadeOvE) mobilidadeOvarianaKey = 'mobilidadeOvarianaEsquerdaReduzida';
+    html += '<p class="linha">'+phrase(mobilidadeOvarianaKey)+'</p>';
 
     html += '<h4 class="sec">IMPRESSÃO:</h4><ul class="impressao">';
     if(checkedItems.length===0){
