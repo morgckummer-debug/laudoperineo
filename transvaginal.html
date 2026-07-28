@@ -1584,11 +1584,14 @@
     printWin.document.open();
     printWin.document.write(printDoc);
     printWin.document.close();
-    printWin.focus();
-    setTimeout(()=>{
-      try{ printWin.print(); }
-      catch(e){ alert('A aba do laudo abriu, mas não foi possível disparar a impressão automaticamente. Use Ctrl+P (ou Cmd+P) nela.'); }
-    }, 300);
+    // Print immediately — the content is already fully written (no external images/fonts
+    // to wait on), so there's no need for a delay that would let the tab flash into view
+    // before the print dialog covers it.
+    try{ printWin.print(); }
+    catch(e){
+      printWin.focus();
+      alert('A aba do laudo abriu, mas não foi possível disparar a impressão automaticamente. Use Ctrl+P (ou Cmd+P) nela.');
+    }
   });
 
   $('btnDownload').addEventListener('click', ()=>{
