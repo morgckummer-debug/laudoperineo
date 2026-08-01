@@ -1666,10 +1666,10 @@
     html += '<li>O útero encontra-se em '+uteroPosicao+', medindo '+span(uteroL)+' x '+span(uteroAP)+' x '+span(uteroT)+' cm (L x AP x T), com volume estimado de '+span(uteroVolume)+' cm³ ('+vrUteroTexto+').</li>';
     if(miometrioTextura==='heterogenea'){
       html += '<li>'+phrase('miometrioHeterogeneo')+'</li>';
-      html += '<li>'+(miomaSentenceHtml || '<span class="blank">Preencha ao menos um nódulo (FIGO + medida) acima.</span>')+(miometrioDescricaoExtra ? ' '+escapeHtml(miometrioDescricaoExtra) : '')+'</li>';
       if(chkAdenomiose){
         html += '<li>'+phrase('miometrioAdenomioseComMioma', {SIMETRIA: adenomioseSimetria})+'</li>';
       }
+      html += '<li>'+(miomaSentenceHtml || '<span class="blank">Preencha ao menos um nódulo (FIGO + medida) acima.</span>')+(miometrioDescricaoExtra ? ' '+escapeHtml(miometrioDescricaoExtra) : '')+'</li>';
     } else if(chkAdenomiose){
       // Adenomiose replaces the "textura homogênea, sem nódulos" claim — the two are
       // contradictory when there's no myoma to justify a heterogeneous myometrium otherwise.
