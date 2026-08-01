@@ -1342,6 +1342,10 @@
     // even before a measurement is filled in — since the placeholder warning below already
     // says a nodule is pending; asserting "no nodules" at the same time is a contradiction.
     let uteroLinha = phrase((miometrioAspecto==='mioma' || chkAdenomiose) ? 'uteroBaseComNodulos' : 'uteroBase', {POSICAO: uteroPosicaoTexto});
+    if(chkAdenomiose){
+      // Adenomiose (diffuse change) is described before the focal mioma nodules.
+      uteroLinha += ' '+phrase(miometrioAspecto==='mioma' ? 'adenomioseComMioma' : 'adenomiose', {SIMETRIA: adenomioseSimetria});
+    }
     if(miometrioAspecto==='mioma'){
       if(miomaFrags.length===1){
         uteroLinha += ' '+phrase('miomaIntro1', {F1: miomaFrags[0]});
@@ -1352,11 +1356,6 @@
       } else {
         uteroLinha += ' <span class="blank">Preencha ao menos um nódulo (FIGO + medida) acima.</span>';
       }
-    }
-    if(chkAdenomiose){
-      // When a myoma is also present, "sem identificação de nódulos sólidos" would
-      // contradict the nodule just described above, so drop that closing clause.
-      uteroLinha += ' '+phrase(miometrioAspecto==='mioma' ? 'adenomioseComMioma' : 'adenomiose', {SIMETRIA: adenomioseSimetria});
     }
     html += '<p class="linha"><strong>Útero:</strong> '+uteroLinha+'</p>';
     if(miometrioAspecto==='mioma' && miomaFrags.length>=3){
