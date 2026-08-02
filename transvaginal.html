@@ -1384,30 +1384,37 @@
       html += '<p class="linha"><strong>Endométrio:</strong> '+phraseRaw('endometrioNormal', {PADRAO: endometrioPadrao, ESPESSURA: span(endometrioEspessura)})+'</p>';
     }
 
+    // Folds the abnormality phrase into the same sentence as the volume
+    // description, instead of a separate paragraph. Most achado phrases open
+    // with "Ovário {lado}..." (needed when they stood alone); that lead-in is
+    // stripped here since the paragraph has already named the ovary.
+    function mergeOvarioAchado(ladoM, achadoText){
+      const semLeadIn = achadoText.replace(new RegExp('^Ov[áa]rio\\s+'+ladoM+'\\s*,?\\s*', 'i'), '');
+      return ' '+semLeadIn.charAt(0).toUpperCase()+semLeadIn.slice(1);
+    }
     function ovarioParagraph(ov, ladoM, ladoF){
       if(ov.aspecto==='nao_identificado'){
         return '<p class="linha"><strong>Ovário '+ladoM+':</strong> '+phrase('ovarioNaoIdentificado')+'</p>';
       }
-      const base = '<p class="linha"><strong>Ovário '+ladoM+':</strong> '+phraseRaw('ovarioNormal', {L: span(ov.L), AP: span(ov.AP), T: span(ov.T), VOLUME: span(ov.volume), VR: escapeHtml(vrOvarioTexto)})+'</p>';
       let extra = '';
       if(ov.aspecto==='policistico'){
-        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.policistico(ladoM)+'</p>';
+        extra = mergeOvarioAchado(ladoM, OVARIO_ACHADO_TEXT.policistico(ladoM));
       } else if(ov.aspecto==='cisto1'){
-        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.cisto1(ladoM, ov.cisto1Medida||'____')+'</p>';
+        extra = mergeOvarioAchado(ladoM, OVARIO_ACHADO_TEXT.cisto1(ladoM, ov.cisto1Medida||'____'));
       } else if(ov.aspecto==='cisto2'){
-        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.cisto2(ladoM, ov.cisto2MedidaA||'____', ov.cisto2MedidaB||'____')+'</p>';
+        extra = mergeOvarioAchado(ladoM, OVARIO_ACHADO_TEXT.cisto2(ladoM, ov.cisto2MedidaA||'____', ov.cisto2MedidaB||'____'));
       } else if(ov.aspecto==='corpoluteo'){
-        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.corpoluteo(ladoM, ov.corpoLuteoMedida||'____')+'</p>';
+        extra = mergeOvarioAchado(ladoM, OVARIO_ACHADO_TEXT.corpoluteo(ladoM, ov.corpoLuteoMedida||'____'));
       } else if(ov.aspecto==='foliculo'){
-        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.foliculo(ladoM, ov.foliculoMedida||'____')+'</p>';
+        extra = mergeOvarioAchado(ladoM, OVARIO_ACHADO_TEXT.foliculo(ladoM, ov.foliculoMedida||'____'));
       } else if(ov.aspecto==='dermoide'){
-        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.dermoide(ladoM, ov.dermoideMedida||'____')+'</p>';
+        extra = mergeOvarioAchado(ladoM, OVARIO_ACHADO_TEXT.dermoide(ladoM, ov.dermoideMedida||'____'));
       } else if(ov.aspecto==='endometrioma'){
-        extra = '<p class="linha">'+OVARIO_ACHADO_TEXT.endometrioma(ladoM, ov.endometriomaMedida||'____')+'</p>';
+        extra = mergeOvarioAchado(ladoM, OVARIO_ACHADO_TEXT.endometrioma(ladoM, ov.endometriomaMedida||'____'));
       } else if(ov.aspecto==='alterado' && ov.descricao){
-        extra = '<p class="linha">'+escapeHtml(ov.descricao)+'.</p>';
+        extra = ' '+escapeHtml(ov.descricao)+'.';
       }
-      return base + extra;
+      return '<p class="linha"><strong>Ovário '+ladoM+':</strong> '+phraseRaw('ovarioNormal', {L: span(ov.L), AP: span(ov.AP), T: span(ov.T), VOLUME: span(ov.volume), VR: escapeHtml(vrOvarioTexto)})+extra+'</p>';
     }
     html += ovarioParagraph(ovD, 'direito', 'direita');
     html += ovarioParagraph(ovE, 'esquerdo', 'esquerda');
@@ -1552,11 +1559,15 @@
       alertEl.scrollIntoView({behavior:'smooth', block:'center'});
       return;
     }
-    // body has no padding of its own: an element's padding-top only reserves space once,
-    // at the very start of the flow, so a second printed page would come out without the
-    // letterhead margin. @page margin repeats on every physical page instead.
+    // @page margin is the correct, standards-based way to repeat the letterhead
+    // margin on every physical page (confirmed working across multiple pages in
+    // Chromium print-to-PDF). The body's own top padding is kept as a fallback
+    // for page 1 in case the renderer printing this doesn't honor @page at all —
+    // it only reserves space once, at the very start of the flow, so it can't
+    // help later pages, but dropping it entirely left page 1 with no margin in
+    // environments where @page isn't respected.
     const printDoc = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Laudo transvaginal</title><style>'
-      + "body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;color:#2b2b2e;margin:0;padding:0;}"
+      + "body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;color:#2b2b2e;margin:0;padding:34px 36px 0;}"
       + 'h3.doctitle{text-align:center;text-decoration:underline;font-size:15.5px;letter-spacing:.5px;margin:0 0 10px;font-weight:700;}'
       + '.relato{color:#C0392B;font-weight:700;margin:0 0 12px;}'
       + 'h4.sec{text-decoration:underline;font-size:13px;letter-spacing:.4px;margin:16px 0 8px;font-weight:600;}'
