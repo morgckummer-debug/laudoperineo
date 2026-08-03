@@ -1546,10 +1546,14 @@
     }
   });
 
-  // Printing from inside a sandboxed preview (e.g. a Claude Artifact iframe) can make
-  // window.print() a silent no-op — no dialog, no error. Opening the report in its own
-  // top-level tab and printing from there sidesteps that, and still works perfectly
-  // fine when this page is hosted normally (GitHub Pages, a local file, etc).
+  // window.print() opens the native dialog directly using the @media print rules
+  // above. A popup-window approach (open a blank tab, document.write() the report
+  // into it, print from there) was used previously to work around window.print()
+  // being a silent no-op inside a sandboxed preview (e.g. a Claude Artifact iframe),
+  // but that popup+document.write path is unreliable on mobile browsers (blocked or
+  // printed with inconsistent margins). Printing the page itself works fine wherever
+  // this page is actually used (GitHub Pages, a local file, etc. — on desktop or
+  // mobile), and matches the same approach already used in index.html/benito.html.
   $('btnPrint').addEventListener('click', ()=>{
     if(pendingCount > 0){
       printAttempted = true;
@@ -1559,41 +1563,10 @@
       alertEl.scrollIntoView({behavior:'smooth', block:'center'});
       return;
     }
-    // @page margin is the correct, standards-based way to repeat the letterhead
-    // margin on every physical page (confirmed working across multiple pages in
-    // Chromium print-to-PDF). The body's own top padding is kept as a fallback
-    // for page 1 in case the renderer printing this doesn't honor @page at all —
-    // it only reserves space once, at the very start of the flow, so it can't
-    // help later pages, but dropping it entirely left page 1 with no margin in
-    // environments where @page isn't respected.
-    const printDoc = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Laudo transvaginal</title><style>'
-      + "body{font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;color:#2b2b2e;margin:0;padding:34px 36px 0;}"
-      + 'h3.doctitle{text-align:center;text-decoration:underline;font-size:15.5px;letter-spacing:.5px;margin:0 0 10px;font-weight:700;}'
-      + '.relato{color:#C0392B;font-weight:700;margin:0 0 12px;}'
-      + 'h4.sec{text-decoration:underline;font-size:13px;letter-spacing:.4px;margin:16px 0 8px;font-weight:600;}'
-      + 'p.linha{margin:0 0 9px;} p.linha strong{font-weight:700;}'
-      + '.blank{color:#B4432F;font-weight:600;}'
-      + 'ul.impressao{margin:0;padding-left:0;list-style:none;} ul.impressao li{margin-bottom:6px;font-weight:700;}'
-      + '.footnote{font-style:italic;font-size:9pt;color:#5b5b5e;margin-top:16px;}'
-      + '@page{margin:4cm 2cm 2cm;}'
-      + '</style></head><body>'+$('paper').innerHTML+'</body></html>';
-
-    let printWin = null;
-    try{ printWin = window.open('', '_blank'); }catch(e){ printWin = null; }
-    if(!printWin){
-      alert('Não foi possível abrir a janela de impressão (bloqueador de pop-up?). Use "Copiar laudo" ou "Baixar .txt" e imprima a partir de lá.');
-      return;
-    }
-    printWin.document.open();
-    printWin.document.write(printDoc);
-    printWin.document.close();
-    // Print immediately — the content is already fully written (no external images/fonts
-    // to wait on), so there's no need for a delay that would let the tab flash into view
-    // before the print dialog covers it.
-    try{ printWin.print(); }
-    catch(e){
-      printWin.focus();
-      alert('A aba do laudo abriu, mas não foi possível disparar a impressão automaticamente. Use Ctrl+P (ou Cmd+P) nela.');
+    try{
+      window.print();
+    }catch(e){
+      alert('Não foi possível abrir a impressão automaticamente. Use "Baixar .txt" e imprima a partir de lá.');
     }
   });
 
