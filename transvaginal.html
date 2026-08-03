@@ -111,6 +111,14 @@
 
   /* Preview / laudo pane */
   .preview-wrap{position:sticky;top:88px;}
+  /* .paper-table wraps the report in a <table> purely so its thead/tfoot can
+     reserve the letterhead margin — thead/tfoot repeat on every physical
+     printed page in every engine we've tested (desktop, mobile, headless),
+     unlike @page margin, which many mobile "print to PDF" pipelines ignore
+     outright. On screen the thead/tfoot stay collapsed to zero height. */
+  .paper-table{width:100%;border-collapse:collapse;}
+  .paper-table thead td, .paper-table tfoot td{padding:0;border:none;height:0;}
+  .paper-table tbody td{padding:0;border:none;}
   .paper{
     background:#FEFCFE;border:1px solid var(--line);border-radius:4px;
     box-shadow:var(--shadow);
@@ -164,13 +172,21 @@
   ::-webkit-scrollbar{width:9px;}
   ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
 
+  /* Margin is zeroed here on purpose: many mobile browsers' "Salvar como PDF"
+     print pipeline ignores @page margin entirely, so it can't be relied on.
+     The actual 4cm top / 2cm sides+bottom letterhead margin is reserved by
+     the .paper-table thead/tfoot below instead, which repeats reliably on
+     every physical page across engines. */
   @page{
-    margin: 4cm 2cm 2cm;
+    margin: 0;
   }
   @media print{
     .topbar, .settings-panel, #formCol, .preview-actions, .status-pill, .print-alert{display:none !important;}
     .layout{display:block;padding:0;margin:0;max-width:none;}
     .preview-wrap{position:static;}
+    .paper-table thead td{height:4cm;}
+    .paper-table tfoot td{height:2cm;}
+    .paper-table tbody td{padding:0 2cm;}
     .paper{background:none;border:none;box-shadow:none;border-radius:0;max-height:none;overflow:visible;padding:0;margin:0;}
   }
 </style>
@@ -681,7 +697,11 @@
   <div class="preview-wrap">
     <span class="status-pill" id="statusPill">0 campos pendentes</span>
     <div class="print-alert" id="printAlert">⚠ Ainda há campos não preenchidos — corrija antes de imprimir.</div>
-    <div class="paper" id="paper" contenteditable="true" spellcheck="false"></div>
+    <table class="paper-table">
+      <thead><tr><td></td></tr></thead>
+      <tfoot><tr><td></td></tr></tfoot>
+      <tbody><tr><td><div class="paper" id="paper" contenteditable="true" spellcheck="false"></div></td></tr></tbody>
+    </table>
     <div class="preview-actions">
       <button class="btn-copy" id="btnCopy">Copiar laudo</button>
       <button class="btn-print" id="btnPrint">Imprimir / PDF</button>
