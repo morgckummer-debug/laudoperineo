@@ -127,7 +127,7 @@
     text-decoration:underline;font-size:13px;letter-spacing:.4px;margin:20px 0 8px;font-weight:600;color:var(--rose-dark);
   }
   .paper ul{margin:0 0 4px 0;padding-left:20px;}
-  .paper li{margin-bottom:9px;}
+  .paper li{margin-bottom:16px;}
   .paper .blank{color:#B4432F;font-weight:600;}
   .paper .filled{color:var(--ink);}
   .paper .impressao li{font-weight:700;}
@@ -1895,13 +1895,15 @@
   });
 
   $('btnPrint').addEventListener('click', ()=>{
+    // TEMP (fase de teste): campos pendentes não bloqueiam mais a impressão —
+    // só continuam sinalizados em vermelho. Reativar o bloqueio (return após
+    // o alertEl.scrollIntoView) quando o laudo estiver pronto para uso real.
     if(pendingCount > 0){
       printAttempted = true;
       render();
       const alertEl = $('printAlert');
       alertEl.classList.add('show');
       alertEl.scrollIntoView({behavior:'smooth', block:'center'});
-      return;
     }
     // window.print() opens the native dialog directly using the @media print rules
     // above. An earlier version also auto-downloaded a backup print-ready file on
