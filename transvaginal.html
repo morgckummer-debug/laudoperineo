@@ -144,6 +144,8 @@
   .paper ul.impressao{margin:0;padding-left:0;list-style:none;}
   .paper ul.impressao li{margin-bottom:6px;font-weight:700;}
   .paper .footnote{font-style:italic;font-size:9pt;color:var(--ink-soft);margin-top:16px;}
+  .paper .assinatura{margin-top:24px;text-align:right;}
+  .paper .assinatura p{margin:0;}
 
   .preview-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
   .preview-actions button{flex:1;min-width:110px;}
@@ -179,8 +181,13 @@
      print pipeline ignores @page margin entirely, so it can't be relied on.
      The actual 4cm top / 2cm sides+bottom letterhead margin is reserved by
      the .paper-table thead/tfoot below instead, which repeats reliably on
-     every physical page across engines. */
+     every physical page across engines. size:A4 is pinned explicitly because
+     the pagination math in paginateForPrint() (page height 29.7cm minus the
+     4cm/2cm bands above) assumes A4 — leaving size unset lets some browsers
+     fall back to Letter (27.94cm tall), which would make that math overrun
+     the real page and misplace "Continua…"/the signature. */
   @page{
+    size: A4;
     margin: 0;
   }
   @media print{
@@ -191,6 +198,27 @@
     .paper-table tfoot td{height:2cm;}
     .paper-table tbody td{padding:0 2cm;}
     .paper{background:none;border:none;box-shadow:none;border-radius:0;max-height:none;overflow:visible;padding:0;margin:0;}
+
+    /* Belt-and-suspenders: paginateForPrint() already breaks pages between
+       these units, never inside one, but keeping these rules means a stray
+       unit that somehow slips past the JS packing still refuses to split
+       across a page instead of printing half a bullet/paragraph. */
+    .paper p.linha, .paper .nodulos-lista, .paper ul.impressao li, .paper .assinatura{page-break-inside:avoid;}
+    .paper h4.sec{page-break-after:avoid;}
+
+    /* Each .print-page is one physical sheet's worth of content, built by
+       paginateForPrint() right before printing: its own content, then a
+       spacer <div> sized to exactly fill the rest of the 23.7cm content band
+       (29.7cm page − 4cm top − 2cm bottom), then "Continua…" or the
+       signature. That spacer — not flex/margin-top:auto, which Chromium's
+       print engine doesn't paginate reliably — is what pins them to the
+       bottom-right corner of that sheet specifically, not wherever the text
+       happens to end. */
+    .paper .print-page + .print-page{page-break-before:always;}
+    .paper .continua{font-style:italic;font-size:10pt;text-align:right;margin:0;}
+    /* The spacer <div> right before it already reserves the gap down to the
+       signature's usual margin-top:24px would double that gap. */
+    .paper .print-page .assinatura{margin-top:0;}
   }
 </style>
 </head>
@@ -1488,6 +1516,11 @@
 
     html += '<p class="footnote">'+phrase('footerImagens')+'</p>';
 
+    html += '<div class="assinatura"><p>'+escapeHtml(VR.medicoNome)+'</p>';
+    if(VR.medicoQual1) html += '<p>'+escapeHtml(VR.medicoQual1)+'</p>';
+    if(VR.medicoQual2) html += '<p>'+escapeHtml(VR.medicoQual2)+'</p>';
+    html += '<p>'+escapeHtml(VR.medicoCRM)+'</p></div>';
+
     $('paper').innerHTML = html;
 
     const pill = $('statusPill');
@@ -1525,13 +1558,14 @@
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
     clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; });
+    clone.querySelectorAll('.assinatura').forEach(el=>{ el.style.textAlign='right'; el.style.marginTop='24px'; });
     const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;\">"+clone.innerHTML+'</div>';
 
     let text = '';
     clone.querySelectorAll(':scope > *').forEach(node=>{
-      if(node.tagName==='UL'){
-        node.querySelectorAll(':scope > li').forEach(li=>{
-          text += li.textContent.trim()+'\n';
+      if(node.tagName==='UL' || node.classList.contains('assinatura')){
+        node.querySelectorAll(':scope > li, :scope > p').forEach(item=>{
+          text += item.textContent.trim()+'\n';
         });
         text += '\n';
       } else {
@@ -1577,6 +1611,161 @@
     }
   });
 
+  // ---------- Print pagination: pins "Continua…" and the signature to the
+  // bottom-right corner of the physical page, at print time only. render()
+  // above still builds the report (including the trailing .assinatura block)
+  // as plain flowing content, so on-screen editing, copy and .txt stay exactly
+  // as before — this function only reshuffles that content into per-page
+  // chunks right before printing, and restore() below undoes it right after.
+  // All of the actual bottom-pinning (.print-page/.continua) lives in
+  // @media print CSS, so even if 'afterprint' never fires in some browser,
+  // the on-screen editable paper still renders as plain flowing text, never
+  // as broken/gapped pages.
+  function paginateForPrint(){
+    const paperEl = $('paper');
+    const originalHTML = paperEl.innerHTML;
+
+    // Hidden clone at the real print content width/typography, used only to
+    // measure how tall each unit of the report renders.
+    const measure = document.createElement('div');
+    measure.className = 'paper';
+    measure.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;left:-99999px;top:0;width:17cm;max-height:none;overflow:visible;background:none;border:none;box-shadow:none;padding:0;margin:0;';
+    measure.innerHTML = originalHTML;
+    document.body.appendChild(measure);
+
+    // Convert the 23.7cm content band (29.7cm A4 minus the 4cm top / 2cm
+    // bottom reserved by the .paper-table thead/tfoot in @media print above)
+    // into px in this same document, so it's on the same footing as the
+    // getBoundingClientRect() measurements below regardless of zoom/DPI.
+    const ref = document.createElement('div');
+    ref.style.cssText = 'position:absolute;visibility:hidden;left:-99999px;top:0;width:0;height:23.7cm;';
+    document.body.appendChild(ref);
+    const pageHeightPx = ref.getBoundingClientRect().height;
+    document.body.removeChild(ref);
+    // Target a bit under the true page height, both for packing content into
+    // a page and for how far down the spacer pushes the pinned Continua/
+    // signature. Times New Roman can render with slightly different line
+    // metrics in this hidden screen-measurement clone than in Chromium's
+    // actual print pass, and that drift compounds over many lines — a
+    // generous ~1cm cushion is what keeps that drift from ever overflowing
+    // the real page (worst case: a little extra white space above the
+    // pinned block, never a mispositioned or split signature).
+    const SAFETY_PX = 38; /* ~1cm */
+    const packBudgetPx = pageHeightPx - SAFETY_PX;
+
+    const continuaP = document.createElement('p');
+    continuaP.className = 'continua';
+    continuaP.textContent = 'Continua…';
+    measure.appendChild(continuaP);
+    const continuaHeight = continuaP.getBoundingClientRect().height;
+    measure.removeChild(continuaP);
+    const continuaHtml = continuaP.outerHTML;
+
+    // Boxes are measured by their actual top/bottom edge in the flowed
+    // measure container, not by summing each element's own height — a plain
+    // height sum silently drops every element's vertical margin (each
+    // p.linha alone carries a 16px margin-bottom), which would systematically
+    // under-count how much a page really holds. top/bottom already bakes in
+    // real (collapsed) margins because it comes from actual layout.
+    const measureRect = measure.getBoundingClientRect();
+    const realTop = Array.from(paperEl.children);
+    const measureTop = Array.from(measure.children);
+    const boxes = [];
+    realTop.forEach((realChild, idx)=>{
+      const measureChild = measureTop[idx];
+      if(realChild.tagName==='UL' && realChild.classList.contains('impressao')){
+        const realLis = Array.from(realChild.children);
+        const measureLis = Array.from(measureChild.children);
+        realLis.forEach((li, i)=>{
+          const r = measureLis[i].getBoundingClientRect();
+          boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:'li', html: li.outerHTML});
+        });
+      } else {
+        const r = measureChild.getBoundingClientRect();
+        boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:(realChild.tagName==='H4' ? 'heading' : 'block'), html: realChild.outerHTML});
+      }
+    });
+    document.body.removeChild(measure);
+
+    // Greedily pack boxes into pages, never splitting one across a boundary.
+    // pageStart tracks where (in the continuous measurement) the current
+    // page's first box began, so "how full is this page" is just how far
+    // past that start the box we're considering would reach.
+    const pages = [[]];
+    let pageStart = boxes.length ? boxes[0].top : 0;
+    boxes.forEach(box=>{
+      if((box.bottom - pageStart) > packBudgetPx && pages[pages.length-1].length > 0){
+        pages.push([]);
+        pageStart = box.top;
+      }
+      pages[pages.length-1].push(box);
+    });
+    // A heading left alone at the bottom of a page, with its content pushed
+    // to the next one, is an orphan — move it down together with what follows.
+    for(let p=0; p<pages.length-1; p++){
+      const pg = pages[p];
+      if(pg.length && pg[pg.length-1].kind==='heading'){
+        pages[p+1].unshift(pg.pop());
+      }
+    }
+
+    // Bottom-pinning uses a plain spacer <div> with a computed pixel height,
+    // not flex + margin-top:auto — Chromium's print engine doesn't reliably
+    // paginate flex containers (their content can spill onto an unplanned
+    // extra page), while a block-level spacer of a known height behaves
+    // exactly like any other paragraph for pagination purposes.
+    const wrap = document.createElement('div');
+    pages.forEach((pageBoxes, pageIdx)=>{
+      const isLast = pageIdx === pages.length - 1;
+      // On the last page the trailing box is always the .assinatura block
+      // (render() appends it last) — pin that instead of a synthetic Continua.
+      const pinned = isLast ? pageBoxes[pageBoxes.length - 1] : null;
+      const contentBoxes = isLast ? pageBoxes.slice(0, -1) : pageBoxes;
+
+      const pageEl = document.createElement('div');
+      pageEl.className = 'print-page';
+      let i = 0;
+      while(i < contentBoxes.length){
+        if(contentBoxes[i].kind === 'li'){
+          const ul = document.createElement('ul');
+          ul.className = 'impressao';
+          while(i < contentBoxes.length && contentBoxes[i].kind === 'li'){ ul.insertAdjacentHTML('beforeend', contentBoxes[i].html); i++; }
+          pageEl.appendChild(ul);
+        } else {
+          pageEl.insertAdjacentHTML('beforeend', contentBoxes[i].html);
+          i++;
+        }
+      }
+      // Real span of this page's content (top of its first box to the
+      // bottom of its last), including whatever margins collapsed between
+      // them — the same top/bottom basis the packing loop above used.
+      const contentHeight = contentBoxes.length ? (contentBoxes[contentBoxes.length-1].bottom - contentBoxes[0].top) : 0;
+
+      const pinnedHtml = isLast ? (pinned ? pinned.html : '') : continuaHtml;
+      const pinnedHeight = isLast ? (pinned ? (pinned.bottom - pinned.top) : 0) : continuaHeight;
+      if(pinnedHtml){
+        const spacerPx = Math.max(0, packBudgetPx - contentHeight - pinnedHeight);
+        const spacer = document.createElement('div');
+        spacer.style.height = spacerPx + 'px';
+        pageEl.appendChild(spacer);
+        pageEl.insertAdjacentHTML('beforeend', pinnedHtml);
+      }
+      wrap.appendChild(pageEl);
+    });
+    paperEl.innerHTML = wrap.innerHTML;
+
+    return function restore(){ paperEl.innerHTML = originalHTML; };
+  }
+
+  let printRestore = null;
+  window.addEventListener('beforeprint', ()=>{
+    if(printRestore) return; // already paginated for this print — beforeprint can fire more than once
+    printRestore = paginateForPrint();
+  });
+  window.addEventListener('afterprint', ()=>{
+    if(printRestore){ printRestore(); printRestore = null; }
+  });
+
   // window.print() opens the native dialog directly using the @media print rules
   // above. A popup-window approach (open a blank tab, document.write() the report
   // into it, print from there) was used previously to work around window.print()
@@ -1585,6 +1774,8 @@
   // printed with inconsistent margins). Printing the page itself works fine wherever
   // this page is actually used (GitHub Pages, a local file, etc. — on desktop or
   // mobile), and matches the same approach already used in index.html/benito.html.
+  // 'beforeprint'/'afterprint' above cover this same way whether print is triggered
+  // by this button or by the browser's own Ctrl/Cmd+P.
   $('btnPrint').addEventListener('click', ()=>{
     // Campos pendentes não bloqueiam a impressão — ficam apenas sinalizados
     // em vermelho como lembrete, permitindo imprimir/gerar PDF mesmo incompleto.
