@@ -323,6 +323,7 @@
   <div class="field" style="margin-bottom:8px;"><label>Ovário não identificado — use {LADO}</label><textarea id="ph_impOvarioNaoIdentificado" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovário alterado (outro) — use {LADO} e {DESCRICAO}</label><textarea id="ph_impOvarioAlterado" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovário policístico — use {LADO}</label><textarea id="ph_impOvarioPolicistico" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Ovários policísticos bilateral (ambos os ovários)</label><textarea id="ph_impOvariosPolicisticosBilateral" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovário com 1 cisto simples — use {LADO}</label><textarea id="ph_impOvarioCisto1" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovário com 2 cistos simples — use {LADO}</label><textarea id="ph_impOvarioCisto2" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovário com corpo lúteo — use {LADO}</label><textarea id="ph_impOvarioCorpoLuteo" rows="2"></textarea></div>
@@ -859,6 +860,7 @@
     impOvarioNaoIdentificado: 'Ovário {LADO} não identificado no presente estudo.',
     impOvarioAlterado: 'Ovário {LADO}: {DESCRICAO}.',
     impOvarioPolicistico: 'Ovário {LADO} com aspecto sugestivo de ovários policísticos.',
+    impOvariosPolicisticosBilateral: 'Ovários de volume aumentado, micropolicísticos.',
     impOvarioCisto1: 'Ovário {LADO} de volume aumentado às custas de cisto uniloculado.',
     impOvarioCisto2: 'Ovário {LADO} de volume aumentado às custas de cistos uniloculados.',
     impOvarioCorpoLuteo: 'Ovário {LADO} de volume aumentado, apresentando imagem compatível com corpo lúteo.',
@@ -1154,10 +1156,16 @@
       items.push({key:'endometrio-espessado', label:phraseRaw('impEndometrioEspessado'), auto:true});
     }
 
+    const ambosOvariosPolicisticos = state.ovD_aspecto==='policistico' && state.ovE_aspecto==='policistico';
+    if(ambosOvariosPolicisticos){
+      items.push({key:'ov-policistico-bilateral', label:phraseRaw('impOvariosPolicisticosBilateral'), auto:true});
+    }
+
     ['ovD','ovE'].forEach(prefix=>{
       const aspecto = state[prefix+'_aspecto'];
       const lado = prefix==='ovD' ? 'direito' : 'esquerdo';
       const ladoFem = prefix==='ovD' ? 'direita' : 'esquerda';
+      if(ambosOvariosPolicisticos && aspecto==='policistico') return;
       if(aspecto==='nao_identificado'){
         items.push({key:prefix+'-nao-identificado', label:phraseRaw('impOvarioNaoIdentificado', {LADO:lado}), auto:true});
       } else if(aspecto==='alterado' && state[prefix+'_descricao']){
