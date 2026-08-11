@@ -315,7 +315,8 @@
   <h3>Ovários</h3>
   <div class="field" style="margin-bottom:8px;"><label>Normal — use {LADO}, {L}, {AP}, {T}, {VOLUME} e {VR}</label><textarea id="ph_ovarioNormal" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Não identificado — use {LADO}</label><textarea id="ph_ovarioNaoIdentificado" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Ovário policístico — use {LADO}</label><textarea id="ph_ovarioPolicistico" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Policístico — frase-base (substitui "Normal" quando policístico) — use {L}, {AP}, {T}, {VOLUME} e {VR}</label><textarea id="ph_ovarioPolicisticoBase" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Ovário policístico — complemento (achado, após a frase-base) — use {LADO}</label><textarea id="ph_ovarioPolicistico" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>1 cisto simples — use {LADO} e {MEDIDA}</label><textarea id="ph_ovarioCisto1" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>2 cistos simples — use {LADO}, {MEDIDA1} e {MEDIDA2}</label><textarea id="ph_ovarioCisto2" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Corpo lúteo — use {LADO} e {MEDIDA}</label><textarea id="ph_ovarioCorpoLuteo" rows="2"></textarea></div>
@@ -856,7 +857,8 @@
 
     ovarioNormal: 'de topografia e forma usuais, medindo {L} x {AP} x {T} cm, com volume de {VOLUME} cm³ ({VR}).',
     ovarioNaoIdentificado: 'não identificado no presente estudo. Não são identificadas massas císticas ou sólidas em sua topografia.',
-    ovarioPolicistico: 'Ovário {LADO} de forma globosa, volume aumentado, apresentando folículos antrais de distribuição predominantemente periférica, com diâmetro médio de 5 mm, associado a aumento da ecogenicidade do estroma.',
+    ovarioPolicisticoBase: 'de topografia usual, forma globosa e textura micropolicística, medindo {L} x {AP} x {T} cm, com volume de {VOLUME} cm³ ({VR}).',
+    ovarioPolicistico: 'Ovário {LADO} apresentando folículos antrais de distribuição predominantemente periférica, com diâmetro médio de 5 mm, associado a aumento da ecogenicidade do estroma.',
     ovarioCisto1: 'Ovário {LADO}, em seu interior observa-se imagem cística anecoica, uniloculada, de paredes finas e regulares, medindo {MEDIDA} mm.',
     ovarioCisto2: 'Ovário {LADO}, em seu interior observam-se duas imagens císticas uniloculares, de paredes finas e regulares, medindo {MEDIDA1} mm e {MEDIDA2} mm, respectivamente.',
     ovarioCorpoLuteo: 'Ovário {LADO}, em seu interior nota-se imagem cística heterogênea, de paredes espessadas e irregulares, conteúdo ecogênico e captação de fluxo periférico ao mapeamento Doppler colorido, medindo {MEDIDA} mm (corpo lúteo).',
@@ -1475,7 +1477,13 @@
       } else if(ov.aspecto==='alterado' && ov.descricao){
         extra = ' '+escapeHtml(ov.descricao)+'.';
       }
-      return '<p class="linha"><strong>Ovário '+ladoM+':</strong> '+phraseRaw('ovarioNormal', {L: span(ov.L), AP: span(ov.AP), T: span(ov.T), VOLUME: span(ov.volume), VR: escapeHtml(vrOvarioTexto)})+extra+'</p>';
+      // Polycystic ovaries get their own base clause ("forma globosa e textura
+      // micropolicística") instead of "ovarioNormal" ("forma usuais") — the
+      // two are contradictory, so using ovarioNormal first and then having
+      // the achado immediately override the shape was the bug being fixed.
+      const baseKey = ov.aspecto==='policistico' ? 'ovarioPolicisticoBase' : 'ovarioNormal';
+      const base = phraseRaw(baseKey, {L: span(ov.L), AP: span(ov.AP), T: span(ov.T), VOLUME: span(ov.volume), VR: escapeHtml(vrOvarioTexto)});
+      return '<p class="linha"><strong>Ovário '+ladoM+':</strong> '+base+extra+'</p>';
     }
     html += ovarioParagraph(ovD, 'direito', 'direita');
     html += ovarioParagraph(ovE, 'esquerdo', 'esquerda');
