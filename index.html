@@ -131,6 +131,9 @@
   .paper .blank{color:#B4432F;font-weight:600;}
   .paper .filled{color:var(--ink);}
   .paper .impressao li{font-weight:700;}
+  .paper .nodulos-lista{margin:6px 0 0;}
+  .paper .nodulos-lista .nodulo-item{margin:0 0 6px;padding-left:2.4em;text-indent:-2.4em;}
+  .paper .nodulos-lista .nodulo-item:last-child{margin-bottom:0;}
   .paper .footnote{font-style:italic;font-size:9pt;color:var(--ink-soft);margin-top:16px;}
 
   .preview-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
@@ -1499,10 +1502,11 @@
     } else if(figoFrags.length===2){
       miomaSentenceHtml = phrase('miomaIntro2', {F1: figoFrags[0], F2: figoFrags[1]});
     } else if(figoFrags.length>=3){
-      // A nested <ul><li> (rather than <br>-joined lines) survives copy/paste into
-      // Word, Gmail, etc. as separate list lines — <br> inside a single <li> tends
-      // to get flattened by paste sanitizers into one run-on sentence.
-      miomaSentenceHtml = phrase('miomaIntroVarios')+'<ul>'+figoFrags.map((f,i)=>'<li>N'+(i+1)+': '+escapeHtml(f)+'.</li>').join('')+'</ul>';
+      // Hanging-indent paragraphs (rather than <br>-joined lines) survive copy/paste
+      // into Word, Gmail, etc. as separate lines — <br> inside a single element tends
+      // to get flattened by paste sanitizers into one run-on sentence — and keep the
+      // wrapped continuation of each sentence aligned after "N1:" instead of the margin.
+      miomaSentenceHtml = phrase('miomaIntroVarios')+'<div class="nodulos-lista">'+figoFrags.map((f,i)=>'<p class="nodulo-item">- N'+(i+1)+': '+escapeHtml(f)+'.</p>').join('')+'</div>';
     }
     const miometrioDescricaoExtra = v('miometrioDescricao');
 
