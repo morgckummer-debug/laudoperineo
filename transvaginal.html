@@ -138,6 +138,9 @@
   .paper p.linha strong{font-weight:700;}
   .paper .blank{color:#B4432F;font-weight:600;}
   .paper .filled{color:var(--ink);}
+  .paper .nodulos-lista{margin:0 0 16px;}
+  .paper .nodulos-lista .nodulo-item{margin:0 0 6px;padding-left:2.4em;text-indent:-2.4em;}
+  .paper .nodulos-lista .nodulo-item:last-child{margin-bottom:0;}
   .paper ul.impressao{margin:0;padding-left:0;list-style:none;}
   .paper ul.impressao li{margin-bottom:6px;font-weight:700;}
   .paper .footnote{font-style:italic;font-size:9pt;color:var(--ink-soft);margin-top:16px;}
@@ -1385,7 +1388,7 @@
     }
     html += '<p class="linha"><strong>Útero:</strong> '+uteroLinha+'</p>';
     if(miometrioAspecto==='mioma' && miomaFrags.length>=3){
-      html += '<p class="linha">'+miomaFrags.map((f,i)=>'N'+(i+1)+': '+escapeHtml(f)).join('<br>')+'</p>';
+      html += '<div class="linha nodulos-lista">'+miomaFrags.map((f,i)=>'<p class="nodulo-item">- N'+(i+1)+': '+escapeHtml(f)+'</p>').join('')+'</div>';
     }
     if(miometrioAspecto==='mioma' && miometrioDescricaoExtra){
       html += '<p class="linha">'+escapeHtml(miometrioDescricaoExtra)+'.</p>';
