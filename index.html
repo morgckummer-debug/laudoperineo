@@ -1899,9 +1899,8 @@
   });
 
   $('btnPrint').addEventListener('click', ()=>{
-    // TEMP (fase de teste): campos pendentes não bloqueiam mais a impressão —
-    // só continuam sinalizados em vermelho. Reativar o bloqueio (return após
-    // o alertEl.scrollIntoView) quando o laudo estiver pronto para uso real.
+    // Campos pendentes não bloqueiam a impressão — ficam apenas sinalizados
+    // em vermelho como lembrete, permitindo imprimir/gerar PDF mesmo incompleto.
     if(pendingCount > 0){
       printAttempted = true;
       render();
