@@ -279,7 +279,7 @@
   <hr class="sep">
   <h3>Útero</h3>
   <div class="field" style="margin-bottom:8px;"><label>Frase-base (sem miomas) — use {POSICAO}</label><textarea id="ph_uteroBase" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>Frase-base (com miomas) — use {POSICAO}</label><textarea id="ph_uteroBaseComNodulos" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Frase-base (com miomas) — use {POSICAO} e {CONTORNOS} (vira "irregulares" automaticamente com mioma FIGO 5, 6 ou 7)</label><textarea id="ph_uteroBaseComNodulos" rows="2"></textarea></div>
 
   <hr class="sep">
   <h3>Miométrio / miomas</h3>
@@ -829,7 +829,7 @@
   const PHRASE_DEFAULTS = {
     bexigaNormal: 'apresentando-se vazia durante a realização do exame',
     uteroBase: '{POSICAO}, situado na linha mediana, de configuração anatômica, textura homogênea e contornos regulares, sem identificação de nódulos sólidos.',
-    uteroBaseComNodulos: '{POSICAO}, situado na linha mediana, de configuração anatômica e contornos regulares.',
+    uteroBaseComNodulos: '{POSICAO}, situado na linha mediana, de configuração anatômica e contornos {CONTORNOS}.',
 
     miomaIntro1: 'Observa-se imagem nodular sólida, hipoecoica e heterogênea, localizada na {F1}.',
     miomaIntro2: 'Observam-se duas imagens nodulares sólidas, hipoecogênicas e heterogêneas, uma localizada na {F1} e outra na {F2}.',
@@ -1294,6 +1294,7 @@
     const adenomioseSimetria = v('adenomioseSimetria')==='assimetricas' ? 'assimétricas' : 'simétricas';
     const miomaCountSel = miometrioAspecto==='mioma' ? parseInt(v('miomaCount')||'1',10) : 0;
     const miomaFrags = [];
+    const miomaFigos = [];
     for(let i=1; i<=miomaCountSel; i++){
       const figo = v('mioma'+i+'Figo');
       const medida = reqIf('mioma'+i+'Medida', miometrioAspecto==='mioma' && i<=miomaCountSel);
@@ -1301,7 +1302,12 @@
       const parede = v('mioma'+i+'Parede');
       const detalhe = v('mioma'+i+'CervicalDetalhe');
       miomaFrags.push(FIGO_TEXT[figo](parede, medida, detalhe));
+      miomaFigos.push(figo);
     }
+    // FIGO 5/6/7 are subserosal myomas — they distort the uterine serosa, so
+    // the outline described in the base sentence should read "irregulares"
+    // instead of the default "regulares" whenever one of those is present.
+    const uteroContornos = miomaFigos.some(f => f==='F5' || f==='F6' || f==='F7') ? 'irregulares' : 'regulares';
     const miometrioDescricaoExtra = vNoDot('miometrioDescricao');
 
     const chkIstmocele = $('chkIstmocele').checked;
@@ -1402,7 +1408,7 @@
     // "sem identificação de nódulos sólidos" must disappear as soon as mioma is selected —
     // even before a measurement is filled in — since the placeholder warning below already
     // says a nodule is pending; asserting "no nodules" at the same time is a contradiction.
-    let uteroLinha = phrase((miometrioAspecto==='mioma' || chkAdenomiose) ? 'uteroBaseComNodulos' : 'uteroBase', {POSICAO: uteroPosicaoTexto});
+    let uteroLinha = phrase((miometrioAspecto==='mioma' || chkAdenomiose) ? 'uteroBaseComNodulos' : 'uteroBase', {POSICAO: uteroPosicaoTexto, CONTORNOS: uteroContornos});
     if(chkAdenomiose){
       // Adenomiose (diffuse change) is described before the focal mioma nodules.
       uteroLinha += ' '+phrase(miometrioAspecto==='mioma' ? 'adenomioseComMioma' : 'adenomiose', {SIMETRIA: adenomioseSimetria});
