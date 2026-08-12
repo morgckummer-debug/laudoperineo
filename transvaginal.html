@@ -455,6 +455,11 @@
         </div>
 
         <div class="conditional" id="wrap_miomaDetalhes">
+          <div class="field-row">
+            <div class="field"><label>Número de nódulos</label>
+              <select id="miomaCount"><option value="1">1</option><option value="2">2</option><option value="3">3 ou mais</option></select>
+            </div>
+          </div>
           <div id="miomaNodulosContainer"></div>
           <button type="button" class="btn-clear" id="btnAddMioma" style="margin:2px 0 12px;">+ Adicionar nódulo</button>
           <div class="field" style="margin-top:4px;">
@@ -1062,6 +1067,7 @@
       const removeBtn = el.querySelector('.mioma-remove');
       if(removeBtn) removeBtn.style.display = nodules.length>1 ? 'inline' : 'none';
     });
+    syncMiomaCountSelect();
   }
   function wireMiomaNodule(uid){
     const el = $('wrap_mioma'+uid);
@@ -1088,6 +1094,24 @@
   function miomaNoduleUids(){
     return Array.from($('miomaNodulosContainer').children).map(el=> el.id.replace('wrap_mioma',''));
   }
+  // "Número de nódulos" is a quick-set shortcut for the common 1/2/3 cases —
+  // it adds or removes nodules to match, same as clicking "+ Adicionar
+  // nódulo"/"Remover nódulo" that many times. "3 ou mais" only sets a floor;
+  // the "+" button (and its own "Remover nódulo") stays available beyond it
+  // for the actual "mais de 3" case, and kept in sync with however many
+  // nodules really exist so it never lies about the count.
+  function syncMiomaCountSelect(){
+    const n = $('miomaNodulosContainer').children.length;
+    $('miomaCount').value = String(Math.min(Math.max(n, 1), 3));
+  }
+  function setMiomaCount(n){
+    const container = $('miomaNodulosContainer');
+    while(container.children.length < n){ addMiomaNodule(); }
+    while(container.children.length > n){ container.lastElementChild.remove(); }
+    renumberMiomaNodules();
+    render();
+  }
+  $('miomaCount').addEventListener('change', e=> setMiomaCount(parseInt(e.target.value, 10)));
   // Seeding the first nodule is deferred to the loadPhrases/loadVR chain at the
   // bottom of this script (instead of calling addMiomaNodule() — and so
   // render() — here) because render() reads `checkedState`/`printAttempted`,
