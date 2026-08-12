@@ -104,6 +104,9 @@
   .subgroup{
     border-left:3px solid var(--rose-light);padding-left:12px;margin-top:6px;margin-bottom:6px;
   }
+  .mioma-nodule-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+  .mioma-nodule-head .mioma-label{font-size:12px;font-weight:600;color:var(--ink-soft);}
+  .mioma-remove{background:none;border:none;color:#B4432F;font-size:11.5px;font-weight:600;padding:0;cursor:pointer;text-decoration:underline;}
   .conditional{display:none;}
   .conditional.show{display:block;}
 
@@ -287,7 +290,7 @@
   <div class="field" style="margin-bottom:8px;"><label>1 nódulo — use {F1}</label><textarea id="ph_miomaIntro1" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>2 nódulos — use {F1} e {F2}</label><textarea id="ph_miomaIntro2" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>3 ou mais nódulos (introdução da lista)</label><textarea id="ph_miomaIntroVarios" rows="2"></textarea></div>
-  <div class="field" style="margin-bottom:8px;"><label>FIGO 0 — use {MEDIDA}</label><textarea id="ph_figoF0" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>FIGO 0 — use {POSICAO} e {MEDIDA}</label><textarea id="ph_figoF0" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>FIGO 1 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF1" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>FIGO 2 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF2" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>FIGO 3 — use {PAREDE} e {MEDIDA}</label><textarea id="ph_figoF3" rows="2"></textarea></div>
@@ -452,47 +455,8 @@
         </div>
 
         <div class="conditional" id="wrap_miomaDetalhes">
-          <div class="field-row">
-            <div class="field"><label>Número de nódulos</label>
-              <select id="miomaCount"><option value="1">1</option><option value="2">2</option><option value="3">3 ou mais</option></select>
-            </div>
-          </div>
-          <div class="subgroup" id="wrap_mioma1">
-            <div class="field-row">
-              <div class="field"><label>Nódulo 1 — classificação FIGO</label>
-                <select id="mioma1Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F8">FIGO 8 — cervical</option></select>
-              </div>
-              <div class="field conditional" id="wrap_mioma1Parede"><label>Parede</label>
-                <select id="mioma1Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
-              </div>
-              <div class="field conditional" id="wrap_mioma1Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma1CervicalDetalhe" placeholder="ex: anterior"></div>
-              <div class="field"><label>Medida (mm)</label><input type="text" id="mioma1Medida" placeholder="ex: 22 x 20"></div>
-            </div>
-          </div>
-          <div class="subgroup conditional" id="wrap_mioma2">
-            <div class="field-row">
-              <div class="field"><label>Nódulo 2 — classificação FIGO</label>
-                <select id="mioma2Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F8">FIGO 8 — cervical</option></select>
-              </div>
-              <div class="field conditional" id="wrap_mioma2Parede"><label>Parede</label>
-                <select id="mioma2Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
-              </div>
-              <div class="field conditional" id="wrap_mioma2Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma2CervicalDetalhe" placeholder="ex: anterior"></div>
-              <div class="field"><label>Medida (mm)</label><input type="text" id="mioma2Medida" placeholder="ex: 22 x 20"></div>
-            </div>
-          </div>
-          <div class="subgroup conditional" id="wrap_mioma3">
-            <div class="field-row">
-              <div class="field"><label>Nódulo 3 (e demais) — classificação FIGO</label>
-                <select id="mioma3Figo"><option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F8">FIGO 8 — cervical</option></select>
-              </div>
-              <div class="field conditional" id="wrap_mioma3Parede"><label>Parede</label>
-                <select id="mioma3Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select>
-              </div>
-              <div class="field conditional" id="wrap_mioma3Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma3CervicalDetalhe" placeholder="ex: anterior"></div>
-              <div class="field"><label>Medida (mm)</label><input type="text" id="mioma3Medida" placeholder="ex: 22 x 20"></div>
-            </div>
-          </div>
+          <div id="miomaNodulosContainer"></div>
+          <button type="button" class="btn-clear" id="btnAddMioma" style="margin:2px 0 12px;">+ Adicionar nódulo</button>
           <div class="field" style="margin-top:4px;">
             <label>Observações adicionais (opcional)</label>
             <textarea id="miometrioDescricao" rows="2" placeholder="qualquer detalhe extra sobre os nódulos, ou demais nódulos além dos listados acima..."></textarea>
@@ -836,7 +800,7 @@
     miomaIntro1: 'Observa-se imagem nodular sólida, hipoecoica e heterogênea, localizada na {F1}.',
     miomaIntro2: 'Observam-se duas imagens nodulares sólidas, hipoecogênicas e heterogêneas, uma localizada na {F1} e outra na {F2}.',
     miomaIntroVarios: 'Observam-se algumas imagens nodulares sólidas, hipoecogênicas e heterogêneas, de localização e dimensões como descrito abaixo:',
-    figoF0: 'submucosa, inteiramente na cavidade uterina (FIGO 0), medindo {MEDIDA} mm',
+    figoF0: 'submucosa, inteiramente na cavidade uterina, em região {POSICAO} (FIGO 0), medindo {MEDIDA} mm',
     figoF1: 'parede {PAREDE}, submucosa com menos de 50% do componente intramural (FIGO 1), medindo {MEDIDA} mm',
     figoF2: 'parede {PAREDE}, submucosa com mais de 50% do componente intramural (FIGO 2), medindo {MEDIDA} mm',
     figoF3: 'parede {PAREDE}, intramural, adjacente à cavidade endometrial, sem condicionar abaulamento da mesma (FIGO 3), medindo {MEDIDA} mm',
@@ -1057,23 +1021,78 @@
 
   $('miometrioAspecto').addEventListener('change', e=>{
     toggle('wrap_miomaDetalhes', e.target.value==='mioma');
-    updateMiomaSlots();
+    if(e.target.value==='mioma' && $('miomaNodulosContainer').children.length===0){
+      addMiomaNodule();
+    }
   });
   $('chkAdenomiose').addEventListener('change', e=> toggle('wrap_adenomioseSimetria', e.target.checked));
-  function updateMiomaSlots(){
-    const n = $('miometrioAspecto').value==='mioma' ? parseInt($('miomaCount').value||'1',10) : 0;
-    [1,2,3].forEach(i=> toggle('wrap_mioma'+i, i<=n));
+
+  // ---------- Myoma nodules: dynamic list instead of a fixed 1/2/3-slot cap ----------
+  // Each nodule keeps a stable uid once created (never reused after removal), so
+  // deleting one mid-list never disturbs the others' field ids/listeners. Display
+  // numbering (N1, N2, ...) is purely positional and recomputed on every add/remove.
+  let miomaNextUid = 1;
+  function miomaSubgroupHTML(uid){
+    const figoOptions = '<option value="F0">FIGO 0 — submucoso, inteiramente intracavitário</option><option value="F1">FIGO 1 — submucoso, &lt;50% intramural</option><option value="F2">FIGO 2 — submucoso, ≥50% intramural</option><option value="F3">FIGO 3 — intramural adjacente à cavidade (sem abaulamento)</option><option value="F4" selected>FIGO 4 — totalmente intramural</option><option value="F5">FIGO 5 — subseroso, ≥50% intramural</option><option value="F6">FIGO 6 — subseroso, &lt;50% intramural</option><option value="F7">FIGO 7 — totalmente subseroso</option><option value="F8">FIGO 8 — cervical</option>';
+    return ''
+      +'<div class="subgroup" id="wrap_mioma'+uid+'">'
+      +'<div class="mioma-nodule-head"><span class="mioma-label">Nódulo <span class="mioma-index"></span> — classificação FIGO</span><button type="button" class="mioma-remove" data-uid="'+uid+'">Remover nódulo</button></div>'
+      +'<div class="field-row">'
+      +'<div class="field"><select id="mioma'+uid+'Figo">'+figoOptions+'</select></div>'
+      +'<div class="field conditional" id="wrap_mioma'+uid+'Parede"><label>Parede</label>'
+      +'<select id="mioma'+uid+'Parede"><option value="anterior">Anterior</option><option value="posterior">Posterior</option><option value="fúndica">Fúndica</option><option value="lateral direita">Lateral direita</option><option value="lateral esquerda">Lateral esquerda</option></select></div>'
+      +'<div class="field conditional" id="wrap_mioma'+uid+'Posicao"><label>Posição</label>'
+      +'<select id="mioma'+uid+'Posicao"><option value="fúndica">Fúndica</option><option value="corporal">Corporal</option></select></div>'
+      +'<div class="field conditional" id="wrap_mioma'+uid+'Cervical"><label>Detalhe cervical (opcional)</label><input type="text" id="mioma'+uid+'CervicalDetalhe" placeholder="ex: anterior"></div>'
+      +'<div class="field"><label>Medida (mm)</label><input type="text" id="mioma'+uid+'Medida" placeholder="ex: 22 x 20"></div>'
+      +'</div></div>';
   }
-  $('miomaCount').addEventListener('change', updateMiomaSlots);
-  function updateMiomaFigoWraps(i){
-    const val = $('mioma'+i+'Figo').value;
-    toggle('wrap_mioma'+i+'Parede', val!=='F0' && val!=='F8');
-    toggle('wrap_mioma'+i+'Cervical', val==='F8');
+  function updateMiomaFigoWraps(uid){
+    const val = $('mioma'+uid+'Figo').value;
+    toggle('wrap_mioma'+uid+'Parede', val!=='F0' && val!=='F8');
+    toggle('wrap_mioma'+uid+'Posicao', val==='F0');
+    toggle('wrap_mioma'+uid+'Cervical', val==='F8');
   }
-  [1,2,3].forEach(i=>{
-    $('mioma'+i+'Figo').addEventListener('change', ()=> updateMiomaFigoWraps(i));
-    updateMiomaFigoWraps(i);
-  });
+  function renumberMiomaNodules(){
+    const container = $('miomaNodulosContainer');
+    const nodules = Array.from(container.children);
+    nodules.forEach((el, idx)=>{
+      const label = el.querySelector('.mioma-index');
+      if(label) label.textContent = idx+1;
+      const removeBtn = el.querySelector('.mioma-remove');
+      if(removeBtn) removeBtn.style.display = nodules.length>1 ? 'inline' : 'none';
+    });
+  }
+  function wireMiomaNodule(uid){
+    const el = $('wrap_mioma'+uid);
+    el.querySelectorAll('input, select').forEach(field=>{
+      field.addEventListener('input', render);
+      field.addEventListener('change', render);
+    });
+    $('mioma'+uid+'Figo').addEventListener('change', ()=> updateMiomaFigoWraps(uid));
+    updateMiomaFigoWraps(uid);
+    el.querySelector('.mioma-remove').addEventListener('click', ()=>{
+      el.remove();
+      renumberMiomaNodules();
+      render();
+    });
+  }
+  function addMiomaNodule(){
+    const uid = miomaNextUid++;
+    $('miomaNodulosContainer').insertAdjacentHTML('beforeend', miomaSubgroupHTML(uid));
+    wireMiomaNodule(uid);
+    renumberMiomaNodules();
+    render();
+  }
+  $('btnAddMioma').addEventListener('click', addMiomaNodule);
+  function miomaNoduleUids(){
+    return Array.from($('miomaNodulosContainer').children).map(el=> el.id.replace('wrap_mioma',''));
+  }
+  // Seeding the first nodule is deferred to the loadPhrases/loadVR chain at the
+  // bottom of this script (instead of calling addMiomaNodule() — and so
+  // render() — here) because render() reads `checkedState`/`printAttempted`,
+  // declared with `let` further down; calling it this early would hit their
+  // temporal dead zone.
 
   $('chkIstmocele').addEventListener('change', e=> toggle('wrap_istmoceleCampos', e.target.checked));
   $('chkPolipoEndocervical').addEventListener('change', e=> toggle('wrap_polipoEndocervicalCampos', e.target.checked));
@@ -1129,7 +1148,7 @@
   }
 
   const FIGO_TEXT = {
-    F0: (p,m,d)=>phraseRaw('figoF0', {MEDIDA:m}),
+    F0: (p,m,d,pos)=>phraseRaw('figoF0', {MEDIDA:m, POSICAO:(pos||'____')}),
     F1: (p,m,d)=>phraseRaw('figoF1', {PAREDE:p, MEDIDA:m}),
     F2: (p,m,d)=>phraseRaw('figoF2', {PAREDE:p, MEDIDA:m}),
     F3: (p,m,d)=>phraseRaw('figoF3', {PAREDE:p, MEDIDA:m}),
@@ -1295,18 +1314,19 @@
     const miometrioAspecto = v('miometrioAspecto');
     const chkAdenomiose = $('chkAdenomiose').checked;
     const adenomioseSimetria = v('adenomioseSimetria')==='assimetricas' ? 'assimétricas' : 'simétricas';
-    const miomaCountSel = miometrioAspecto==='mioma' ? parseInt(v('miomaCount')||'1',10) : 0;
+    const miomaUids = miometrioAspecto==='mioma' ? miomaNoduleUids() : [];
     const miomaFrags = [];
     const miomaFigos = [];
-    for(let i=1; i<=miomaCountSel; i++){
-      const figo = v('mioma'+i+'Figo');
-      const medida = reqIf('mioma'+i+'Medida', miometrioAspecto==='mioma' && i<=miomaCountSel);
-      if(!medida) continue;
-      const parede = v('mioma'+i+'Parede');
-      const detalhe = v('mioma'+i+'CervicalDetalhe');
-      miomaFrags.push(FIGO_TEXT[figo](parede, medida, detalhe));
+    miomaUids.forEach(uid=>{
+      const figo = v('mioma'+uid+'Figo');
+      const medida = reqIf('mioma'+uid+'Medida', true);
+      if(!medida) return;
+      const parede = v('mioma'+uid+'Parede');
+      const detalhe = v('mioma'+uid+'CervicalDetalhe');
+      const posicao = v('mioma'+uid+'Posicao');
+      miomaFrags.push(FIGO_TEXT[figo](parede, medida, detalhe, posicao));
       miomaFigos.push(figo);
-    }
+    });
     // FIGO 5/6/7 are subserosal myomas — they distort the uterine serosa, so
     // the outline described in the base sentence should read "irregulares"
     // instead of the default "regulares" whenever one of those is present.
@@ -1855,13 +1875,16 @@
     document.querySelectorAll('.conditional').forEach(el=>el.classList.remove('show'));
     document.querySelectorAll('.field input, .field select').forEach(el=>el.classList.remove('flag-abnormal', 'field-missing'));
     document.querySelectorAll('.flag-note').forEach(el=>el.classList.remove('show'));
+    // Collapse back to a single fresh myoma nodule, same as a first-time load,
+    // instead of leaving however many were added for the previous patient.
+    $('miomaNodulosContainer').innerHTML = '';
     checkedState = {};
     printAttempted = false;
     $('printAlert').classList.remove('show');
-    render();
+    addMiomaNodule();
   });
 
-  loadPhrases().then(()=> loadVR().then(render));
+  loadPhrases().then(()=> loadVR().then(()=> addMiomaNodule()));
 })();
 </script>
 </body>
