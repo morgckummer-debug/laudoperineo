@@ -332,6 +332,7 @@
   <div class="field" style="margin-bottom:8px;"><label>Endometriose profunda intestinal — use {LOCAL}, {MEDIDA} e {REGIAO}</label><textarea id="ph_endometrioseIntestinal" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Líquido livre ausente</label><textarea id="ph_liquidoLivreAusente" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Líquido livre presente — use {MEDIDAS} e {VOLUME}</label><textarea id="ph_liquidoLivrePresente" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Útero e ambos os ovários com mobilidade preservada (frase única, substitui as duas abaixo)</label><textarea id="ph_mobilidadeTodosPreservados" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Mobilidade uterina preservada</label><textarea id="ph_mobilidadeUterinaPreservada" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Mobilidade uterina reduzida</label><textarea id="ph_mobilidadeUterinaReduzida" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Sinal do "sliding" negativo (mobilidade uterina reduzida)</label><textarea id="ph_slidingSignNegativo" rows="2"></textarea></div>
@@ -872,6 +873,7 @@
     endometrioseIntestinal: 'Observa-se imagem nodular irregular, hipoecoica, localizada na muscular da mucosa do {LOCAL}, medindo {MEDIDA} mm, em região {REGIAO}.',
     liquidoLivreAusente: 'Ausência de líquido livre em fundo de saco posterior.',
     liquidoLivrePresente: 'Presença de líquido livre em fundo de saco posterior, medindo {MEDIDAS} cm, com volume estimado de {VOLUME} mL.',
+    mobilidadeTodosPreservados: 'Útero e ovários com mobilidade preservada às manobras bimanuais.',
     mobilidadeUterinaPreservada: 'Mobilidade uterina preservada.',
     mobilidadeUterinaReduzida: 'Mobilidade uterina reduzida.',
     slidingSignNegativo: 'Sinal do "sliding" negativo.',
@@ -1512,15 +1514,21 @@
       ? phraseRaw('liquidoLivrePresente', {MEDIDAS: span(liquidoLivreMedidas), VOLUME: span(liquidoLivre_Volume)})
       : phrase('liquidoLivreAusente'))+'</p>';
 
-    html += '<p class="linha">'+(mobilidadeUterina==='reduzida'
-      ? (phrase('mobilidadeUterinaReduzida')+' '+phrase('slidingSignNegativo'))
-      : phrase('mobilidadeUterinaPreservada'))+'</p>';
+    // When uterus and both ovaries all have preserved mobility, collapse what
+    // would otherwise be two separate sentences into a single combined one.
+    if(mobilidadeUterina!=='reduzida' && !chkMobilidadeOvD && !chkMobilidadeOvE){
+      html += '<p class="linha">'+phrase('mobilidadeTodosPreservados')+'</p>';
+    } else {
+      html += '<p class="linha">'+(mobilidadeUterina==='reduzida'
+        ? (phrase('mobilidadeUterinaReduzida')+' '+phrase('slidingSignNegativo'))
+        : phrase('mobilidadeUterinaPreservada'))+'</p>';
 
-    let mobilidadeOvarianaKey = 'mobilidadeOvarianaAmbosPreservados';
-    if(chkMobilidadeOvD && chkMobilidadeOvE) mobilidadeOvarianaKey = 'mobilidadeOvarianaAmbosReduzidos';
-    else if(chkMobilidadeOvD) mobilidadeOvarianaKey = 'mobilidadeOvarianaDireitaReduzida';
-    else if(chkMobilidadeOvE) mobilidadeOvarianaKey = 'mobilidadeOvarianaEsquerdaReduzida';
-    html += '<p class="linha">'+phrase(mobilidadeOvarianaKey)+'</p>';
+      let mobilidadeOvarianaKey = 'mobilidadeOvarianaAmbosPreservados';
+      if(chkMobilidadeOvD && chkMobilidadeOvE) mobilidadeOvarianaKey = 'mobilidadeOvarianaAmbosReduzidos';
+      else if(chkMobilidadeOvD) mobilidadeOvarianaKey = 'mobilidadeOvarianaDireitaReduzida';
+      else if(chkMobilidadeOvE) mobilidadeOvarianaKey = 'mobilidadeOvarianaEsquerdaReduzida';
+      html += '<p class="linha">'+phrase(mobilidadeOvarianaKey)+'</p>';
+    }
 
     html += '<h4 class="sec">IMPRESSÃO:</h4><ul class="impressao">';
     if(checkedItems.length===0){
