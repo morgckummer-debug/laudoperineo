@@ -143,8 +143,9 @@
   .paper .nodulos-lista .nodulo-item:last-child{margin-bottom:0;}
   .paper ul.impressao{margin:0;padding-left:0;list-style:none;}
   .paper ul.impressao li{margin-bottom:6px;font-weight:700;}
-  .paper .footnote{font-style:italic;font-size:9pt;color:var(--ink-soft);margin-top:16px;}
-  .paper .assinatura{margin-top:24px;text-align:right;}
+  .paper .rodape-final{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-top:16px;}
+  .paper .footnote{font-style:italic;font-size:9pt;color:var(--ink-soft);margin:0;}
+  .paper .assinatura{margin:0;text-align:right;}
   .paper .assinatura p{margin:0;}
   .paper .assinatura-nome{display:inline-block;font-style:italic;border-top:1px solid var(--ink);padding:3px 14px 0;margin-bottom:2px!important;}
   .paper .assinatura-info{font-size:9.5pt;color:var(--ink-soft);}
@@ -205,7 +206,7 @@
        these units, never inside one, but keeping these rules means a stray
        unit that somehow slips past the JS packing still refuses to split
        across a page instead of printing half a bullet/paragraph. */
-    .paper p.linha, .paper .nodulos-lista, .paper ul.impressao li, .paper .assinatura{page-break-inside:avoid;}
+    .paper p.linha, .paper .nodulos-lista, .paper ul.impressao li, .paper .rodape-final{page-break-inside:avoid;}
     .paper h4.sec{page-break-after:avoid;}
 
     /* Each .print-page is one physical sheet's worth of content, built by
@@ -218,9 +219,9 @@
        happens to end. */
     .paper .print-page + .print-page{page-break-before:always;}
     .paper .continua{font-style:italic;font-size:10pt;text-align:right;margin:0;}
-    /* The spacer <div> right before it already reserves the gap down to the
-       signature's usual margin-top:24px would double that gap. */
-    .paper .print-page .assinatura{margin-top:0;}
+    /* The spacer <div> right before it already reserves the gap — the
+       rodape-final row's usual margin-top would double that gap. */
+    .paper .print-page .rodape-final{margin-top:0;}
   }
 </style>
 </head>
@@ -1538,12 +1539,16 @@
     }
     html += '</ul>';
 
+    // Grouped together so print pagination (which pins whatever the last
+    // top-level element is to the bottom of the last page) places both at
+    // once: "Imagens em anexo" bottom-left, signature bottom-right.
+    html += '<div class="rodape-final">';
     html += '<p class="footnote">'+phrase('footerImagens')+'</p>';
-
     html += '<div class="assinatura"><p class="assinatura-nome">'+escapeHtml(VR.medicoNome)+'</p>';
     if(VR.medicoQual1) html += '<p class="assinatura-info">'+escapeHtml(VR.medicoQual1)+'</p>';
     if(VR.medicoQual2) html += '<p class="assinatura-info">'+escapeHtml(VR.medicoQual2)+'</p>';
     html += '<p class="assinatura-info">'+escapeHtml(VR.medicoCRM)+'</p></div>';
+    html += '</div>';
 
     $('paper').innerHTML = html;
 
@@ -1581,8 +1586,9 @@
     clone.querySelectorAll('.relato').forEach(h=>{ h.style.color='#C0392B'; h.style.fontWeight='700'; });
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
-    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; });
-    clone.querySelectorAll('.assinatura').forEach(el=>{ el.style.textAlign='right'; el.style.marginTop='24px'; });
+    clone.querySelectorAll('.rodape-final').forEach(el=>{ el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='flex-end'; el.style.gap='24px'; el.style.marginTop='16px'; });
+    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; el.style.margin='0'; });
+    clone.querySelectorAll('.assinatura').forEach(el=>{ el.style.textAlign='right'; el.style.margin='0'; });
     clone.querySelectorAll('.assinatura-nome').forEach(el=>{ el.style.display='inline-block'; el.style.fontStyle='italic'; el.style.borderTop='1px solid #2b2b2e'; el.style.padding='3px 14px 0'; el.style.marginBottom='2px'; });
     clone.querySelectorAll('.assinatura-info').forEach(el=>{ el.style.fontSize='9.5pt'; el.style.color='#8d9391'; });
     const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;\">"+clone.innerHTML+'</div>';
@@ -1591,6 +1597,11 @@
     clone.querySelectorAll(':scope > *').forEach(node=>{
       if(node.tagName==='UL' || node.classList.contains('assinatura')){
         node.querySelectorAll(':scope > li, :scope > p').forEach(item=>{
+          text += item.textContent.trim()+'\n';
+        });
+        text += '\n';
+      } else if(node.classList.contains('rodape-final')){
+        node.querySelectorAll('p').forEach(item=>{
           text += item.textContent.trim()+'\n';
         });
         text += '\n';
