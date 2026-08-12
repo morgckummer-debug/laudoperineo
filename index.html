@@ -111,6 +111,14 @@
 
   /* Preview / laudo pane */
   .preview-wrap{position:sticky;top:88px;}
+  /* .paper-table wraps the report in a <table> purely so its thead/tfoot can
+     reserve the letterhead margin — thead/tfoot repeat on every physical
+     printed page in every engine we've tested (desktop, mobile, headless),
+     unlike @page margin, which many mobile "print to PDF" pipelines ignore
+     outright. On screen the thead/tfoot stay collapsed to zero height. */
+  .paper-table{width:100%;border-collapse:collapse;}
+  .paper-table thead td, .paper-table tfoot td{padding:0;border:none;height:0;}
+  .paper-table tbody td{padding:0;border:none;}
   .paper{
     background:#FEFCFE;border:1px solid var(--line);border-radius:4px;
     box-shadow:var(--shadow);
@@ -119,7 +127,7 @@
     max-height:calc(100vh - 150px);overflow-y:auto;
   }
   .paper h3.doctitle{
-    text-align:center;text-decoration:underline;font-size:14.5px;letter-spacing:.5px;
+    text-align:center;text-decoration:underline;font-size:18px;letter-spacing:.5px;
     margin:0 0 4px;font-weight:600;
   }
   .paper .doctitle-sub{text-align:center;font-size:10.5pt;color:var(--ink-soft);margin-bottom:20px;}
@@ -134,7 +142,12 @@
   .paper .nodulos-lista{margin:6px 0 0;}
   .paper .nodulos-lista .nodulo-item{margin:0 0 6px;padding-left:2.4em;text-indent:-2.4em;}
   .paper .nodulos-lista .nodulo-item:last-child{margin-bottom:0;}
-  .paper .footnote{font-style:italic;font-size:9pt;color:var(--ink-soft);margin-top:16px;}
+  .paper .rodape-final{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-top:16px;}
+  .paper .footnote{font-style:italic;font-size:9pt;color:var(--ink-soft);margin:0;flex:1 1 auto;min-width:0;}
+  .paper .assinatura{margin:0;text-align:right;flex:0 0 auto;}
+  .paper .assinatura p{margin:0;}
+  .paper .assinatura-nome{display:inline-block;font-style:italic;border-top:1px solid var(--ink);padding:3px 14px 0;margin-bottom:2px!important;}
+  .paper .assinatura-info{font-size:9.5pt;color:var(--ink-soft);}
 
   .preview-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
   .preview-actions button{flex:1;min-width:110px;}
@@ -166,10 +179,18 @@
   ::-webkit-scrollbar{width:9px;}
   ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
 
-  /* @page margins repeat on every physical printed page — unlike an element's own
-     padding, which only reserves space once at the start of a tall box. */
+  /* Margin is zeroed here on purpose: many mobile browsers' "Salvar como PDF"
+     print pipeline ignores @page margin entirely, so it can't be relied on.
+     The actual 4cm top / 2cm sides+bottom letterhead margin is reserved by
+     the .paper-table thead/tfoot below instead, which repeats reliably on
+     every physical page across engines. size:A4 is pinned explicitly because
+     the pagination math in paginateForPrint() (page height 29.7cm minus the
+     4cm/2cm bands above) assumes A4 — leaving size unset lets some browsers
+     fall back to Letter (27.94cm tall), which would make that math overrun
+     the real page and misplace "Continua…"/the signature. */
   @page{
-    margin: 4cm 2cm 2cm;
+    size: A4;
+    margin: 0;
   }
   @media print{
     /* display:none actually removes these from the document flow. The previous
@@ -181,7 +202,31 @@
     .topbar, .settings-panel, #formCol, .preview-actions, .status-pill, .print-alert{display:none !important;}
     .layout{display:block;padding:0;margin:0;max-width:none;}
     .preview-wrap{position:static;}
+    .paper-table thead td{height:4cm;}
+    .paper-table tfoot td{height:2cm;}
+    .paper-table tbody td{padding:0 2cm;}
     .paper{background:none;border:none;box-shadow:none;border-radius:0;max-height:none;overflow:visible;padding:0;margin:0;}
+
+    /* Belt-and-suspenders: paginateForPrint() already breaks pages between
+       these units, never inside one, but keeping these rules means a stray
+       unit that somehow slips past the JS packing still refuses to split
+       across a page instead of printing half a bullet/paragraph. */
+    .paper li, .paper .nodulos-lista, .paper .rodape-final{page-break-inside:avoid;}
+    .paper h4.sec{page-break-after:avoid;}
+
+    /* Each .print-page is one physical sheet's worth of content, built by
+       paginateForPrint() right before printing: its own content, then a
+       spacer <div> sized to exactly fill the rest of the 23.7cm content band
+       (29.7cm page − 4cm top − 2cm bottom), then "Continua…" or the
+       footer row (footnote + signature). That spacer — not flex/margin-top:
+       auto, which Chromium's print engine doesn't paginate reliably — is
+       what pins them to the bottom corners of that sheet specifically, not
+       wherever the text happens to end. */
+    .paper .print-page + .print-page{page-break-before:always;}
+    .paper .continua{font-style:italic;font-size:10pt;text-align:right;margin:0;}
+    /* The spacer <div> right before it already reserves the gap — the
+       rodape-final row's usual margin-top would double that gap. */
+    .paper .print-page .rodape-final{margin-top:0;}
   }
 </style>
 </head>
@@ -786,7 +831,11 @@
   <div class="preview-wrap">
     <span class="status-pill" id="statusPill">0 campos pendentes</span>
     <div class="print-alert" id="printAlert">⚠ Ainda há campos não preenchidos — corrija antes de imprimir.</div>
-    <div class="paper" id="paper" contenteditable="true" spellcheck="false"></div>
+    <table class="paper-table">
+      <thead><tr><td></td></tr></thead>
+      <tfoot><tr><td></td></tr></tfoot>
+      <tbody><tr><td><div class="paper" id="paper" contenteditable="true" spellcheck="false"></div></td></tr></tbody>
+    </table>
     <div class="preview-actions">
       <button class="btn-copy" id="btnCopy">Copiar laudo</button>
       <button class="btn-print" id="btnPrint">Imprimir / PDF</button>
@@ -1787,7 +1836,13 @@
     }
     html += '</ul>';
 
+    // Grouped together so print pagination (which pins whatever the last
+    // top-level element is to the bottom of the last page) places both at
+    // once: the footnote bottom-left, signature bottom-right.
+    html += '<div class="rodape-final">';
     html += '<p class="footnote">Este laudo segue a padronização do sistema POP-Q, conforme recomendações da International Continence Society (ICS) e da American Urogynecologic Society (AUGS).</p>';
+    html += '<div class="assinatura"><p class="assinatura-nome">'+escapeHtml(VR.medicoNome)+'</p><p class="assinatura-info">'+escapeHtml(VR.medicoCRM)+'</p></div>';
+    html += '</div>';
 
     $('paper').innerHTML = html;
 
@@ -1826,11 +1881,15 @@
   function buildRichClipboard(){
     const clone = $('paper').cloneNode(true);
     clone.querySelectorAll('.impressao li').forEach(li=>{ li.style.fontWeight = '700'; });
-    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='600'; });
+    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='600'; h.style.fontSize='18px'; });
     clone.querySelectorAll('.doctitle-sub').forEach(h=>{ h.style.textAlign='center'; h.style.color='#5b5b5e'; });
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
-    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; });
+    clone.querySelectorAll('.rodape-final').forEach(el=>{ el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='flex-end'; el.style.gap='24px'; el.style.marginTop='16px'; });
+    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; el.style.margin='0'; el.style.flex='1 1 auto'; el.style.minWidth='0'; });
+    clone.querySelectorAll('.assinatura').forEach(el=>{ el.style.textAlign='right'; el.style.margin='0'; el.style.flex='0 0 auto'; });
+    clone.querySelectorAll('.assinatura-nome').forEach(el=>{ el.style.display='inline-block'; el.style.fontStyle='italic'; el.style.borderTop='1px solid #2b2b2e'; el.style.padding='3px 14px 0'; el.style.marginBottom='2px'; });
+    clone.querySelectorAll('.assinatura-info').forEach(el=>{ el.style.fontSize='9.5pt'; el.style.color='#8d9391'; });
     const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;\">"+clone.innerHTML+'</div>';
 
     // Plain-text fallback: rebuild manually so list items keep a literal bullet
@@ -1851,6 +1910,11 @@
               text += '   - '+subLi.textContent.trim()+'\n';
             });
           }
+        });
+        text += '\n';
+      } else if(node.nodeType===1 && node.classList.contains('rodape-final')){
+        node.querySelectorAll('p').forEach(item=>{
+          text += item.textContent.trim()+'\n';
         });
         text += '\n';
       } else if(node.nodeType===1){
@@ -1898,6 +1962,161 @@
     }
   });
 
+  // ---------- Print pagination: pins "Continua…" and the footer row
+  // (footnote + signature) to the bottom corners of the physical page, at
+  // print time only. render() above still builds the report as plain
+  // flowing content, so on-screen editing, copy and .txt stay exactly as
+  // before — this function only reshuffles that content into per-page
+  // chunks right before printing, and restore() below undoes it right
+  // after. Unlike transvaginal.html (one flat list of <p>/<li>), this
+  // report has several <ul> sections (COMPARTIMENTO ANTERIOR, MÉDIO,
+  // POSTERIOR, PERÍNEO, SLING, IMPRESSÃO), so every <ul> — not just
+  // ul.impressao — is walked for splittable <li> boxes, tagged with its
+  // own class so a split list gets re-wrapped in a <ul> of the same class
+  // (impressao bullets stay bold, plain ones stay plain).
+  function paginateForPrint(){
+    const paperEl = $('paper');
+    const originalHTML = paperEl.innerHTML;
+
+    const measure = document.createElement('div');
+    measure.className = 'paper';
+    measure.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;left:-99999px;top:0;width:17cm;max-height:none;overflow:visible;background:none;border:none;box-shadow:none;padding:0;margin:0;';
+    measure.innerHTML = originalHTML;
+    document.body.appendChild(measure);
+
+    // Convert the 23.7cm content band (29.7cm A4 minus the 4cm top / 2cm
+    // bottom reserved by the .paper-table thead/tfoot in @media print above)
+    // into px in this same document, so it's on the same footing as the
+    // getBoundingClientRect() measurements below regardless of zoom/DPI.
+    const ref = document.createElement('div');
+    ref.style.cssText = 'position:absolute;visibility:hidden;left:-99999px;top:0;width:0;height:23.7cm;';
+    document.body.appendChild(ref);
+    const pageHeightPx = ref.getBoundingClientRect().height;
+    document.body.removeChild(ref);
+    // Target a bit under the true page height, both for packing content into
+    // a page and for how far down the spacer pushes the pinned Continua/
+    // footer row. Times New Roman can render with slightly different line
+    // metrics in this hidden screen-measurement clone than in Chromium's
+    // actual print pass, and that drift compounds over many lines — a
+    // generous ~1cm cushion is what keeps that drift from ever overflowing
+    // the real page.
+    const SAFETY_PX = 38; /* ~1cm */
+    const packBudgetPx = pageHeightPx - SAFETY_PX;
+
+    const continuaP = document.createElement('p');
+    continuaP.className = 'continua';
+    continuaP.textContent = 'Continua…';
+    measure.appendChild(continuaP);
+    const continuaHeight = continuaP.getBoundingClientRect().height;
+    measure.removeChild(continuaP);
+    const continuaHtml = continuaP.outerHTML;
+
+    // Boxes are measured by their actual top/bottom edge in the flowed
+    // measure container, not by summing each element's own height — a plain
+    // height sum silently drops every element's vertical margin, which
+    // would systematically under-count how much a page really holds.
+    // top/bottom already bakes in real (collapsed) margins because it
+    // comes from actual layout.
+    const measureRect = measure.getBoundingClientRect();
+    const realTop = Array.from(paperEl.children);
+    const measureTop = Array.from(measure.children);
+    const boxes = [];
+    realTop.forEach((realChild, idx)=>{
+      const measureChild = measureTop[idx];
+      if(realChild.tagName==='UL'){
+        const realLis = Array.from(realChild.children);
+        const measureLis = Array.from(measureChild.children);
+        realLis.forEach((li, i)=>{
+          const r = measureLis[i].getBoundingClientRect();
+          boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:'li', html: li.outerHTML, listClass: realChild.className});
+        });
+      } else {
+        const r = measureChild.getBoundingClientRect();
+        boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:(realChild.tagName==='H4' ? 'heading' : 'block'), html: realChild.outerHTML});
+      }
+    });
+    document.body.removeChild(measure);
+
+    // Greedily pack boxes into pages, never splitting one across a boundary.
+    const pages = [[]];
+    let pageStart = boxes.length ? boxes[0].top : 0;
+    boxes.forEach(box=>{
+      if((box.bottom - pageStart) > packBudgetPx && pages[pages.length-1].length > 0){
+        pages.push([]);
+        pageStart = box.top;
+      }
+      pages[pages.length-1].push(box);
+    });
+    // A heading left alone at the bottom of a page, with its content pushed
+    // to the next one, is an orphan — move it down together with what follows.
+    for(let p=0; p<pages.length-1; p++){
+      const pg = pages[p];
+      if(pg.length && pg[pg.length-1].kind==='heading'){
+        pages[p+1].unshift(pg.pop());
+      }
+    }
+
+    // Bottom-pinning uses a plain spacer <div> with a computed pixel height,
+    // not flex + margin-top:auto — Chromium's print engine doesn't reliably
+    // paginate flex containers (their content can spill onto an unplanned
+    // extra page), while a block-level spacer of a known height behaves
+    // exactly like any other paragraph for pagination purposes.
+    const wrap = document.createElement('div');
+    pages.forEach((pageBoxes, pageIdx)=>{
+      const isLast = pageIdx === pages.length - 1;
+      // On the last page the trailing box is always the .rodape-final row
+      // (render() appends it last) — pin that instead of a synthetic Continua.
+      const pinned = isLast ? pageBoxes[pageBoxes.length - 1] : null;
+      const contentBoxes = isLast ? pageBoxes.slice(0, -1) : pageBoxes;
+
+      const pageEl = document.createElement('div');
+      pageEl.className = 'print-page';
+      let i = 0;
+      while(i < contentBoxes.length){
+        if(contentBoxes[i].kind === 'li'){
+          const listClass = contentBoxes[i].listClass;
+          const ul = document.createElement('ul');
+          ul.className = listClass;
+          while(i < contentBoxes.length && contentBoxes[i].kind === 'li' && contentBoxes[i].listClass === listClass){
+            ul.insertAdjacentHTML('beforeend', contentBoxes[i].html);
+            i++;
+          }
+          pageEl.appendChild(ul);
+        } else {
+          pageEl.insertAdjacentHTML('beforeend', contentBoxes[i].html);
+          i++;
+        }
+      }
+      // Real span of this page's content (top of its first box to the
+      // bottom of its last), including whatever margins collapsed between
+      // them — the same top/bottom basis the packing loop above used.
+      const contentHeight = contentBoxes.length ? (contentBoxes[contentBoxes.length-1].bottom - contentBoxes[0].top) : 0;
+
+      const pinnedHtml = isLast ? (pinned ? pinned.html : '') : continuaHtml;
+      const pinnedHeight = isLast ? (pinned ? (pinned.bottom - pinned.top) : 0) : continuaHeight;
+      if(pinnedHtml){
+        const spacerPx = Math.max(0, packBudgetPx - contentHeight - pinnedHeight);
+        const spacer = document.createElement('div');
+        spacer.style.height = spacerPx + 'px';
+        pageEl.appendChild(spacer);
+        pageEl.insertAdjacentHTML('beforeend', pinnedHtml);
+      }
+      wrap.appendChild(pageEl);
+    });
+    paperEl.innerHTML = wrap.innerHTML;
+
+    return function restore(){ paperEl.innerHTML = originalHTML; };
+  }
+
+  let printRestore = null;
+  window.addEventListener('beforeprint', ()=>{
+    if(printRestore) return; // already paginated for this print — beforeprint can fire more than once
+    printRestore = paginateForPrint();
+  });
+  window.addEventListener('afterprint', ()=>{
+    if(printRestore){ printRestore(); printRestore = null; }
+  });
+
   $('btnPrint').addEventListener('click', ()=>{
     // Campos pendentes não bloqueiam a impressão — ficam apenas sinalizados
     // em vermelho como lembrete, permitindo imprimir/gerar PDF mesmo incompleto.
@@ -1913,7 +2132,9 @@
     // every click, but that fired unconditionally regardless of what the user did
     // with the dialog — including hitting "Cancelar" — which looked like canceling
     // triggered a download. Print works fine wherever this page is actually used
-    // (a normal top-level tab, e.g. GitHub Pages), so just call it.
+    // (a normal top-level tab, e.g. GitHub Pages), so just call it. 'beforeprint'/
+    // 'afterprint' above cover this same way whether print is triggered by this
+    // button or by the browser's own Ctrl/Cmd+P.
     try{
       window.print();
     }catch(e){
