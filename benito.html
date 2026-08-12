@@ -452,14 +452,14 @@
           </div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Útero — longitudinal (L)</label><input type="text" inputmode="decimal" data-decimals="1" id="uteroL" placeholder="cm"></div>
-          <div class="field"><label>Útero — anteroposterior (AP)</label><input type="text" inputmode="decimal" data-decimals="1" id="uteroAP" placeholder="cm"></div>
-          <div class="field"><label>Útero — transverso (T)</label><input type="text" inputmode="decimal" data-decimals="1" id="uteroT" placeholder="cm"></div>
+          <div class="field"><label>Útero — longitudinal (L)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="uteroL" placeholder="cm"></div>
+          <div class="field"><label>Útero — anteroposterior (AP)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="uteroAP" placeholder="cm"></div>
+          <div class="field"><label>Útero — transverso (T)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="uteroT" placeholder="cm"></div>
           <div class="field"><label>Volume uterino</label>
             <input type="text" inputmode="decimal" data-decimals="1" id="uteroVolume" placeholder="cm³">
             <span class="flag-note" id="flag_uteroVolume">Acima do valor de referência</span>
           </div>
-          <div class="field"><label>Espessura endometrial</label><input type="text" inputmode="decimal" data-decimals="1" id="endometrio" placeholder="mm"></div>
+          <div class="field"><label>Espessura endometrial</label><input type="text" inputmode="decimal" data-decimals="1" data-max="25" id="endometrio" placeholder="mm"></div>
           <div class="field"><label>Textura endometrial</label>
             <select id="endometrioTextura"><option value="homogenea">Homogênea</option><option value="heterogenea">Heterogênea</option></select>
           </div>
@@ -522,18 +522,18 @@
         </div>
 
         <div class="field-row">
-          <div class="field"><label>Ovário direito — L</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_L" placeholder="cm"></div>
-          <div class="field"><label>Ovário direito — AP</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_AP" placeholder="cm"></div>
-          <div class="field"><label>Ovário direito — T</label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_T" placeholder="cm"></div>
+          <div class="field"><label>Ovário direito — L</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovD_L" placeholder="cm"></div>
+          <div class="field"><label>Ovário direito — AP</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovD_AP" placeholder="cm"></div>
+          <div class="field"><label>Ovário direito — T</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovD_T" placeholder="cm"></div>
           <div class="field"><label>Ovário direito — volume</label>
             <input type="text" inputmode="decimal" data-decimals="1" id="ovD_volume" placeholder="cm³">
             <span class="flag-note" id="flag_ovD_volume">Fora do valor de referência</span>
           </div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Ovário esquerdo — L</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_L" placeholder="cm"></div>
-          <div class="field"><label>Ovário esquerdo — AP</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_AP" placeholder="cm"></div>
-          <div class="field"><label>Ovário esquerdo — T</label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_T" placeholder="cm"></div>
+          <div class="field"><label>Ovário esquerdo — L</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovE_L" placeholder="cm"></div>
+          <div class="field"><label>Ovário esquerdo — AP</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovE_AP" placeholder="cm"></div>
+          <div class="field"><label>Ovário esquerdo — T</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovE_T" placeholder="cm"></div>
           <div class="field"><label>Ovário esquerdo — volume</label>
             <input type="text" inputmode="decimal" data-decimals="1" id="ovE_volume" placeholder="cm³">
             <span class="flag-note" id="flag_ovE_volume">Fora do valor de referência</span>
@@ -801,20 +801,39 @@
     const cleaned = el.value.replace(/[^0-9,.]/g, '');
     if(cleaned !== el.value) el.value = cleaned;
   }
-  function isValidDecimal(el){
+  // data-max caps the numeric VALUE (e.g. endometrium ≤25mm) independently of
+  // data-maxint, which caps how many digits can appear before the comma
+  // (e.g. uterine/ovarian measurements — realistically single-digit cm, so
+  // "70" or "12" shouldn't be typeable even though "7" and "1,2" are fine).
+  function decimalFormatOk(el){
     const maxDecimals = parseInt(el.dataset.decimals || '0', 10);
+    const maxInt = parseInt(el.dataset.maxint || '0', 10);
     const normalized = el.value.replace(/\./g, ',');
     if(normalized === '') return true;
+    const intPart = maxInt > 0 ? ('\\d{1,'+maxInt+'}') : '\\d+';
     return maxDecimals <= 0
-      ? /^\d+$/.test(normalized)
-      : new RegExp('^\\d+(,\\d{1,'+maxDecimals+'})?$').test(normalized);
+      ? new RegExp('^'+intPart+'$').test(normalized)
+      : new RegExp('^'+intPart+'(,\\d{1,'+maxDecimals+'})?$').test(normalized);
+  }
+  function isValidDecimal(el){
+    if(!decimalFormatOk(el)) return false;
+    const normalized = el.value.replace(/\./g, ',');
+    if(normalized === '' || el.dataset.max === undefined) return true;
+    const num = parseFloat(normalized.replace(',', '.'));
+    return isNaN(num) || num <= parseFloat(el.dataset.max);
   }
   function checkDecimalFormat(el){
     sanitizeChars(el);
     const maxDecimals = parseInt(el.dataset.decimals || '0', 10);
-    const message = maxDecimals <= 0
+    const maxInt = parseInt(el.dataset.maxint || '0', 10);
+    let message = maxDecimals <= 0
       ? 'Revise o número — apenas dígitos, sem vírgula.'
-      : 'Revise o número — precisa de um algarismo antes da vírgula (ex: 1,2).';
+      : (maxInt > 0
+        ? 'Revise o número — até '+maxInt+' algarismo'+(maxInt>1?'s':'')+' antes da vírgula e '+maxDecimals+' depois (ex: '+('9'.repeat(maxInt))+',0).'
+        : 'Revise o número — precisa de um algarismo antes da vírgula (ex: 1,2).');
+    if(decimalFormatOk(el) && el.dataset.max !== undefined){
+      message = 'Revise o número — valor máximo aceito: '+el.dataset.max.replace('.',',')+'.';
+    }
     showFormatWarning(el, !isValidDecimal(el), message);
   }
   function wireDecimalInputs(){
@@ -896,7 +915,7 @@
     esfExtDefeito: 'Observa-se defeito do esfíncter anal externo localizado às {HORAS} horas, comprometendo aproximadamente {PCT}% da circunferência, medindo {MEDIDA} mm.',
     slingBem: 'Sling bem posicionado.',
 
-    istmocele: 'Presença de istmocele, medindo {MEDIDA} mm. Relação entre o miométrio residual e o adjacente: {PCT}%.',
+    istmocele: 'Presença de istmocele, medindo {MEDIDA} mm. Relação entre o miométrio residual e o adjacente: {PCT}% (VR < 50%).',
     polipoEndocervical: 'Em canal endocervical, nota-se imagem elipsoide sólida, ecogênica, com pedículo vascular identificado ao mapeamento colorido, medindo {MEDIDA} mm.',
     polipoEndometrial: 'No interior da cavidade uterina, em região {LOCAL}, observa-se imagem elipsoide sólida, ecogênica e heterogênea, de limites pouco precisos, sem sombra acústica posterior, com pedículo vascular identificado ao mapeamento colorido no folheto endometrial {PEDICULO}, medindo {MEDIDA} mm.',
     hidrossalpingeLi: 'Nota-se imagem tubular anecoica, sem captação de fluxo ao Doppler, localizada em região anexial {LADO}, medindo {MEDIDA} cm.',
@@ -1822,7 +1841,7 @@
     html += '</ul>';
 
     html += '<p class="footnote">Este laudo segue a padronização do sistema POP-Q, conforme recomendações da International Continence Society (ICS) e da American Urogynecologic Society (AUGS).</p>';
-    html += '<p style="text-align:center;margin-top:36px;">'+escapeHtml(VR.medicoNome)+'<br>'+escapeHtml(VR.medicoCRM)+'</p>';
+    html += '<p style="text-align:center;margin-top:36px;line-height:1.2;">'+escapeHtml(VR.medicoNome)+'<br>'+escapeHtml(VR.medicoCRM)+'</p>';
 
     $('paper').innerHTML = html;
 
