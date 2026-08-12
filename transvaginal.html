@@ -127,7 +127,7 @@
     max-height:calc(100vh - 150px);overflow-y:auto;
   }
   .paper h3.doctitle{
-    text-align:center;text-decoration:underline;font-size:15.5px;letter-spacing:.5px;
+    text-align:center;text-decoration:underline;font-size:18px;letter-spacing:.5px;
     margin:0 0 10px;font-weight:700;
   }
   .paper .relato{color:#C0392B;font-weight:700;margin:0 0 12px;}
@@ -1582,7 +1582,7 @@
   function buildRichClipboard(){
     const clone = $('paper').cloneNode(true);
     clone.querySelectorAll('.impressao li').forEach(li=>{ li.style.fontWeight = '700'; });
-    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; });
+    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; h.style.fontSize='18px'; });
     clone.querySelectorAll('.relato').forEach(h=>{ h.style.color='#C0392B'; h.style.fontWeight='700'; });
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
