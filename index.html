@@ -197,11 +197,11 @@
 
   /* Margin is zeroed here on purpose: many mobile browsers' "Salvar como PDF"
      print pipeline ignores @page margin entirely, so it can't be relied on.
-     The actual 4cm top / 2cm sides+bottom letterhead margin is reserved by
+     The actual 3.5cm top / 2cm sides+bottom letterhead margin is reserved by
      the .paper-table thead/tfoot below instead, which repeats reliably on
      every physical page across engines. size:A4 is pinned explicitly because
      the pagination math in paginateForPrint() (page height 29.7cm minus the
-     4cm/2cm bands above) assumes A4 — leaving size unset lets some browsers
+     3.5cm/2cm bands above) assumes A4 — leaving size unset lets some browsers
      fall back to Letter (27.94cm tall), which would make that math overrun
      the real page and misplace "Continua…"/the signature. */
   @page{
@@ -218,7 +218,7 @@
     .topbar, .settings-panel, #formCol, .preview-actions, .format-toolbar, .status-pill, .print-alert{display:none !important;}
     .layout{display:block;padding:0;margin:0;max-width:none;}
     .preview-wrap{position:static;}
-    .paper-table thead td{height:4cm;}
+    .paper-table thead td{height:3.5cm;}
     .paper-table tfoot td{height:2cm;}
     .paper-table tbody td{padding:0 2cm;}
     .paper{background:none;border:none;box-shadow:none;border-radius:0;max-height:none;overflow:visible;padding:0;margin:0;}
@@ -232,8 +232,8 @@
 
     /* Each .print-page is one physical sheet's worth of content, built by
        paginateForPrint() right before printing: its own content, then a
-       spacer <div> sized to exactly fill the rest of the 23.7cm content band
-       (29.7cm page − 4cm top − 2cm bottom), then "Continua…" or the
+       spacer <div> sized to exactly fill the rest of the 24.2cm content band
+       (29.7cm page − 3.5cm top − 2cm bottom), then "Continua…" or the
        footer row (footnote + signature). That spacer — not flex/margin-top:
        auto, which Chromium's print engine doesn't paginate reliably — is
        what pins them to the bottom corners of that sheet specifically, not
@@ -2137,12 +2137,12 @@
     measure.innerHTML = originalHTML;
     document.body.appendChild(measure);
 
-    // Convert the 23.7cm content band (29.7cm A4 minus the 4cm top / 2cm
+    // Convert the 24.2cm content band (29.7cm A4 minus the 3.5cm top / 2cm
     // bottom reserved by the .paper-table thead/tfoot in @media print above)
     // into px in this same document, so it's on the same footing as the
     // getBoundingClientRect() measurements below regardless of zoom/DPI.
     const ref = document.createElement('div');
-    ref.style.cssText = 'position:absolute;visibility:hidden;left:-99999px;top:0;width:0;height:23.7cm;';
+    ref.style.cssText = 'position:absolute;visibility:hidden;left:-99999px;top:0;width:0;height:24.2cm;';
     document.body.appendChild(ref);
     const pageHeightPx = ref.getBoundingClientRect().height;
     document.body.removeChild(ref);
