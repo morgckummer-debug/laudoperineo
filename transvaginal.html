@@ -163,6 +163,7 @@
     width:34px;height:32px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--ink);
     font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;
   }
+  .format-toolbar .fmt-btn svg{display:block;}
   .format-toolbar .fmt-btn:hover{border-color:var(--rose);color:var(--rose-dark);}
   .format-toolbar .fmt-btn.active{background:var(--rose-light);border-color:var(--rose);color:var(--rose-dark);}
   .format-toolbar .fmt-sep{width:1px;height:22px;background:var(--line);margin:0 4px;}
@@ -719,6 +720,19 @@
       <button type="button" class="fmt-btn" id="fmtBold" title="Negrito (Ctrl+B)"><b>N</b></button>
       <button type="button" class="fmt-btn" id="fmtItalic" title="Itálico (Ctrl+I)"><i>I</i></button>
       <span class="fmt-sep"></span>
+      <button type="button" class="fmt-btn" id="fmtAlignLeft" title="Alinhar à esquerda">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="3" x2="15" y2="3"/><line x1="1" y1="6.5" x2="10" y2="6.5"/><line x1="1" y1="10" x2="15" y2="10"/><line x1="1" y1="13.5" x2="10" y2="13.5"/></svg>
+      </button>
+      <button type="button" class="fmt-btn" id="fmtAlignCenter" title="Centralizar">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="3" x2="15" y2="3"/><line x1="3.5" y1="6.5" x2="12.5" y2="6.5"/><line x1="1" y1="10" x2="15" y2="10"/><line x1="3.5" y1="13.5" x2="12.5" y2="13.5"/></svg>
+      </button>
+      <button type="button" class="fmt-btn" id="fmtAlignRight" title="Alinhar à direita">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="3" x2="15" y2="3"/><line x1="6" y1="6.5" x2="15" y2="6.5"/><line x1="1" y1="10" x2="15" y2="10"/><line x1="6" y1="13.5" x2="15" y2="13.5"/></svg>
+      </button>
+      <button type="button" class="fmt-btn" id="fmtAlignJustify" title="Justificar">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="3" x2="15" y2="3"/><line x1="1" y1="6.5" x2="15" y2="6.5"/><line x1="1" y1="10" x2="15" y2="10"/><line x1="1" y1="13.5" x2="15" y2="13.5"/></svg>
+      </button>
+      <span class="fmt-sep"></span>
       <label for="fmtLineHeight">Espaçamento entre linhas</label>
       <select id="fmtLineHeight" title="Espaçamento entre linhas">
         <option value="1.15">Compacto</option>
@@ -777,11 +791,21 @@
     const btnBold = $('fmtBold');
     const btnItalic = $('fmtItalic');
     const lineHeightSel = $('fmtLineHeight');
+    // [button element, execCommand name] — alignment is radio-like (queryCommandState
+    // reports true for exactly one of these at a time), unlike bold/italic which can
+    // both be active together, so it's kept as its own list rather than merged in.
+    const alignButtons = [
+      [$('fmtAlignLeft'), 'justifyLeft'],
+      [$('fmtAlignCenter'), 'justifyCenter'],
+      [$('fmtAlignRight'), 'justifyRight'],
+      [$('fmtAlignJustify'), 'justifyFull'],
+    ];
 
     function updateFormatButtons(){
       try{
         btnBold.classList.toggle('active', document.queryCommandState('bold'));
         btnItalic.classList.toggle('active', document.queryCommandState('italic'));
+        alignButtons.forEach(([btn, cmd])=>btn.classList.toggle('active', document.queryCommandState(cmd)));
       }catch(e){ /* queryCommandState unsupported */ }
     }
     function applyFormat(cmd){
@@ -789,9 +813,11 @@
       document.execCommand(cmd, false, null);
       updateFormatButtons();
     }
-    [btnBold, btnItalic].forEach(btn=>btn.addEventListener('mousedown', e=>e.preventDefault()));
+    const allFmtButtons = [btnBold, btnItalic, ...alignButtons.map(([btn])=>btn)];
+    allFmtButtons.forEach(btn=>btn.addEventListener('mousedown', e=>e.preventDefault()));
     btnBold.addEventListener('click', ()=>applyFormat('bold'));
     btnItalic.addEventListener('click', ()=>applyFormat('italic'));
+    alignButtons.forEach(([btn, cmd])=>btn.addEventListener('click', ()=>applyFormat(cmd)));
     paperEl.addEventListener('keyup', updateFormatButtons);
     paperEl.addEventListener('mouseup', updateFormatButtons);
     paperEl.addEventListener('keydown', e=>{
