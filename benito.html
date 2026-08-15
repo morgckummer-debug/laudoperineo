@@ -116,7 +116,7 @@
     background:#FEFCFE;border:1px solid var(--line);border-radius:4px;
     box-shadow:var(--shadow);
     padding:34px 36px 40px;
-    font-family:'Times New Roman', Times, serif;font-size:11.5pt;line-height:1.5;color:var(--ink);
+    font-family:'Times New Roman', Times, serif;font-size:11.5pt;line-height:1.15;color:var(--ink);
     max-height:calc(100vh - 150px);overflow-y:auto;
   }
   .paper h3.doctitle{
@@ -774,9 +774,9 @@
       <span class="fmt-sep"></span>
       <label for="fmtLineHeight">Espaçamento entre linhas</label>
       <select id="fmtLineHeight" title="Espaçamento entre linhas">
-        <option value="1.15">Compacto</option>
+        <option value="1.15" selected>Compacto</option>
         <option value="1.35">Estreito</option>
-        <option value="1.5" selected>Normal</option>
+        <option value="1.5">Normal</option>
         <option value="1.8">Largo</option>
       </select>
     </div>
@@ -1984,7 +1984,7 @@
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
     clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; });
-    const lineHeight = $('paper').style.lineHeight || '1.5';
+    const lineHeight = $('paper').style.lineHeight || '1.15';
     const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:"+lineHeight+";\">"+clone.innerHTML+'</div>';
 
     // Plain-text fallback: rebuild manually so list items keep a literal bullet
