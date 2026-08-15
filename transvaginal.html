@@ -158,6 +158,21 @@
   .btn-print{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
   .btn-clear{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
 
+  .format-toolbar{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+  .format-toolbar .fmt-btn{
+    width:34px;height:32px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--ink);
+    font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;
+  }
+  .format-toolbar .fmt-btn svg{display:block;}
+  .format-toolbar .fmt-btn:hover{border-color:var(--rose);color:var(--rose-dark);}
+  .format-toolbar .fmt-btn.active{background:var(--rose-light);border-color:var(--rose);color:var(--rose-dark);}
+  .format-toolbar .fmt-sep{width:1px;height:22px;background:var(--line);margin:0 4px;}
+  .format-toolbar label{font-size:12px;color:var(--ink-soft);}
+  .format-toolbar select{
+    border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;font-size:12.5px;color:var(--ink);
+    background:#fff;cursor:pointer;
+  }
+
   .status-pill{
     font-size:11px;font-weight:600;padding:4px 12px;border-radius:999px;background:var(--sage-light);color:var(--rose-dark);
     display:inline-block;margin-bottom:10px;
@@ -195,7 +210,7 @@
     margin: 0;
   }
   @media print{
-    .topbar, .settings-panel, #formCol, .preview-actions, .status-pill, .print-alert{display:none !important;}
+    .topbar, .settings-panel, #formCol, .preview-actions, .format-toolbar, .status-pill, .print-alert{display:none !important;}
     .layout{display:block;padding:0;margin:0;max-width:none;}
     .preview-wrap{position:static;}
     .paper-table thead td{height:4cm;}
@@ -701,6 +716,31 @@
   <div class="preview-wrap">
     <span class="status-pill" id="statusPill">0 campos pendentes</span>
     <div class="print-alert" id="printAlert">⚠ Ainda há campos não preenchidos — corrija antes de imprimir.</div>
+    <div class="format-toolbar" id="formatToolbar">
+      <button type="button" class="fmt-btn" id="fmtBold" title="Negrito (Ctrl+B)"><b>N</b></button>
+      <button type="button" class="fmt-btn" id="fmtItalic" title="Itálico (Ctrl+I)"><i>I</i></button>
+      <span class="fmt-sep"></span>
+      <button type="button" class="fmt-btn" id="fmtAlignLeft" title="Alinhar à esquerda">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="3" x2="15" y2="3"/><line x1="1" y1="6.5" x2="10" y2="6.5"/><line x1="1" y1="10" x2="15" y2="10"/><line x1="1" y1="13.5" x2="10" y2="13.5"/></svg>
+      </button>
+      <button type="button" class="fmt-btn" id="fmtAlignCenter" title="Centralizar">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="3" x2="15" y2="3"/><line x1="3.5" y1="6.5" x2="12.5" y2="6.5"/><line x1="1" y1="10" x2="15" y2="10"/><line x1="3.5" y1="13.5" x2="12.5" y2="13.5"/></svg>
+      </button>
+      <button type="button" class="fmt-btn" id="fmtAlignRight" title="Alinhar à direita">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="3" x2="15" y2="3"/><line x1="6" y1="6.5" x2="15" y2="6.5"/><line x1="1" y1="10" x2="15" y2="10"/><line x1="6" y1="13.5" x2="15" y2="13.5"/></svg>
+      </button>
+      <button type="button" class="fmt-btn" id="fmtAlignJustify" title="Justificar">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="3" x2="15" y2="3"/><line x1="1" y1="6.5" x2="15" y2="6.5"/><line x1="1" y1="10" x2="15" y2="10"/><line x1="1" y1="13.5" x2="15" y2="13.5"/></svg>
+      </button>
+      <span class="fmt-sep"></span>
+      <label for="fmtLineHeight">Espaçamento entre linhas</label>
+      <select id="fmtLineHeight" title="Espaçamento entre linhas">
+        <option value="1.15">Compacto</option>
+        <option value="1.35">Estreito</option>
+        <option value="1.5" selected>Normal</option>
+        <option value="1.8">Largo</option>
+      </select>
+    </div>
     <table class="paper-table">
       <thead><tr><td></td></tr></thead>
       <tfoot><tr><td></td></tr></tfoot>
@@ -741,6 +781,65 @@
       try{ localStorage.setItem(key, value); }catch(e){ /* storage unavailable this session */ }
     }
   };
+
+  // ---------- Format toolbar: bold/italic on the selection inside #paper, plus
+  // an adjustable line-height. mousedown+preventDefault on the buttons keeps the
+  // browser from moving focus off #paper before click fires, so the text
+  // selection made by the user is still there when execCommand runs. ----------
+  (function(){
+    const paperEl = $('paper');
+    const btnBold = $('fmtBold');
+    const btnItalic = $('fmtItalic');
+    const lineHeightSel = $('fmtLineHeight');
+    // [button element, execCommand name] — alignment is radio-like (queryCommandState
+    // reports true for exactly one of these at a time), unlike bold/italic which can
+    // both be active together, so it's kept as its own list rather than merged in.
+    const alignButtons = [
+      [$('fmtAlignLeft'), 'justifyLeft'],
+      [$('fmtAlignCenter'), 'justifyCenter'],
+      [$('fmtAlignRight'), 'justifyRight'],
+      [$('fmtAlignJustify'), 'justifyFull'],
+    ];
+
+    function updateFormatButtons(){
+      try{
+        btnBold.classList.toggle('active', document.queryCommandState('bold'));
+        btnItalic.classList.toggle('active', document.queryCommandState('italic'));
+        alignButtons.forEach(([btn, cmd])=>btn.classList.toggle('active', document.queryCommandState(cmd)));
+      }catch(e){ /* queryCommandState unsupported */ }
+    }
+    function applyFormat(cmd){
+      paperEl.focus();
+      document.execCommand(cmd, false, null);
+      updateFormatButtons();
+    }
+    const allFmtButtons = [btnBold, btnItalic, ...alignButtons.map(([btn])=>btn)];
+    allFmtButtons.forEach(btn=>btn.addEventListener('mousedown', e=>e.preventDefault()));
+    btnBold.addEventListener('click', ()=>applyFormat('bold'));
+    btnItalic.addEventListener('click', ()=>applyFormat('italic'));
+    alignButtons.forEach(([btn, cmd])=>btn.addEventListener('click', ()=>applyFormat(cmd)));
+    paperEl.addEventListener('keyup', updateFormatButtons);
+    paperEl.addEventListener('mouseup', updateFormatButtons);
+    paperEl.addEventListener('keydown', e=>{
+      const mod = e.ctrlKey || e.metaKey;
+      if(!mod) return;
+      if(e.key === 'b' || e.key === 'B'){ e.preventDefault(); applyFormat('bold'); }
+      else if(e.key === 'i' || e.key === 'I'){ e.preventDefault(); applyFormat('italic'); }
+    });
+
+    // Set as an inline style on #paper itself (not on its innerHTML), so it
+    // survives render() re-drawing the report content — render() only ever
+    // reassigns paperEl.innerHTML, never touches paperEl.style.
+    lineHeightSel.addEventListener('change', ()=>{
+      paperEl.style.lineHeight = lineHeightSel.value;
+      kvStore.set('paper-line-height', lineHeightSel.value);
+    });
+    kvStore.get('paper-line-height').then(saved=>{
+      if(!saved) return;
+      lineHeightSel.value = saved;
+      paperEl.style.lineHeight = saved;
+    });
+  })();
 
   // ---------- Numeric format rules: digit required before comma, max N decimal places ----------
   function showFormatWarning(el, show, message){
@@ -1648,7 +1747,8 @@
     clone.querySelectorAll('.assinatura').forEach(el=>{ el.style.textAlign='right'; el.style.margin='0'; el.style.flex='0 0 auto'; el.style.lineHeight='1.2'; });
     clone.querySelectorAll('.assinatura-nome').forEach(el=>{ el.style.display='inline-block'; el.style.fontStyle='italic'; el.style.borderTop='1px solid #2b2b2e'; el.style.padding='3px 14px 0'; el.style.marginBottom='2px'; });
     clone.querySelectorAll('.assinatura-info').forEach(el=>{ el.style.fontSize='9.5pt'; el.style.color='#8d9391'; });
-    const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:1.5;\">"+clone.innerHTML+'</div>';
+    const lineHeight = $('paper').style.lineHeight || '1.5';
+    const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:"+lineHeight+";\">"+clone.innerHTML+'</div>';
 
     let text = '';
     clone.querySelectorAll(':scope > *').forEach(node=>{
@@ -1724,6 +1824,11 @@
     const measure = document.createElement('div');
     measure.className = 'paper';
     measure.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;left:-99999px;top:0;width:17cm;max-height:none;overflow:visible;background:none;border:none;box-shadow:none;padding:0;margin:0;';
+    // Pagination is measured off this clone, not the live #paper, so it must
+    // carry over any line-height the user picked in the format toolbar —
+    // otherwise packing would be computed against the default 1.5 while the
+    // real page renders at the custom spacing, misplacing page breaks.
+    if(paperEl.style.lineHeight) measure.style.lineHeight = paperEl.style.lineHeight;
     measure.innerHTML = originalHTML;
     document.body.appendChild(measure);
 
