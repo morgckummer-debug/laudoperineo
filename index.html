@@ -159,7 +159,7 @@
 
   .format-toolbar{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
   .format-toolbar .fmt-btn{
-    width:34px;height:32px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--ink);
+    width:34px;height:32px;padding:0;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--ink);
     font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;
   }
   .format-toolbar .fmt-btn svg{display:block;}
@@ -804,6 +804,7 @@
     <div class="format-toolbar" id="formatToolbar">
       <button type="button" class="fmt-btn" id="fmtBold" title="Negrito (Ctrl+B)"><b>N</b></button>
       <button type="button" class="fmt-btn" id="fmtItalic" title="Itálico (Ctrl+I)"><i>I</i></button>
+      <button type="button" class="fmt-btn" id="fmtUnderline" title="Sublinhado (Ctrl+U)"><u>S</u></button>
       <span class="fmt-sep"></span>
       <button type="button" class="fmt-btn" id="fmtAlignLeft" title="Alinhar à esquerda">
         <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="3" x2="15" y2="3"/><line x1="1" y1="6.5" x2="10" y2="6.5"/><line x1="1" y1="10" x2="15" y2="10"/><line x1="1" y1="13.5" x2="10" y2="13.5"/></svg>
@@ -875,6 +876,7 @@
     const paperEl = $('paper');
     const btnBold = $('fmtBold');
     const btnItalic = $('fmtItalic');
+    const btnUnderline = $('fmtUnderline');
     const lineHeightSel = $('fmtLineHeight');
     // [button element, execCommand name] — alignment is radio-like (queryCommandState
     // reports true for exactly one of these at a time), unlike bold/italic which can
@@ -890,6 +892,7 @@
       try{
         btnBold.classList.toggle('active', document.queryCommandState('bold'));
         btnItalic.classList.toggle('active', document.queryCommandState('italic'));
+        btnUnderline.classList.toggle('active', document.queryCommandState('underline'));
         alignButtons.forEach(([btn, cmd])=>btn.classList.toggle('active', document.queryCommandState(cmd)));
       }catch(e){ /* queryCommandState unsupported */ }
     }
@@ -898,10 +901,11 @@
       document.execCommand(cmd, false, null);
       updateFormatButtons();
     }
-    const allFmtButtons = [btnBold, btnItalic, ...alignButtons.map(([btn])=>btn)];
+    const allFmtButtons = [btnBold, btnItalic, btnUnderline, ...alignButtons.map(([btn])=>btn)];
     allFmtButtons.forEach(btn=>btn.addEventListener('mousedown', e=>e.preventDefault()));
     btnBold.addEventListener('click', ()=>applyFormat('bold'));
     btnItalic.addEventListener('click', ()=>applyFormat('italic'));
+    btnUnderline.addEventListener('click', ()=>applyFormat('underline'));
     alignButtons.forEach(([btn, cmd])=>btn.addEventListener('click', ()=>applyFormat(cmd)));
     paperEl.addEventListener('keyup', updateFormatButtons);
     paperEl.addEventListener('mouseup', updateFormatButtons);
@@ -910,6 +914,7 @@
       if(!mod) return;
       if(e.key === 'b' || e.key === 'B'){ e.preventDefault(); applyFormat('bold'); }
       else if(e.key === 'i' || e.key === 'I'){ e.preventDefault(); applyFormat('italic'); }
+      else if(e.key === 'u' || e.key === 'U'){ e.preventDefault(); applyFormat('underline'); }
     });
 
     // Set as an inline style on #paper itself (not on its innerHTML), so it
