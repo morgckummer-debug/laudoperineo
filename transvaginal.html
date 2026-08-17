@@ -2176,8 +2176,20 @@
     checkedState = {};
     printAttempted = false;
     $('printAlert').classList.remove('show');
+    setDefaultDataExame();
     addMiomaNodule();
   });
+
+  // Defaults the exam date to today (dd.mm.aaaa) so it doesn't need to be typed
+  // for the common same-day case; the field stays editable for any other date.
+  function setDefaultDataExame(){
+    const el = $('dataExame');
+    if(!el || el.value) return;
+    const pad = n => String(n).padStart(2, '0');
+    const d = new Date();
+    el.value = pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear();
+  }
+  setDefaultDataExame();
 
   loadPhrases().then(()=> loadVR().then(()=> addMiomaNodule()));
 })();
