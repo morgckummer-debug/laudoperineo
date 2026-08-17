@@ -418,7 +418,7 @@
           <div class="field"><label>Data do exame</label><input type="text" id="dataExame" placeholder="dd/mm/aaaa"></div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Médico solicitante</label><input type="text" id="medicoSolicitante" placeholder="Dr(a). ..."></div>
+          <div class="field"><label>Médico solicitante</label><input type="text" id="medicoSolicitante" list="medicosDatalist" placeholder="Dr(a). ..." autocomplete="off"><datalist id="medicosDatalist"></datalist></div>
         </div>
         <div class="field-row">
           <div class="field"><label>G (gestações)</label><input type="text" inputmode="numeric" id="gpaG" placeholder="0"></div>
@@ -873,15 +873,106 @@
       paperEl.style.lineHeight = saved;
     });
 
+    // Font size: if the user has text selected inside #paper (e.g. just the
+    // title), wrap only that selection in a sized span — same "acts on the
+    // selection" behavior as bold/italic. With nothing selected, it falls
+    // back to setting the whole report's default size (and that default is
+    // the part that's saved/restored across sessions).
     const fontSizeSel = $('fmtFontSize');
     fontSizeSel.addEventListener('change', ()=>{
-      paperEl.style.fontSize = fontSizeSel.value + 'pt';
-      kvStore.set('paper-font-size', fontSizeSel.value);
+      const size = fontSizeSel.value;
+      const sel = window.getSelection();
+      if(sel && sel.rangeCount && !sel.isCollapsed && paperEl.contains(sel.anchorNode) && paperEl.contains(sel.focusNode)){
+        const range = sel.getRangeAt(0);
+        const span = document.createElement('span');
+        span.style.fontSize = size + 'pt';
+        try{
+          range.surroundContents(span);
+        }catch(e){
+          const contents = range.extractContents();
+          span.appendChild(contents);
+          range.insertNode(span);
+        }
+        sel.removeAllRanges();
+        const newRange = document.createRange();
+        newRange.selectNodeContents(span);
+        sel.addRange(newRange);
+      } else {
+        paperEl.style.fontSize = size + 'pt';
+        kvStore.set('paper-font-size', size);
+      }
     });
     kvStore.get('paper-font-size').then(saved=>{
       if(!saved) return;
       fontSizeSel.value = saved;
       paperEl.style.fontSize = saved + 'pt';
+    });
+  })();
+
+  // ---------- Médico solicitante: combobox backed by a <datalist>, seeded with
+  // the clinic's referring-physician list. Any name typed that isn't already in
+  // the list gets saved (this browser only) and shows up as a suggestion from
+  // then on. ----------
+  (function(){
+    const DEFAULT_MEDICOS = [
+      'Dra. Alice Maciel F. e Santos',
+      'Dra. Aline Torres Alves',
+      'Dra. Ana Rita de Paiva Toledo',
+      'Dr. Antônio José Lobo Ribeiro',
+      'Dr. Carlos Alberto F. Silva',
+      'Dra. Cíntia Aparecida S. Oliveira',
+      'Dra. Cristiane M. Gontijo Campos',
+      'Dra. Daniela Cristina M. Tameirão',
+      'Dr. Enilton Barbosa de Araújo',
+      'Dr. Flávio Pimenta Silveira',
+      'Dra. Galia Marichal Manso',
+      'Dr. Gilton de Menezes',
+      'Dra. Iasmine Corrêa Lanza',
+      'Dr. Jahir Richard de Oliveira',
+      'Dr. João Alberto de B. Ribeiro',
+      'Dr. Kleyton W. Pereira Tomaz',
+      'Dra. Lorenza Rafaela F. Magnago',
+      'Dra. Luciane Lopes F. Sader',
+      'Dra. Luciene Ferreira Calazans',
+      'Dra. Marcela Fernanda F. Cólen',
+      'Dra. Maria Soeli Lanza Meirelles',
+      'Dra. Mayana Lobo de Almeida',
+      'Dra. Patrícia J. Schwenck de Carvalho',
+      'Dra. Priscila R. Baleeiro Marcos',
+      'Dra. Rejane Márcia de Abreu',
+      'Dr. Robson Gonçalves',
+      'Dr. Rogério Vicente de L. Ferreira',
+      'Dr. Samir de P. Abdo Zacarias',
+      'Dr. Samuel Conrado de O. Mourão',
+      'Dra. Samyle O. Vasconcelos Marino',
+      'Dra. Tatiane Ventura Gonçalves',
+      'Dr. Wagner Pinheiro P. Villafort'
+    ];
+    const input = $('medicoSolicitante');
+    const datalist = $('medicosDatalist');
+    let customMedicos = [];
+
+    function renderOptions(){
+      datalist.innerHTML = DEFAULT_MEDICOS.concat(customMedicos)
+        .map(n=>'<option value="'+n.replace(/"/g,'&quot;')+'"></option>').join('');
+    }
+    renderOptions();
+
+    kvStore.get('custom-medicos').then(saved=>{
+      if(!saved) return;
+      try{ customMedicos = JSON.parse(saved); }catch(e){ customMedicos = []; }
+      renderOptions();
+    });
+
+    input.addEventListener('change', ()=>{
+      const val = input.value.trim();
+      if(!val) return;
+      const exists = DEFAULT_MEDICOS.concat(customMedicos).some(n=>n.toLowerCase()===val.toLowerCase());
+      if(!exists){
+        customMedicos.push(val);
+        kvStore.set('custom-medicos', JSON.stringify(customMedicos));
+        renderOptions();
+      }
     });
   })();
 
@@ -1320,6 +1411,9 @@
   function escapeHtml(s){
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
+  function lowerFirst(s){
+    return s.charAt(0).toLowerCase() + s.slice(1);
+  }
   function flag(id, isAbnormal){
     const el = $(id), note = $('flag_'+id);
     if(!el) return;
@@ -1610,7 +1704,7 @@
     html += '</div>';
     html += '<h3 class="doctitle">ULTRASSOM TRANSVAGINAL</h3>';
     if(motivoExame){
-      html += '<p class="relato">Relato de '+escapeHtml(motivoExame)+'.</p>';
+      html += '<p class="relato">Relato de '+escapeHtml(lowerFirst(motivoExame))+'.</p>';
     }
     html += '<p class="linha"><strong>Ao exame:</strong></p>';
 
