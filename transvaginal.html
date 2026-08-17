@@ -841,6 +841,15 @@
   // to the freshly-built h3.doctitle every time.
   let titleFontSize = null;
 
+  // Same problem, worse consequence: text edited directly inside an
+  // "IMPRESSÃO" item (e.g. correcting the auto-generated "DIU
+  // normoposicionado" to describe a perforating IUD for this patient) lives
+  // only in the live DOM, so the next checkbox toggled anywhere on the form
+  // triggers render() and silently reverts it to the default phrase. Each
+  // item's <li> carries a data-key matching its checklist entry; edits are
+  // captured into this map (keyed the same way) and reapplied in render().
+  let impressaoOverrides = {};
+
   // ---------- Format toolbar: bold/italic on the selection inside #paper, plus
   // an adjustable line-height. mousedown+preventDefault on the buttons keeps the
   // browser from moving focus off #paper before click fires, so the text
@@ -1680,6 +1689,19 @@
     });
   }
 
+  // Captures manual edits made directly inside an IMPRESSÃO <li> so render()
+  // can restore them (see impressaoOverrides above). Reads the caret position
+  // rather than the input event's target, since #paper is a single
+  // contenteditable region — individual <li> elements aren't editable on
+  // their own.
+  $('paper').addEventListener('input', ()=>{
+    const sel = window.getSelection();
+    if(!sel || !sel.anchorNode) return;
+    const node = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode;
+    const li = node && node.closest ? node.closest('ul.impressao li[data-key]') : null;
+    if(li) impressaoOverrides[li.dataset.key] = li.textContent;
+  });
+
   // ---------- Main render ----------
   let pendingCount = 0;
   let printAttempted = false;
@@ -1971,7 +1993,10 @@
     if(checkedItems.length===0){
       html += '<li style="font-weight:400;color:var(--ink-soft);">Selecione os achados no formulário à esquerda.</li>';
     } else {
-      checkedItems.forEach(it=>{ html += '<li>* '+escapeHtml(it.label)+'</li>'; });
+      checkedItems.forEach(it=>{
+        const text = Object.prototype.hasOwnProperty.call(impressaoOverrides, it.key) ? impressaoOverrides[it.key] : ('* '+it.label);
+        html += '<li data-key="'+it.key+'">'+escapeHtml(text)+'</li>';
+      });
     }
     html += '</ul>';
 
@@ -2009,15 +2034,43 @@
     clone.querySelectorAll('.impressao li').forEach(li=>{ li.style.fontWeight = '700'; });
     clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; if(!h.style.fontSize) h.style.fontSize='16px'; });
     clone.querySelectorAll('.id-card').forEach(el=>{ el.style.background='#ffffff'; el.style.border='1.5px solid #2b2b2e'; el.style.borderRadius='10px'; el.style.padding='10px 16px'; el.style.marginBottom='20px'; el.style.fontWeight='700'; });
-    clone.querySelectorAll('.id-card-row').forEach(el=>{ el.style.display='flex'; el.style.justifyContent='space-between'; el.style.gap='16px'; el.style.fontSize='11.5pt'; });
     clone.querySelectorAll('.relato').forEach(h=>{ h.style.color='#C0392B'; h.style.fontWeight='700'; });
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
-    clone.querySelectorAll('.rodape-final').forEach(el=>{ el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='flex-end'; el.style.gap='24px'; el.style.marginTop='16px'; });
-    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; el.style.margin='0'; el.style.flex='1 1 auto'; el.style.minWidth='0'; });
-    clone.querySelectorAll('.assinatura').forEach(el=>{ el.style.textAlign='right'; el.style.margin='0'; el.style.flex='0 0 auto'; el.style.lineHeight='1.2'; });
+    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; el.style.margin='0'; });
+    clone.querySelectorAll('.assinatura').forEach(el=>{ el.style.textAlign='right'; el.style.margin='0'; el.style.lineHeight='1.2'; });
     clone.querySelectorAll('.assinatura-nome').forEach(el=>{ el.style.display='inline-block'; el.style.fontStyle='italic'; el.style.borderTop='1px solid #2b2b2e'; el.style.padding='3px 14px 0'; el.style.marginBottom='2px'; });
     clone.querySelectorAll('.assinatura-info').forEach(el=>{ el.style.fontSize='9.5pt'; el.style.color='#8d9391'; });
+
+    // Word's HTML renderer doesn't support flexbox — the side-by-side rows
+    // below (patient/date, and the footnote-left/signature-right footer)
+    // collapsed into stacked blocks instead, which is the "desformatado"
+    // rodapé. Tables render identically in Word as everywhere else, so any
+    // row that relied on flex for its side-by-side layout is rebuilt as one.
+    clone.querySelectorAll('.id-card-row').forEach(el=>{
+      el.style.fontSize = '11.5pt';
+      if(el.children.length !== 2) return;
+      const [left, right] = el.children;
+      const table = document.createElement('table');
+      table.setAttribute('style', 'border-collapse:collapse;width:100%;margin:0;');
+      table.innerHTML = '<tr>'
+        + '<td style="border:none;padding:0;text-align:left;">'+left.innerHTML+'</td>'
+        + '<td style="border:none;padding:0;text-align:right;">'+right.innerHTML+'</td>'
+        + '</tr>';
+      el.replaceWith(table);
+    });
+    clone.querySelectorAll('.rodape-final').forEach(el=>{
+      const footnote = el.querySelector('.footnote');
+      const assinatura = el.querySelector('.assinatura');
+      const table = document.createElement('table');
+      table.setAttribute('style', 'border-collapse:collapse;width:100%;margin-top:16px;');
+      table.innerHTML = '<tr>'
+        + '<td style="border:none;padding:0;vertical-align:bottom;text-align:left;">'+(footnote ? footnote.outerHTML : '')+'</td>'
+        + '<td style="border:none;padding:0;vertical-align:bottom;text-align:right;width:1%;white-space:nowrap;">'+(assinatura ? assinatura.outerHTML : '')+'</td>'
+        + '</tr>';
+      el.replaceWith(table);
+    });
+
     const lineHeight = $('paper').style.lineHeight || '1.15';
     const fontSize = $('paper').style.fontSize || '11.5pt';
     return "<div style=\"font-family:'Times New Roman',Times,serif;font-size:"+fontSize+";line-height:"+lineHeight+";\">"+clone.innerHTML+'</div>';
@@ -2219,7 +2272,36 @@
   function sanitizeFilenamePart(s){
     return s.replace(/[\\/:*?"<>|]/g, '').trim();
   }
-  $('btnDownloadWord').addEventListener('click', ()=>{
+  // Chrome/Edge can prompt a native "save as" dialog (File System Access
+  // API) instead of always dropping the file in Downloads — only available
+  // over https (or localhost) and unsupported in Firefox/Safari, so it
+  // falls back to the plain auto-download anchor everywhere else.
+  async function saveBlobAs(blob, suggestedName){
+    if(window.showSaveFilePicker){
+      try{
+        const handle = await window.showSaveFilePicker({
+          suggestedName,
+          types: [{description:'Documento Word', accept:{'application/msword':['.doc']}}]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        return;
+      }catch(e){
+        if(e && e.name === 'AbortError') return; // user cancelled the picker
+        // any other failure (e.g. API present but blocked): fall back below
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = suggestedName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  }
+  $('btnDownloadWord').addEventListener('click', async ()=>{
     try{
       const html = buildReportHtml();
       const docHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" '
@@ -2230,15 +2312,8 @@
         + '<w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->'
         + '</head><body>' + html + '</body></html>';
       const blob = new Blob(['﻿', docHtml], {type:'application/msword;charset=utf-8'});
-      const url = URL.createObjectURL(blob);
       const paciente = sanitizeFilenamePart(v('nomePaciente')) || 'Laudo';
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = paciente+' - Transvaginal.doc';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(()=>URL.revokeObjectURL(url), 2000);
+      await saveBlobAs(blob, paciente+' - Transvaginal.doc');
     }catch(e){
       alert('Não foi possível baixar o arquivo Word neste navegador.');
     }
@@ -2256,6 +2331,7 @@
     // instead of leaving however many were added for the previous patient.
     $('miomaNodulosContainer').innerHTML = '';
     checkedState = {};
+    impressaoOverrides = {};
     printAttempted = false;
     $('printAlert').classList.remove('show');
     setDefaultDataExame();
