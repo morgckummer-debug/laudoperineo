@@ -1320,6 +1320,9 @@
   function escapeHtml(s){
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
+  function lowerFirst(s){
+    return s.charAt(0).toLowerCase() + s.slice(1);
+  }
   function flag(id, isAbnormal){
     const el = $(id), note = $('flag_'+id);
     if(!el) return;
@@ -1610,7 +1613,7 @@
     html += '</div>';
     html += '<h3 class="doctitle">ULTRASSOM TRANSVAGINAL</h3>';
     if(motivoExame){
-      html += '<p class="relato">Relato de '+escapeHtml(motivoExame)+'.</p>';
+      html += '<p class="relato">Relato de '+escapeHtml(lowerFirst(motivoExame))+'.</p>';
     }
     html += '<p class="linha"><strong>Ao exame:</strong></p>';
 
