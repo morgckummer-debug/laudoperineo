@@ -1817,7 +1817,7 @@
     if(motivoExame){
       html += '<p class="relato">Relato de '+escapeHtml(lowerFirst(motivoExame))+'.</p>';
     }
-    html += '<p class="linha"><strong>Ao exame:</strong></p>';
+    html += '<p class="linha"><strong style="text-decoration:underline;">Ao exame:</strong></p>';
 
     const bexigaTexto = (bexigaAspecto==='alterado' && bexigaDescricao)
       ? escapeHtml(bexigaDescricao)
