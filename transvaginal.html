@@ -127,6 +127,12 @@
     font-family:'Times New Roman', Times, serif;font-size:11.5pt;line-height:1.15;color:var(--ink);
     max-height:calc(100vh - 150px);overflow-y:auto;
   }
+  .paper .id-card{
+    background:#d4d4d4;border-radius:10px;padding:10px 16px;margin:0 0 20px;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  .paper .id-card-row{display:flex;justify-content:space-between;gap:16px;font-size:11.5pt;}
+  .paper .id-card-row + .id-card-row{margin-top:2px;}
   .paper h3.doctitle{
     text-align:center;text-decoration:underline;font-size:18px;letter-spacing:.5px;
     margin:0 0 24px;font-weight:700;
@@ -406,7 +412,19 @@
     <div class="card">
       <div class="card-head"><h2>Dados do exame</h2></div>
       <div class="card-body">
-        <p style="font-size:12px;color:var(--ink-soft);margin-top:0;">Sem cabeçalho de identificação — a impressão reserva 4 cm em branco no topo para a folha timbrada.</p>
+        <p style="font-size:12px;color:var(--ink-soft);margin-top:0;">A impressão reserva 3,5 cm em branco no topo para a folha timbrada; o cabeçalho de identificação abaixo entra logo após esse espaço.</p>
+        <div class="field-row">
+          <div class="field"><label>Nome da paciente</label><input type="text" id="nomePaciente" placeholder="Nome completo"></div>
+          <div class="field"><label>Data do exame</label><input type="text" id="dataExame" placeholder="dd/mm/aaaa"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Médico solicitante</label><input type="text" id="medicoSolicitante" placeholder="Dr(a). ..."></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>G (gestações)</label><input type="text" inputmode="numeric" id="gpaG" placeholder="0"></div>
+          <div class="field"><label>P (partos)</label><input type="text" inputmode="numeric" id="gpaP" placeholder="0"></div>
+          <div class="field"><label>A (abortos)</label><input type="text" inputmode="numeric" id="gpaA" placeholder="0"></div>
+        </div>
         <div class="field"><label>Motivo do exame ("Relato de...")</label><textarea id="motivoExame" rows="2" placeholder="ex: dor pélvica; sangramento uterino anormal; controle de mioma..."></textarea></div>
       </div>
     </div>
@@ -1435,6 +1453,12 @@
       return req(id);
     }
 
+    const nomePaciente = v('nomePaciente');
+    const dataExame = v('dataExame');
+    const medicoSolicitante = v('medicoSolicitante');
+    const gpaG = v('gpaG');
+    const gpaP = v('gpaP');
+    const gpaA = v('gpaA');
     const motivoExame = vNoDot('motivoExame');
 
     const bexigaAspecto = v('bexigaAspecto');
@@ -1558,6 +1582,11 @@
 
     // ----- Assemble laudo HTML -----
     let html = '';
+    html += '<div class="id-card">';
+    html += '<div class="id-card-row"><span><strong>Nome:</strong> '+span(blankOrValue(nomePaciente))+'</span><span><strong>Data:</strong> '+span(blankOrValue(dataExame))+'</span></div>';
+    html += '<div class="id-card-row"><span><strong>Médico:</strong> '+span(blankOrValue(medicoSolicitante))+'</span></div>';
+    html += '<div class="id-card-row"><span><strong>G:</strong> '+span(blankOrValue(gpaG))+' &nbsp; <strong>P:</strong> '+span(blankOrValue(gpaP))+' &nbsp; <strong>A:</strong> '+span(blankOrValue(gpaA))+'</span></div>';
+    html += '</div>';
     html += '<h3 class="doctitle">ULTRASSOM TRANSVAGINAL</h3>';
     if(motivoExame){
       html += '<p class="relato">Relato de '+escapeHtml(motivoExame)+'.</p>';
@@ -1744,6 +1773,8 @@
     const clone = $('paper').cloneNode(true);
     clone.querySelectorAll('.impressao li').forEach(li=>{ li.style.fontWeight = '700'; });
     clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; h.style.fontSize='18px'; });
+    clone.querySelectorAll('.id-card').forEach(el=>{ el.style.background='#d4d4d4'; el.style.borderRadius='10px'; el.style.padding='10px 16px'; el.style.marginBottom='20px'; });
+    clone.querySelectorAll('.id-card-row').forEach(el=>{ el.style.display='flex'; el.style.justifyContent='space-between'; el.style.gap='16px'; el.style.fontSize='11.5pt'; });
     clone.querySelectorAll('.relato').forEach(h=>{ h.style.color='#C0392B'; h.style.fontWeight='700'; });
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
