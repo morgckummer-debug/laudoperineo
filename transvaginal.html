@@ -134,7 +134,7 @@
   .paper .id-card-row{display:flex;justify-content:space-between;gap:16px;font-size:11.5pt;}
   .paper .id-card-row + .id-card-row{margin-top:2px;}
   .paper h3.doctitle{
-    text-align:center;text-decoration:underline;font-size:18px;letter-spacing:.5px;
+    text-align:center;text-decoration:underline;font-size:16px;letter-spacing:.5px;
     margin:0 0 24px;font-weight:700;
   }
   .paper .relato{color:#C0392B;font-weight:700;margin:0 0 12px;}
@@ -759,6 +759,16 @@
         <option value="1.5">Normal</option>
         <option value="1.8">Largo</option>
       </select>
+      <span class="fmt-sep"></span>
+      <label for="fmtFontSize">Tamanho da fonte</label>
+      <select id="fmtFontSize" title="Tamanho da fonte">
+        <option value="10.5">10,5 pt</option>
+        <option value="11">11 pt</option>
+        <option value="11.5" selected>11,5 pt (padrão)</option>
+        <option value="12">12 pt</option>
+        <option value="12.5">12,5 pt</option>
+        <option value="13">13 pt</option>
+      </select>
     </div>
     <table class="paper-table">
       <thead><tr><td></td></tr></thead>
@@ -861,6 +871,17 @@
       if(!saved) return;
       lineHeightSel.value = saved;
       paperEl.style.lineHeight = saved;
+    });
+
+    const fontSizeSel = $('fmtFontSize');
+    fontSizeSel.addEventListener('change', ()=>{
+      paperEl.style.fontSize = fontSizeSel.value + 'pt';
+      kvStore.set('paper-font-size', fontSizeSel.value);
+    });
+    kvStore.get('paper-font-size').then(saved=>{
+      if(!saved) return;
+      fontSizeSel.value = saved;
+      paperEl.style.fontSize = saved + 'pt';
     });
   })();
 
@@ -1772,7 +1793,7 @@
   function buildRichClipboard(){
     const clone = $('paper').cloneNode(true);
     clone.querySelectorAll('.impressao li').forEach(li=>{ li.style.fontWeight = '700'; });
-    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; h.style.fontSize='18px'; });
+    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; h.style.fontSize='16px'; });
     clone.querySelectorAll('.id-card').forEach(el=>{ el.style.background='#d4d4d4'; el.style.borderRadius='10px'; el.style.padding='10px 16px'; el.style.marginBottom='20px'; });
     clone.querySelectorAll('.id-card-row').forEach(el=>{ el.style.display='flex'; el.style.justifyContent='space-between'; el.style.gap='16px'; el.style.fontSize='11.5pt'; });
     clone.querySelectorAll('.relato').forEach(h=>{ h.style.color='#C0392B'; h.style.fontWeight='700'; });
@@ -1784,7 +1805,8 @@
     clone.querySelectorAll('.assinatura-nome').forEach(el=>{ el.style.display='inline-block'; el.style.fontStyle='italic'; el.style.borderTop='1px solid #2b2b2e'; el.style.padding='3px 14px 0'; el.style.marginBottom='2px'; });
     clone.querySelectorAll('.assinatura-info').forEach(el=>{ el.style.fontSize='9.5pt'; el.style.color='#8d9391'; });
     const lineHeight = $('paper').style.lineHeight || '1.15';
-    const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:"+lineHeight+";\">"+clone.innerHTML+'</div>';
+    const fontSize = $('paper').style.fontSize || '11.5pt';
+    const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:"+fontSize+";line-height:"+lineHeight+";\">"+clone.innerHTML+'</div>';
 
     let text = '';
     clone.querySelectorAll(':scope > *').forEach(node=>{
@@ -1865,6 +1887,7 @@
     // otherwise packing would be computed against the default 1.5 while the
     // real page renders at the custom spacing, misplacing page breaks.
     if(paperEl.style.lineHeight) measure.style.lineHeight = paperEl.style.lineHeight;
+    if(paperEl.style.fontSize) measure.style.fontSize = paperEl.style.fontSize;
     measure.innerHTML = originalHTML;
     document.body.appendChild(measure);
 
