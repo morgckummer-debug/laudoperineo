@@ -841,6 +841,15 @@
   // to the freshly-built h3.doctitle every time.
   let titleFontSize = null;
 
+  // Same problem, worse consequence: text edited directly inside an
+  // "IMPRESSÃO" item (e.g. correcting the auto-generated "DIU
+  // normoposicionado" to describe a perforating IUD for this patient) lives
+  // only in the live DOM, so the next checkbox toggled anywhere on the form
+  // triggers render() and silently reverts it to the default phrase. Each
+  // item's <li> carries a data-key matching its checklist entry; edits are
+  // captured into this map (keyed the same way) and reapplied in render().
+  let impressaoOverrides = {};
+
   // ---------- Format toolbar: bold/italic on the selection inside #paper, plus
   // an adjustable line-height. mousedown+preventDefault on the buttons keeps the
   // browser from moving focus off #paper before click fires, so the text
@@ -1680,6 +1689,19 @@
     });
   }
 
+  // Captures manual edits made directly inside an IMPRESSÃO <li> so render()
+  // can restore them (see impressaoOverrides above). Reads the caret position
+  // rather than the input event's target, since #paper is a single
+  // contenteditable region — individual <li> elements aren't editable on
+  // their own.
+  $('paper').addEventListener('input', ()=>{
+    const sel = window.getSelection();
+    if(!sel || !sel.anchorNode) return;
+    const node = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode;
+    const li = node && node.closest ? node.closest('ul.impressao li[data-key]') : null;
+    if(li) impressaoOverrides[li.dataset.key] = li.textContent;
+  });
+
   // ---------- Main render ----------
   let pendingCount = 0;
   let printAttempted = false;
@@ -1971,7 +1993,10 @@
     if(checkedItems.length===0){
       html += '<li style="font-weight:400;color:var(--ink-soft);">Selecione os achados no formulário à esquerda.</li>';
     } else {
-      checkedItems.forEach(it=>{ html += '<li>* '+escapeHtml(it.label)+'</li>'; });
+      checkedItems.forEach(it=>{
+        const text = Object.prototype.hasOwnProperty.call(impressaoOverrides, it.key) ? impressaoOverrides[it.key] : ('* '+it.label);
+        html += '<li data-key="'+it.key+'">'+escapeHtml(text)+'</li>';
+      });
     }
     html += '</ul>';
 
@@ -2256,6 +2281,7 @@
     // instead of leaving however many were added for the previous patient.
     $('miomaNodulosContainer').innerHTML = '';
     checkedState = {};
+    impressaoOverrides = {};
     printAttempted = false;
     $('printAlert').classList.remove('show');
     setDefaultDataExame();
