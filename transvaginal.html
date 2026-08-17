@@ -878,25 +878,40 @@
     // selection" behavior as bold/italic. With nothing selected, it falls
     // back to setting the whole report's default size (and that default is
     // the part that's saved/restored across sessions).
+    //
+    // The selection has to be captured on mousedown, before the click's
+    // default action moves focus to the <select> — by the time 'change'
+    // fires (after the option is picked), the browser has already collapsed
+    // window.getSelection() to nothing, so reading it there would always
+    // fall into the "nothing selected" branch.
     const fontSizeSel = $('fmtFontSize');
-    fontSizeSel.addEventListener('change', ()=>{
-      const size = fontSizeSel.value;
+    let savedFontSizeRange = null;
+    fontSizeSel.addEventListener('mousedown', ()=>{
       const sel = window.getSelection();
       if(sel && sel.rangeCount && !sel.isCollapsed && paperEl.contains(sel.anchorNode) && paperEl.contains(sel.focusNode)){
-        const range = sel.getRangeAt(0);
+        savedFontSizeRange = sel.getRangeAt(0).cloneRange();
+      } else {
+        savedFontSizeRange = null;
+      }
+    });
+    fontSizeSel.addEventListener('change', ()=>{
+      const size = fontSizeSel.value;
+      if(savedFontSizeRange){
         const span = document.createElement('span');
         span.style.fontSize = size + 'pt';
         try{
-          range.surroundContents(span);
+          savedFontSizeRange.surroundContents(span);
         }catch(e){
-          const contents = range.extractContents();
+          const contents = savedFontSizeRange.extractContents();
           span.appendChild(contents);
-          range.insertNode(span);
+          savedFontSizeRange.insertNode(span);
         }
+        const sel = window.getSelection();
         sel.removeAllRanges();
         const newRange = document.createRange();
         newRange.selectNodeContents(span);
         sel.addRange(newRange);
+        savedFontSizeRange = null;
       } else {
         paperEl.style.fontSize = size + 'pt';
         kvStore.set('paper-font-size', size);
