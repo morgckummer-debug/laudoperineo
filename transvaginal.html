@@ -801,9 +801,8 @@
       <tbody><tr><td><div class="paper" id="paper" contenteditable="true" spellcheck="false"></div></td></tr></tbody>
     </table>
     <div class="preview-actions">
-      <button class="btn-copy" id="btnCopy">Copiar laudo</button>
       <button class="btn-print" id="btnPrint">Imprimir / PDF</button>
-      <button class="btn-clear" id="btnDownload">Baixar .txt</button>
+      <button class="btn-clear" id="btnDownloadWord">Baixar Word</button>
     </div>
   </div>
 </div>
@@ -835,6 +834,12 @@
       try{ localStorage.setItem(key, value); }catch(e){ /* storage unavailable this session */ }
     }
   };
+
+  // Title font size, applied as a span inside #paper's own generated HTML,
+  // doesn't survive render() rebuilding that HTML from scratch on the next
+  // field edit — this mirrors it outside the DOM so render() can reapply it
+  // to the freshly-built h3.doctitle every time.
+  let titleFontSize = null;
 
   // ---------- Format toolbar: bold/italic on the selection inside #paper, plus
   // an adjustable line-height. mousedown+preventDefault on the buttons keeps the
@@ -921,7 +926,16 @@
     });
     fontSizeSel.addEventListener('change', ()=>{
       const size = fontSizeSel.value;
-      if(savedFontSizeRange){
+      const titleEl = paperEl.querySelector('h3.doctitle');
+      if(savedFontSizeRange && titleEl && titleEl.contains(savedFontSizeRange.commonAncestorContainer)){
+        // Selection is (part of) the title: track it as state instead of just
+        // wrapping a span, so it comes back after render() next rebuilds the
+        // title from scratch — otherwise the very next field edit would erase it.
+        titleFontSize = size;
+        kvStore.set('title-font-size', size);
+        titleEl.style.fontSize = size + 'pt';
+        savedFontSizeRange = null;
+      } else if(savedFontSizeRange){
         const span = document.createElement('span');
         span.style.fontSize = size + 'pt';
         try{
@@ -946,6 +960,12 @@
       if(!saved) return;
       fontSizeSel.value = saved;
       paperEl.style.fontSize = saved + 'pt';
+    });
+    kvStore.get('title-font-size').then(saved=>{
+      if(!saved) return;
+      titleFontSize = saved;
+      const titleEl = paperEl.querySelector('h3.doctitle');
+      if(titleEl) titleEl.style.fontSize = saved + 'pt';
     });
   })();
 
@@ -1967,6 +1987,10 @@
     html += '</div>';
 
     $('paper').innerHTML = html;
+    if(titleFontSize){
+      const titleEl = $('paper').querySelector('h3.doctitle');
+      if(titleEl) titleEl.style.fontSize = titleFontSize + 'pt';
+    }
 
     const pill = $('statusPill');
     if(pendingCount===0){ pill.textContent='Laudo completo'; pill.classList.remove('pending'); $('printAlert').classList.remove('show'); }
@@ -1980,25 +2004,10 @@
   });
 
   // ---------- Actions ----------
-  function fallbackCopy(text){
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.top = '-1000px';
-    ta.style.left = '-1000px';
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    let ok = false;
-    try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
-    document.body.removeChild(ta);
-    return ok;
-  }
-
-  function buildRichClipboard(){
+  function buildReportHtml(){
     const clone = $('paper').cloneNode(true);
     clone.querySelectorAll('.impressao li').forEach(li=>{ li.style.fontWeight = '700'; });
-    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; h.style.fontSize='16px'; });
+    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; if(!h.style.fontSize) h.style.fontSize='16px'; });
     clone.querySelectorAll('.id-card').forEach(el=>{ el.style.background='#ffffff'; el.style.border='1.5px solid #2b2b2e'; el.style.borderRadius='10px'; el.style.padding='10px 16px'; el.style.marginBottom='20px'; el.style.fontWeight='700'; });
     clone.querySelectorAll('.id-card-row').forEach(el=>{ el.style.display='flex'; el.style.justifyContent='space-between'; el.style.gap='16px'; el.style.fontSize='11.5pt'; });
     clone.querySelectorAll('.relato').forEach(h=>{ h.style.color='#C0392B'; h.style.fontWeight='700'; });
@@ -2011,62 +2020,8 @@
     clone.querySelectorAll('.assinatura-info').forEach(el=>{ el.style.fontSize='9.5pt'; el.style.color='#8d9391'; });
     const lineHeight = $('paper').style.lineHeight || '1.15';
     const fontSize = $('paper').style.fontSize || '11.5pt';
-    const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:"+fontSize+";line-height:"+lineHeight+";\">"+clone.innerHTML+'</div>';
-
-    let text = '';
-    clone.querySelectorAll(':scope > *').forEach(node=>{
-      if(node.tagName==='UL' || node.classList.contains('assinatura')){
-        node.querySelectorAll(':scope > li, :scope > p').forEach(item=>{
-          text += item.textContent.trim()+'\n';
-        });
-        text += '\n';
-      } else if(node.classList.contains('rodape-final')){
-        node.querySelectorAll('p').forEach(item=>{
-          text += item.textContent.trim()+'\n';
-        });
-        text += '\n';
-      } else {
-        const t = node.textContent.trim();
-        if(t) text += t+'\n';
-      }
-    });
-    return {html, text: text.trim()};
+    return "<div style=\"font-family:'Times New Roman',Times,serif;font-size:"+fontSize+";line-height:"+lineHeight+";\">"+clone.innerHTML+'</div>';
   }
-
-  $('btnCopy').addEventListener('click', async ()=>{
-    const {html, text} = buildRichClipboard();
-    const btn = $('btnCopy'); const old = btn.textContent;
-    let success = false;
-    try{
-      if(navigator.clipboard && window.ClipboardItem){
-        await navigator.clipboard.write([
-          new ClipboardItem({
-            'text/html': new Blob([html], {type:'text/html'}),
-            'text/plain': new Blob([text], {type:'text/plain'})
-          })
-        ]);
-        success = true;
-      }
-    }catch(e){ success = false; }
-    if(!success){
-      try{
-        if(navigator.clipboard && navigator.clipboard.writeText){
-          await navigator.clipboard.writeText(text);
-          success = true;
-        }
-      }catch(e){ success = false; }
-    }
-    if(!success){ success = fallbackCopy(text); }
-    if(success){
-      btn.textContent = 'Copiado ✓'; setTimeout(()=>btn.textContent=old, 1800);
-    } else {
-      const range = document.createRange();
-      range.selectNodeContents($('paper'));
-      const sel = window.getSelection();
-      sel.removeAllRanges(); sel.addRange(range);
-      alert('Não foi possível copiar automaticamente neste navegador. O texto do laudo foi selecionado — use Ctrl+C (ou Cmd+C no Mac) para copiar.');
-    }
-  });
 
   // ---------- Print pagination: pins "Continua…" and the signature to the
   // bottom-right corner of the physical page, at print time only. render()
@@ -2252,24 +2207,40 @@
     try{
       window.print();
     }catch(e){
-      alert('Não foi possível abrir a impressão automaticamente. Use "Baixar .txt" e imprima a partir de lá.');
+      alert('Não foi possível abrir a impressão automaticamente. Use "Baixar Word" e imprima a partir de lá.');
     }
   });
 
-  $('btnDownload').addEventListener('click', ()=>{
+  // ---------- "Baixar Word": reuses the same formatted HTML built for
+  // buildReportHtml() and wraps it in the minimal markup Word recognizes as
+  // its own — no server, no external library, so it works fully offline.
+  // Word opens this as a normal .doc it can then "Salvar como" .docx into
+  // the exam's folder, same as scanning/typing one up manually today. ----------
+  function sanitizeFilenamePart(s){
+    return s.replace(/[\\/:*?"<>|]/g, '').trim();
+  }
+  $('btnDownloadWord').addEventListener('click', ()=>{
     try{
-      const text = $('paper').innerText;
-      const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+      const html = buildReportHtml();
+      const docHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" '
+        + 'xmlns:w="urn:schemas-microsoft-com:office:word" '
+        + 'xmlns="http://www.w3.org/TR/REC-html40">'
+        + '<head><meta charset="utf-8"><title>Laudo</title>'
+        + '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View>'
+        + '<w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->'
+        + '</head><body>' + html + '</body></html>';
+      const blob = new Blob(['﻿', docHtml], {type:'application/msword;charset=utf-8'});
       const url = URL.createObjectURL(blob);
+      const paciente = sanitizeFilenamePart(v('nomePaciente')) || 'Laudo';
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'laudo-transvaginal.txt';
+      a.download = paciente+' - Transvaginal.doc';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       setTimeout(()=>URL.revokeObjectURL(url), 2000);
     }catch(e){
-      alert('Não foi possível baixar o arquivo neste navegador. Tente copiar o texto manualmente.');
+      alert('Não foi possível baixar o arquivo Word neste navegador.');
     }
   });
 
