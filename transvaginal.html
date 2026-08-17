@@ -108,6 +108,25 @@
   .conditional{display:none;}
   .conditional.show{display:block;}
 
+  /* Custom combobox for "Médico solicitante" — a plain <datalist> doesn't show
+     its suggestion popup at all on iOS Safari (and is unreliable on other
+     mobile browsers too), so the list is rendered by hand here instead.
+     It's moved to a direct child of <body> and positioned with fixed
+     coordinates computed in JS (see medicosComboList setup), because .card
+     has overflow:hidden — nested absolute/relative positioning would get
+     the dropdown clipped by the card's edge instead of floating over it. */
+  .combo-list{
+    display:none;position:fixed;z-index:1000;
+    background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius-sm);
+    box-shadow:var(--shadow);max-height:220px;overflow-y:auto;
+  }
+  .combo-list.show{display:block;}
+  .combo-list .combo-option{
+    padding:10px 14px;font-size:13.5px;color:var(--ink);cursor:pointer;
+  }
+  .combo-list .combo-option:hover, .combo-list .combo-option.active{background:var(--rose-light);}
+  .combo-list .combo-empty{padding:10px 14px;font-size:12.5px;color:var(--ink-soft);}
+
   hr.sep{border:none;border-top:1px dashed var(--line);margin:14px 0;}
 
   /* Preview / laudo pane */
@@ -418,7 +437,7 @@
           <div class="field"><label>Data do exame</label><input type="text" id="dataExame" placeholder="dd/mm/aaaa"></div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Médico solicitante</label><input type="text" id="medicoSolicitante" list="medicosDatalist" placeholder="Dr(a). ..." autocomplete="off"><datalist id="medicosDatalist"></datalist></div>
+          <div class="field"><label>Médico solicitante</label><input type="text" id="medicoSolicitante" placeholder="Dr(a). ..." autocomplete="off"><div class="combo-list" id="medicosComboList"></div></div>
         </div>
         <div class="field-row">
           <div class="field"><label>G (gestações)</label><input type="text" inputmode="numeric" id="gpaG" placeholder="0"></div>
@@ -924,10 +943,13 @@
     });
   })();
 
-  // ---------- Médico solicitante: combobox backed by a <datalist>, seeded with
-  // the clinic's referring-physician list. Any name typed that isn't already in
+  // ---------- Médico solicitante: hand-rolled combobox, seeded with the
+  // clinic's referring-physician list. Any name typed that isn't already in
   // the list gets saved (this browser only) and shows up as a suggestion from
-  // then on. ----------
+  // then on. This used to be a plain <datalist>, but iOS Safari doesn't show
+  // a <datalist> suggestion popup at all (and support is spotty on other
+  // mobile browsers too) — so the dropdown is built and positioned by hand
+  // here instead, which works the same on every browser/device. ----------
   (function(){
     const DEFAULT_MEDICOS = [
       'Dra. Alice Maciel F. e Santos',
@@ -964,29 +986,97 @@
       'Dr. Wagner Pinheiro P. Villafort'
     ];
     const input = $('medicoSolicitante');
-    const datalist = $('medicosDatalist');
+    const listEl = $('medicosComboList');
     let customMedicos = [];
+    let currentMatches = [];
+    let activeIndex = -1;
 
-    function renderOptions(){
-      datalist.innerHTML = DEFAULT_MEDICOS.concat(customMedicos)
-        .map(n=>'<option value="'+n.replace(/"/g,'&quot;')+'"></option>').join('');
+    // Moved to <body> (not left nested in .card, which has overflow:hidden
+    // and would otherwise clip the dropdown) and positioned with fixed
+    // coordinates matched to the input's on-screen position.
+    document.body.appendChild(listEl);
+
+    function allMedicos(){ return DEFAULT_MEDICOS.concat(customMedicos); }
+
+    function positionList(){
+      const r = input.getBoundingClientRect();
+      listEl.style.left = r.left + 'px';
+      listEl.style.top = (r.bottom + 4) + 'px';
+      listEl.style.width = r.width + 'px';
     }
-    renderOptions();
+
+    function highlight(idx){
+      activeIndex = idx;
+      Array.from(listEl.children).forEach((el, i)=> el.classList.toggle('active', i===activeIndex));
+    }
+
+    function renderList(){
+      const q = input.value.trim().toLowerCase();
+      currentMatches = q ? allMedicos().filter(n=> n.toLowerCase().includes(q)) : allMedicos();
+      activeIndex = -1;
+      listEl.innerHTML = currentMatches.length
+        ? currentMatches.map((n, i)=> '<div class="combo-option" data-idx="'+i+'">'+escapeHtml(n)+'</div>').join('')
+        : '<div class="combo-empty">Nenhum nome encontrado — o que você digitar será salvo.</div>';
+    }
+
+    function showList(){
+      renderList();
+      positionList();
+      listEl.classList.add('show');
+    }
+    function hideList(){ listEl.classList.remove('show'); }
+    function repositionIfVisible(){ if(listEl.classList.contains('show')) positionList(); }
+
+    function selectValue(val){
+      input.value = val;
+      // Dispatched before hideList(): 'input' bubbles back into this same
+      // combobox's own listener (which shows the list), so hiding has to be
+      // the last thing that happens or that listener re-opens it right away.
+      input.dispatchEvent(new Event('input', {bubbles:true}));
+      input.dispatchEvent(new Event('change', {bubbles:true}));
+      hideList();
+    }
+
+    input.addEventListener('focus', showList);
+    input.addEventListener('input', showList);
+    input.addEventListener('blur', ()=>{
+      // Delayed so a tap/click on an option (handled below) still lands —
+      // mousedown on the option already keeps focus on the input by
+      // preventing its default, but this is a safety net for touch devices
+      // where the keyboard closing can blur the field a beat earlier.
+      setTimeout(hideList, 150);
+    });
+    input.addEventListener('keydown', e=>{
+      if(!listEl.classList.contains('show') || !currentMatches.length) return;
+      if(e.key === 'ArrowDown'){ e.preventDefault(); highlight(Math.min(activeIndex+1, currentMatches.length-1)); }
+      else if(e.key === 'ArrowUp'){ e.preventDefault(); highlight(Math.max(activeIndex-1, 0)); }
+      else if(e.key === 'Enter'){ if(activeIndex>=0){ e.preventDefault(); selectValue(currentMatches[activeIndex]); } }
+      else if(e.key === 'Escape'){ hideList(); }
+    });
+    // Touch/click synthesis fires mousedown before click on mobile too;
+    // preventing its default keeps focus (and the list) from disappearing
+    // before the click handler below gets to read what was tapped.
+    listEl.addEventListener('mousedown', e=> e.preventDefault());
+    listEl.addEventListener('click', e=>{
+      const opt = e.target.closest('.combo-option');
+      if(!opt) return;
+      selectValue(currentMatches[Number(opt.dataset.idx)]);
+    });
+    window.addEventListener('resize', repositionIfVisible);
+    window.addEventListener('scroll', repositionIfVisible, true);
 
     kvStore.get('custom-medicos').then(saved=>{
       if(!saved) return;
       try{ customMedicos = JSON.parse(saved); }catch(e){ customMedicos = []; }
-      renderOptions();
     });
 
     input.addEventListener('change', ()=>{
       const val = input.value.trim();
       if(!val) return;
-      const exists = DEFAULT_MEDICOS.concat(customMedicos).some(n=>n.toLowerCase()===val.toLowerCase());
+      const exists = allMedicos().some(n=> n.toLowerCase()===val.toLowerCase());
       if(!exists){
         customMedicos.push(val);
         kvStore.set('custom-medicos', JSON.stringify(customMedicos));
-        renderOptions();
       }
     });
   })();
