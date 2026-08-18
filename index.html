@@ -826,6 +826,21 @@
         <option value="1.5">Normal</option>
         <option value="1.8">Largo</option>
       </select>
+      <span class="fmt-sep"></span>
+      <label for="fmtFontSize">Tamanho da fonte</label>
+      <select id="fmtFontSize" title="Tamanho da fonte">
+        <option value="10.5">10,5 pt</option>
+        <option value="11">11 pt</option>
+        <option value="11.5" selected>11,5 pt (padrão)</option>
+        <option value="12">12 pt</option>
+        <option value="12.5">12,5 pt</option>
+        <option value="13">13 pt</option>
+        <option value="14">14 pt</option>
+        <option value="15">15 pt</option>
+        <option value="16">16 pt</option>
+        <option value="17">17 pt</option>
+        <option value="18">18 pt</option>
+      </select>
     </div>
     <table class="paper-table">
       <thead><tr><td></td></tr></thead>
@@ -833,9 +848,8 @@
       <tbody><tr><td><div class="paper" id="paper" contenteditable="true" spellcheck="false"></div></td></tr></tbody>
     </table>
     <div class="preview-actions">
-      <button class="btn-copy" id="btnCopy">Copiar laudo</button>
       <button class="btn-print" id="btnPrint">Imprimir / PDF</button>
-      <button class="btn-clear" id="btnDownload">Baixar .txt</button>
+      <button class="btn-clear" id="btnDownloadWord">Baixar Word</button>
     </div>
   </div>
 </div>
@@ -867,6 +881,12 @@
       try{ localStorage.setItem(key, value); }catch(e){ /* storage unavailable this session */ }
     }
   };
+
+  // Font size picked for the report title is applied as an inline style on
+  // the live h3.doctitle, same as the line-height above, but render() rebuilds
+  // that element from scratch on every field edit — this mirrors it outside
+  // the DOM so render() can reapply it to the freshly-built h3.doctitle every time.
+  let titleFontSize = null;
 
   // ---------- Format toolbar: bold/italic on the selection inside #paper, plus
   // an adjustable line-height. mousedown+preventDefault on the buttons keeps the
@@ -928,6 +948,71 @@
       if(!saved) return;
       lineHeightSel.value = saved;
       paperEl.style.lineHeight = saved;
+    });
+
+    // Font size: if the user has text selected inside #paper (e.g. just the
+    // title), wrap only that selection in a sized span — same "acts on the
+    // selection" behavior as bold/italic. With nothing selected, it falls
+    // back to setting the whole report's default size (and that default is
+    // the part that's saved/restored across sessions).
+    //
+    // The selection has to be captured on mousedown, before the click's
+    // default action moves focus to the <select> — by the time 'change'
+    // fires (after the option is picked), the browser has already collapsed
+    // window.getSelection() to nothing, so reading it there would always
+    // fall into the "nothing selected" branch.
+    const fontSizeSel = $('fmtFontSize');
+    let savedFontSizeRange = null;
+    fontSizeSel.addEventListener('mousedown', ()=>{
+      const sel = window.getSelection();
+      if(sel && sel.rangeCount && !sel.isCollapsed && paperEl.contains(sel.anchorNode) && paperEl.contains(sel.focusNode)){
+        savedFontSizeRange = sel.getRangeAt(0).cloneRange();
+      } else {
+        savedFontSizeRange = null;
+      }
+    });
+    fontSizeSel.addEventListener('change', ()=>{
+      const size = fontSizeSel.value;
+      const titleEl = paperEl.querySelector('h3.doctitle');
+      if(savedFontSizeRange && titleEl && titleEl.contains(savedFontSizeRange.commonAncestorContainer)){
+        // Selection is (part of) the title: track it as state instead of just
+        // wrapping a span, so it comes back after render() next rebuilds the
+        // title from scratch — otherwise the very next field edit would erase it.
+        titleFontSize = size;
+        kvStore.set('title-font-size', size);
+        titleEl.style.fontSize = size + 'pt';
+        savedFontSizeRange = null;
+      } else if(savedFontSizeRange){
+        const span = document.createElement('span');
+        span.style.fontSize = size + 'pt';
+        try{
+          savedFontSizeRange.surroundContents(span);
+        }catch(e){
+          const contents = savedFontSizeRange.extractContents();
+          span.appendChild(contents);
+          savedFontSizeRange.insertNode(span);
+        }
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        const newRange = document.createRange();
+        newRange.selectNodeContents(span);
+        sel.addRange(newRange);
+        savedFontSizeRange = null;
+      } else {
+        paperEl.style.fontSize = size + 'pt';
+        kvStore.set('paper-font-size', size);
+      }
+    });
+    kvStore.get('paper-font-size').then(saved=>{
+      if(!saved) return;
+      fontSizeSel.value = saved;
+      paperEl.style.fontSize = saved + 'pt';
+    });
+    kvStore.get('title-font-size').then(saved=>{
+      if(!saved) return;
+      titleFontSize = saved;
+      const titleEl = paperEl.querySelector('h3.doctitle');
+      if(titleEl) titleEl.style.fontSize = saved + 'pt';
     });
   })();
 
@@ -1997,6 +2082,10 @@
     html += '</div>';
 
     $('paper').innerHTML = html;
+    if(titleFontSize){
+      const titleEl = $('paper').querySelector('h3.doctitle');
+      if(titleEl) titleEl.style.fontSize = titleFontSize + 'pt';
+    }
 
     const pill = $('statusPill');
     if(pendingCount===0){ pill.textContent='Laudo completo'; pill.classList.remove('pending'); $('printAlert').classList.remove('show'); }
@@ -2010,110 +2099,39 @@
   });
 
   // ---------- Actions ----------
-  function fallbackCopy(text){
-    // execCommand fallback works in more contexts than navigator.clipboard (e.g. sandboxed iframes)
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.top = '-1000px';
-    ta.style.left = '-1000px';
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    let ok = false;
-    try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
-    document.body.removeChild(ta);
-    return ok;
-  }
-
-  // Bullets and bold weight in the on-screen laudo come from the page's stylesheet
-  // (list-style, .impressao{font-weight:700}), not from the text itself — a plain
-  // .innerText copy silently drops both. Build a copy payload with those rules
-  // inlined, so the formatting survives when pasted into Word, Gmail, etc.
-  function buildRichClipboard(){
+  // Builds the report as self-contained HTML for the Word export: same style
+  // inlining buildRichClipboard used to do for copy/paste, plus swapping the
+  // flex-based .rodape-final row for a <table> — Word's HTML renderer doesn't
+  // support flexbox, so the footnote-left/signature-right footer would
+  // collapse into a stacked block without it.
+  function buildReportHtml(){
     const clone = $('paper').cloneNode(true);
     clone.querySelectorAll('.impressao li').forEach(li=>{ li.style.fontWeight = '700'; });
-    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='600'; h.style.fontSize='18px'; });
+    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='600'; if(!h.style.fontSize) h.style.fontSize='18px'; });
     clone.querySelectorAll('.doctitle-sub').forEach(h=>{ h.style.textAlign='center'; h.style.color='#5b5b5e'; });
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
-    clone.querySelectorAll('.rodape-final').forEach(el=>{ el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='flex-end'; el.style.gap='24px'; el.style.marginTop='16px'; });
-    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; el.style.margin='0'; el.style.flex='1 1 auto'; el.style.minWidth='0'; });
-    clone.querySelectorAll('.assinatura').forEach(el=>{ el.style.textAlign='right'; el.style.margin='0'; el.style.flex='0 0 auto'; el.style.lineHeight='1.2'; });
-    clone.querySelectorAll('.assinatura-nome').forEach(el=>{ el.style.display='inline-block'; el.style.fontStyle='italic'; el.style.borderTop='1px solid #2b2b2e'; el.style.padding='3px 14px 0'; el.style.marginBottom='2px'; });
-    clone.querySelectorAll('.assinatura-info').forEach(el=>{ el.style.fontSize='9.5pt'; el.style.color='#8d9391'; });
-    const lineHeight = $('paper').style.lineHeight || '1.15';
-    const html = "<div style=\"font-family:'Times New Roman',Times,serif;font-size:11.5pt;line-height:"+lineHeight+";\">"+clone.innerHTML+'</div>';
+    clone.querySelectorAll('.footnote').forEach(el=>{ el.style.fontStyle='italic'; el.style.color='#5b5b5e'; el.style.fontSize='9pt'; el.style.margin='0'; });
+    clone.querySelectorAll('.assinatura').forEach(el=>{ el.style.textAlign='right'; el.style.margin='0'; el.style.lineHeight='1.2'; });
+    clone.querySelectorAll('.assinatura-nome').forEach(el=>{ el.style.display='inline-block'; el.style.fontStyle='italic'; el.style.borderTop='1px solid #2b2b2e'; el.style.padding='3px 14px 0'; el.style.margin='0 0 2px'; });
+    clone.querySelectorAll('.assinatura-info').forEach(el=>{ el.style.fontSize='9.5pt'; el.style.color='#8d9391'; el.style.margin='0'; });
 
-    // Plain-text fallback: rebuild manually so list items keep a literal bullet
-    // character, since plain text can't rely on <ul><li> to render one. A nested
-    // <ul> (e.g. the numbered myoma list) is walked one level deep so each nested
-    // item keeps its own line instead of being flattened into the parent li's text.
-    let text = '';
-    clone.childNodes.forEach(node=>{
-      if(node.nodeType===1 && node.tagName==='UL'){
-        node.querySelectorAll(':scope > li').forEach(li=>{
-          const liClone = li.cloneNode(true);
-          const nestedUl = liClone.querySelector(':scope > ul');
-          if(nestedUl) nestedUl.remove();
-          text += '• '+liClone.textContent.trim()+'\n';
-          const nestedOriginal = li.querySelector(':scope > ul');
-          if(nestedOriginal){
-            nestedOriginal.querySelectorAll(':scope > li').forEach(subLi=>{
-              text += '   - '+subLi.textContent.trim()+'\n';
-            });
-          }
-        });
-        text += '\n';
-      } else if(node.nodeType===1 && node.classList.contains('rodape-final')){
-        node.querySelectorAll('p').forEach(item=>{
-          text += item.textContent.trim()+'\n';
-        });
-        text += '\n';
-      } else if(node.nodeType===1){
-        const t = node.textContent.trim();
-        if(t) text += t+'\n\n';
-      }
+    clone.querySelectorAll('.rodape-final').forEach(el=>{
+      const footnote = el.querySelector('.footnote');
+      const assinatura = el.querySelector('.assinatura');
+      const table = document.createElement('table');
+      table.setAttribute('style', 'border-collapse:collapse;width:100%;margin-top:16px;');
+      table.innerHTML = '<tr>'
+        + '<td style="border:none;padding:0;vertical-align:bottom;text-align:left;">'+(footnote ? footnote.outerHTML : '')+'</td>'
+        + '<td style="border:none;padding:0;vertical-align:bottom;text-align:right;width:1%;white-space:nowrap;">'+(assinatura ? assinatura.outerHTML : '')+'</td>'
+        + '</tr>';
+      el.replaceWith(table);
     });
-    return {html, text: text.trim()};
-  }
 
-  $('btnCopy').addEventListener('click', async ()=>{
-    const {html, text} = buildRichClipboard();
-    const btn = $('btnCopy'); const old = btn.textContent;
-    let success = false;
-    try{
-      if(navigator.clipboard && window.ClipboardItem){
-        await navigator.clipboard.write([
-          new ClipboardItem({
-            'text/html': new Blob([html], {type:'text/html'}),
-            'text/plain': new Blob([text], {type:'text/plain'})
-          })
-        ]);
-        success = true;
-      }
-    }catch(e){ success = false; }
-    if(!success){
-      try{
-        if(navigator.clipboard && navigator.clipboard.writeText){
-          await navigator.clipboard.writeText(text);
-          success = true;
-        }
-      }catch(e){ success = false; }
-    }
-    if(!success){ success = fallbackCopy(text); }
-    if(success){
-      btn.textContent = 'Copiado ✓'; setTimeout(()=>btn.textContent=old, 1800);
-    } else {
-      // Last resort: select the report so the user can copy manually with Ctrl/Cmd+C
-      // (a native selection copy preserves the visual formatting on its own).
-      const range = document.createRange();
-      range.selectNodeContents($('paper'));
-      const sel = window.getSelection();
-      sel.removeAllRanges(); sel.addRange(range);
-      alert('Não foi possível copiar automaticamente neste navegador. O texto do laudo foi selecionado — use Ctrl+C (ou Cmd+C no Mac) para copiar.');
-    }
-  });
+    const lineHeight = $('paper').style.lineHeight || '1.15';
+    const fontSize = $('paper').style.fontSize || '11.5pt';
+    return "<div style=\"font-family:'Times New Roman',Times,serif;font-size:"+fontSize+";line-height:"+lineHeight+";\">"+clone.innerHTML+'</div>';
+  }
 
   // ---------- Print pagination: pins "Continua…" and the footer row
   // (footnote + signature) to the bottom corners of the physical page, at
@@ -2130,17 +2148,7 @@
   function paginateForPrint(){
     const paperEl = $('paper');
     const originalHTML = paperEl.innerHTML;
-
-    const measure = document.createElement('div');
-    measure.className = 'paper';
-    measure.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;left:-99999px;top:0;width:17cm;max-height:none;overflow:visible;background:none;border:none;box-shadow:none;padding:0;margin:0;';
-    // Pagination is measured off this clone, not the live #paper, so it must
-    // carry over any line-height the user picked in the format toolbar —
-    // otherwise packing would be computed against the default 1.5 while the
-    // real page renders at the custom spacing, misplacing page breaks.
-    if(paperEl.style.lineHeight) measure.style.lineHeight = paperEl.style.lineHeight;
-    measure.innerHTML = originalHTML;
-    document.body.appendChild(measure);
+    const originalLineHeight = paperEl.style.lineHeight;
 
     // Convert the 24.2cm content band (29.7cm A4 minus the 3.5cm top / 2cm
     // bottom reserved by the .paper-table thead/tfoot in @media print above)
@@ -2161,58 +2169,100 @@
     const SAFETY_PX = 38; /* ~1cm */
     const packBudgetPx = pageHeightPx - SAFETY_PX;
 
-    const continuaP = document.createElement('p');
-    continuaP.className = 'continua';
-    continuaP.textContent = 'Continua…';
-    measure.appendChild(continuaP);
-    const continuaHeight = continuaP.getBoundingClientRect().height;
-    measure.removeChild(continuaP);
-    const continuaHtml = continuaP.outerHTML;
+    // Packs the report into pages at a given line-height, purely as a
+    // measurement — nothing here touches the live #paper. Re-run at a
+    // tighter line-height below to see whether a report that just barely
+    // spills onto a second page (often only to fit the pinned footer row)
+    // can be pulled back onto one.
+    function packAtLineHeight(lineHeight){
+      const measure = document.createElement('div');
+      measure.className = 'paper';
+      measure.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;left:-99999px;top:0;width:17cm;max-height:none;overflow:visible;background:none;border:none;box-shadow:none;padding:0;margin:0;';
+      measure.style.lineHeight = lineHeight;
+      if(paperEl.style.fontSize) measure.style.fontSize = paperEl.style.fontSize;
+      measure.innerHTML = originalHTML;
+      document.body.appendChild(measure);
 
-    // Boxes are measured by their actual top/bottom edge in the flowed
-    // measure container, not by summing each element's own height — a plain
-    // height sum silently drops every element's vertical margin, which
-    // would systematically under-count how much a page really holds.
-    // top/bottom already bakes in real (collapsed) margins because it
-    // comes from actual layout.
-    const measureRect = measure.getBoundingClientRect();
-    const realTop = Array.from(paperEl.children);
-    const measureTop = Array.from(measure.children);
-    const boxes = [];
-    realTop.forEach((realChild, idx)=>{
-      const measureChild = measureTop[idx];
-      if(realChild.tagName==='UL'){
-        const realLis = Array.from(realChild.children);
-        const measureLis = Array.from(measureChild.children);
-        realLis.forEach((li, i)=>{
-          const r = measureLis[i].getBoundingClientRect();
-          boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:'li', html: li.outerHTML, listClass: realChild.className});
-        });
-      } else {
-        const r = measureChild.getBoundingClientRect();
-        boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:(realChild.tagName==='H4' ? 'heading' : 'block'), html: realChild.outerHTML});
-      }
-    });
-    document.body.removeChild(measure);
+      const continuaP = document.createElement('p');
+      continuaP.className = 'continua';
+      continuaP.textContent = 'Continua…';
+      measure.appendChild(continuaP);
+      const continuaHeight = continuaP.getBoundingClientRect().height;
+      measure.removeChild(continuaP);
+      const continuaHtml = continuaP.outerHTML;
 
-    // Greedily pack boxes into pages, never splitting one across a boundary.
-    const pages = [[]];
-    let pageStart = boxes.length ? boxes[0].top : 0;
-    boxes.forEach(box=>{
-      if((box.bottom - pageStart) > packBudgetPx && pages[pages.length-1].length > 0){
-        pages.push([]);
-        pageStart = box.top;
+      // Boxes are measured by their actual top/bottom edge in the flowed
+      // measure container, not by summing each element's own height — a plain
+      // height sum silently drops every element's vertical margin, which
+      // would systematically under-count how much a page really holds.
+      // top/bottom already bakes in real (collapsed) margins because it
+      // comes from actual layout.
+      const measureRect = measure.getBoundingClientRect();
+      const realTop = Array.from(paperEl.children);
+      const measureTop = Array.from(measure.children);
+      const boxes = [];
+      realTop.forEach((realChild, idx)=>{
+        const measureChild = measureTop[idx];
+        if(realChild.tagName==='UL'){
+          const realLis = Array.from(realChild.children);
+          const measureLis = Array.from(measureChild.children);
+          realLis.forEach((li, i)=>{
+            const r = measureLis[i].getBoundingClientRect();
+            boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:'li', html: li.outerHTML, listClass: realChild.className});
+          });
+        } else {
+          const r = measureChild.getBoundingClientRect();
+          boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:(realChild.tagName==='H4' ? 'heading' : 'block'), html: realChild.outerHTML});
+        }
+      });
+      document.body.removeChild(measure);
+
+      // Greedily pack boxes into pages, never splitting one across a boundary.
+      const pages = [[]];
+      let pageStart = boxes.length ? boxes[0].top : 0;
+      boxes.forEach(box=>{
+        if((box.bottom - pageStart) > packBudgetPx && pages[pages.length-1].length > 0){
+          pages.push([]);
+          pageStart = box.top;
+        }
+        pages[pages.length-1].push(box);
+      });
+      // A heading left alone at the bottom of a page, with its content pushed
+      // to the next one, is an orphan — move it down together with what follows.
+      for(let p=0; p<pages.length-1; p++){
+        const pg = pages[p];
+        if(pg.length && pg[pg.length-1].kind==='heading'){
+          pages[p+1].unshift(pg.pop());
+        }
       }
-      pages[pages.length-1].push(box);
-    });
-    // A heading left alone at the bottom of a page, with its content pushed
-    // to the next one, is an orphan — move it down together with what follows.
-    for(let p=0; p<pages.length-1; p++){
-      const pg = pages[p];
-      if(pg.length && pg[pg.length-1].kind==='heading'){
-        pages[p+1].unshift(pg.pop());
+      return {pages, continuaHtml, continuaHeight};
+    }
+
+    // Try the user's chosen line-height first; only if that spills past one
+    // page does auto-fit kick in, nudging the spacing down in small steps
+    // (never below 1.0) until everything packs onto a single page. A report
+    // that's genuinely long still fails every step and falls back to normal
+    // multi-page pagination at the original spacing — auto-fit never
+    // sacrifices readability to hide real overflow, only to reclaim the
+    // sliver of space a pinned footer row needs.
+    const baseLineHeight = parseFloat(paperEl.style.lineHeight) || 1.15;
+    const MIN_LINE_HEIGHT = 1.0;
+    const LINE_HEIGHT_STEP = 0.03;
+    let packed = packAtLineHeight(baseLineHeight);
+    let usedLineHeight = baseLineHeight;
+    if(packed.pages.length > 1){
+      for(let lh = baseLineHeight - LINE_HEIGHT_STEP; lh >= MIN_LINE_HEIGHT - 1e-9; lh -= LINE_HEIGHT_STEP){
+        const attempt = packAtLineHeight(lh);
+        if(attempt.pages.length === 1){
+          packed = attempt;
+          usedLineHeight = lh;
+          break;
+        }
       }
     }
+    if(usedLineHeight !== baseLineHeight) paperEl.style.lineHeight = usedLineHeight;
+
+    const {pages, continuaHtml, continuaHeight} = packed;
 
     // Bottom-pinning uses a plain spacer <div> with a computed pixel height,
     // not flex + margin-top:auto — Chromium's print engine doesn't reliably
@@ -2263,7 +2313,10 @@
     });
     paperEl.innerHTML = wrap.innerHTML;
 
-    return function restore(){ paperEl.innerHTML = originalHTML; };
+    return function restore(){
+      paperEl.innerHTML = originalHTML;
+      paperEl.style.lineHeight = originalLineHeight;
+    };
   }
 
   let printRestore = null;
@@ -2296,24 +2349,61 @@
     try{
       window.print();
     }catch(e){
-      alert('Não foi possível abrir a impressão automaticamente. Use "Baixar .txt" e imprima a partir de lá.');
+      alert('Não foi possível abrir a impressão automaticamente. Use "Baixar Word" e imprima a partir de lá.');
     }
   });
 
-  $('btnDownload').addEventListener('click', ()=>{
+  // ---------- "Baixar Word": reuses the same formatted HTML built for
+  // buildReportHtml() and wraps it in the minimal markup Word recognizes as
+  // its own — no server, no external library, so it works fully offline.
+  // Word opens this as a normal .doc it can then "Salvar como" .docx into
+  // the exam's folder, same as scanning/typing one up manually today. ----------
+  function sanitizeFilenamePart(s){
+    return s.replace(/[\\/:*?"<>|]/g, '').trim();
+  }
+  // Chrome/Edge can prompt a native "save as" dialog (File System Access
+  // API) instead of always dropping the file in Downloads — only available
+  // over https (or localhost) and unsupported in Firefox/Safari, so it
+  // falls back to the plain auto-download anchor everywhere else.
+  async function saveBlobAs(blob, suggestedName){
+    if(window.showSaveFilePicker){
+      try{
+        const handle = await window.showSaveFilePicker({
+          suggestedName,
+          types: [{description:'Documento Word', accept:{'application/msword':['.doc']}}]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        return;
+      }catch(e){
+        if(e && e.name === 'AbortError') return; // user cancelled the picker
+        // any other failure (e.g. API present but blocked): fall back below
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = suggestedName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  }
+  $('btnDownloadWord').addEventListener('click', async ()=>{
     try{
-      const text = $('paper').innerText;
-      const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'laudo-perineal.txt';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(()=>URL.revokeObjectURL(url), 2000);
+      const html = buildReportHtml();
+      const docHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" '
+        + 'xmlns:w="urn:schemas-microsoft-com:office:word" '
+        + 'xmlns="http://www.w3.org/TR/REC-html40">'
+        + '<head><meta charset="utf-8"><title>Laudo</title>'
+        + '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View>'
+        + '<w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->'
+        + '</head><body>' + html + '</body></html>';
+      const blob = new Blob(['﻿', docHtml], {type:'application/msword;charset=utf-8'});
+      await saveBlobAs(blob, 'Laudo Perineal.doc');
     }catch(e){
-      alert('Não foi possível baixar o arquivo neste navegador. Tente copiar o texto manualmente.');
+      alert('Não foi possível baixar o arquivo Word neste navegador.');
     }
   });
 
