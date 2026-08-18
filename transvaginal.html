@@ -2089,20 +2089,7 @@
   function paginateForPrint(){
     const paperEl = $('paper');
     const originalHTML = paperEl.innerHTML;
-
-    // Hidden clone at the real print content width/typography, used only to
-    // measure how tall each unit of the report renders.
-    const measure = document.createElement('div');
-    measure.className = 'paper';
-    measure.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;left:-99999px;top:0;width:17cm;max-height:none;overflow:visible;background:none;border:none;box-shadow:none;padding:0;margin:0;';
-    // Pagination is measured off this clone, not the live #paper, so it must
-    // carry over any line-height the user picked in the format toolbar —
-    // otherwise packing would be computed against the default 1.5 while the
-    // real page renders at the custom spacing, misplacing page breaks.
-    if(paperEl.style.lineHeight) measure.style.lineHeight = paperEl.style.lineHeight;
-    if(paperEl.style.fontSize) measure.style.fontSize = paperEl.style.fontSize;
-    measure.innerHTML = originalHTML;
-    document.body.appendChild(measure);
+    const originalLineHeight = paperEl.style.lineHeight;
 
     // Convert the 24.2cm content band (29.7cm A4 minus the 3.5cm top / 2cm
     // bottom reserved by the .paper-table thead/tfoot in @media print above)
@@ -2124,61 +2111,103 @@
     const SAFETY_PX = 38; /* ~1cm */
     const packBudgetPx = pageHeightPx - SAFETY_PX;
 
-    const continuaP = document.createElement('p');
-    continuaP.className = 'continua';
-    continuaP.textContent = 'Continua…';
-    measure.appendChild(continuaP);
-    const continuaHeight = continuaP.getBoundingClientRect().height;
-    measure.removeChild(continuaP);
-    const continuaHtml = continuaP.outerHTML;
+    // Packs the report into pages at a given line-height, purely as a
+    // measurement — nothing here touches the live #paper. Re-run at a
+    // tighter line-height below to see whether a report that just barely
+    // spills onto a second page (often only to fit the pinned signature)
+    // can be pulled back onto one.
+    function packAtLineHeight(lineHeight){
+      const measure = document.createElement('div');
+      measure.className = 'paper';
+      measure.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;left:-99999px;top:0;width:17cm;max-height:none;overflow:visible;background:none;border:none;box-shadow:none;padding:0;margin:0;';
+      measure.style.lineHeight = lineHeight;
+      if(paperEl.style.fontSize) measure.style.fontSize = paperEl.style.fontSize;
+      measure.innerHTML = originalHTML;
+      document.body.appendChild(measure);
 
-    // Boxes are measured by their actual top/bottom edge in the flowed
-    // measure container, not by summing each element's own height — a plain
-    // height sum silently drops every element's vertical margin (each
-    // p.linha alone carries a 16px margin-bottom), which would systematically
-    // under-count how much a page really holds. top/bottom already bakes in
-    // real (collapsed) margins because it comes from actual layout.
-    const measureRect = measure.getBoundingClientRect();
-    const realTop = Array.from(paperEl.children);
-    const measureTop = Array.from(measure.children);
-    const boxes = [];
-    realTop.forEach((realChild, idx)=>{
-      const measureChild = measureTop[idx];
-      if(realChild.tagName==='UL' && realChild.classList.contains('impressao')){
-        const realLis = Array.from(realChild.children);
-        const measureLis = Array.from(measureChild.children);
-        realLis.forEach((li, i)=>{
-          const r = measureLis[i].getBoundingClientRect();
-          boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:'li', html: li.outerHTML});
-        });
-      } else {
-        const r = measureChild.getBoundingClientRect();
-        boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:(realChild.tagName==='H4' ? 'heading' : 'block'), html: realChild.outerHTML});
-      }
-    });
-    document.body.removeChild(measure);
+      const continuaP = document.createElement('p');
+      continuaP.className = 'continua';
+      continuaP.textContent = 'Continua…';
+      measure.appendChild(continuaP);
+      const continuaHeight = continuaP.getBoundingClientRect().height;
+      measure.removeChild(continuaP);
+      const continuaHtml = continuaP.outerHTML;
 
-    // Greedily pack boxes into pages, never splitting one across a boundary.
-    // pageStart tracks where (in the continuous measurement) the current
-    // page's first box began, so "how full is this page" is just how far
-    // past that start the box we're considering would reach.
-    const pages = [[]];
-    let pageStart = boxes.length ? boxes[0].top : 0;
-    boxes.forEach(box=>{
-      if((box.bottom - pageStart) > packBudgetPx && pages[pages.length-1].length > 0){
-        pages.push([]);
-        pageStart = box.top;
+      // Boxes are measured by their actual top/bottom edge in the flowed
+      // measure container, not by summing each element's own height — a plain
+      // height sum silently drops every element's vertical margin (each
+      // p.linha alone carries a 16px margin-bottom), which would systematically
+      // under-count how much a page really holds. top/bottom already bakes in
+      // real (collapsed) margins because it comes from actual layout.
+      const measureRect = measure.getBoundingClientRect();
+      const realTop = Array.from(paperEl.children);
+      const measureTop = Array.from(measure.children);
+      const boxes = [];
+      realTop.forEach((realChild, idx)=>{
+        const measureChild = measureTop[idx];
+        if(realChild.tagName==='UL' && realChild.classList.contains('impressao')){
+          const realLis = Array.from(realChild.children);
+          const measureLis = Array.from(measureChild.children);
+          realLis.forEach((li, i)=>{
+            const r = measureLis[i].getBoundingClientRect();
+            boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:'li', html: li.outerHTML});
+          });
+        } else {
+          const r = measureChild.getBoundingClientRect();
+          boxes.push({top:r.top-measureRect.top, bottom:r.bottom-measureRect.top, kind:(realChild.tagName==='H4' ? 'heading' : 'block'), html: realChild.outerHTML});
+        }
+      });
+      document.body.removeChild(measure);
+
+      // Greedily pack boxes into pages, never splitting one across a boundary.
+      // pageStart tracks where (in the continuous measurement) the current
+      // page's first box began, so "how full is this page" is just how far
+      // past that start the box we're considering would reach.
+      const pages = [[]];
+      let pageStart = boxes.length ? boxes[0].top : 0;
+      boxes.forEach(box=>{
+        if((box.bottom - pageStart) > packBudgetPx && pages[pages.length-1].length > 0){
+          pages.push([]);
+          pageStart = box.top;
+        }
+        pages[pages.length-1].push(box);
+      });
+      // A heading left alone at the bottom of a page, with its content pushed
+      // to the next one, is an orphan — move it down together with what follows.
+      for(let p=0; p<pages.length-1; p++){
+        const pg = pages[p];
+        if(pg.length && pg[pg.length-1].kind==='heading'){
+          pages[p+1].unshift(pg.pop());
+        }
       }
-      pages[pages.length-1].push(box);
-    });
-    // A heading left alone at the bottom of a page, with its content pushed
-    // to the next one, is an orphan — move it down together with what follows.
-    for(let p=0; p<pages.length-1; p++){
-      const pg = pages[p];
-      if(pg.length && pg[pg.length-1].kind==='heading'){
-        pages[p+1].unshift(pg.pop());
+      return {pages, continuaHtml, continuaHeight};
+    }
+
+    // Try the user's chosen line-height first; only if that spills past one
+    // page does auto-fit kick in, nudging the spacing down in small steps
+    // (never below 1.0) until everything packs onto a single page. A report
+    // that's genuinely long still fails every step and falls back to normal
+    // multi-page pagination at the original spacing — auto-fit never
+    // sacrifices readability to hide real overflow, only to reclaim the
+    // sliver of space a pinned signature needs.
+    const baseLineHeight = parseFloat(paperEl.style.lineHeight) || 1.15;
+    const MIN_LINE_HEIGHT = 1.0;
+    const LINE_HEIGHT_STEP = 0.03;
+    let packed = packAtLineHeight(baseLineHeight);
+    let usedLineHeight = baseLineHeight;
+    if(packed.pages.length > 1){
+      for(let lh = baseLineHeight - LINE_HEIGHT_STEP; lh >= MIN_LINE_HEIGHT - 1e-9; lh -= LINE_HEIGHT_STEP){
+        const attempt = packAtLineHeight(lh);
+        if(attempt.pages.length === 1){
+          packed = attempt;
+          usedLineHeight = lh;
+          break;
+        }
       }
     }
+    if(usedLineHeight !== baseLineHeight) paperEl.style.lineHeight = usedLineHeight;
+
+    const {pages, continuaHtml, continuaHeight} = packed;
 
     // Bottom-pinning uses a plain spacer <div> with a computed pixel height,
     // not flex + margin-top:auto — Chromium's print engine doesn't reliably
@@ -2225,7 +2254,10 @@
     });
     paperEl.innerHTML = wrap.innerHTML;
 
-    return function restore(){ paperEl.innerHTML = originalHTML; };
+    return function restore(){
+      paperEl.innerHTML = originalHTML;
+      paperEl.style.lineHeight = originalLineHeight;
+    };
   }
 
   let printRestore = null;
