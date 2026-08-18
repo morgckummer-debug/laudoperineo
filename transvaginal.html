@@ -2031,8 +2031,22 @@
   // ---------- Actions ----------
   function buildReportHtml(){
     const clone = $('paper').cloneNode(true);
-    clone.querySelectorAll('ul.impressao').forEach(ul=>{ ul.style.margin='0'; ul.style.padding='0'; ul.style.listStyle='none'; });
-    clone.querySelectorAll('.impressao li').forEach(li=>{ li.style.fontWeight = '700'; });
+    // Word's HTML importer auto-applies its own bulleted list to any <ul><li>
+    // it sees, ignoring list-style:none entirely (it drives the bullet off
+    // its own mso-list machinery, not CSS) — stacking a Word bullet on top of
+    // the literal "* " already in each item's text. Exporting each finding as
+    // a plain bold paragraph instead sidesteps Word's list auto-detection.
+    clone.querySelectorAll('ul.impressao').forEach(ul=>{
+      const div = document.createElement('div');
+      Array.from(ul.children).forEach(li=>{
+        const p = document.createElement('p');
+        p.style.margin = '0 0 6px';
+        p.style.fontWeight = '700';
+        p.innerHTML = li.innerHTML;
+        div.appendChild(p);
+      });
+      ul.replaceWith(div);
+    });
     clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; if(!h.style.fontSize) h.style.fontSize='16px'; });
     clone.querySelectorAll('.id-card').forEach(el=>{ el.style.background='#ffffff'; el.style.border='1.5px solid #2b2b2e'; el.style.borderRadius='10px'; el.style.padding='10px 16px'; el.style.marginBottom='20px'; el.style.fontWeight='700'; });
     clone.querySelectorAll('.relato').forEach(h=>{ h.style.color='#C0392B'; h.style.fontWeight='700'; });
