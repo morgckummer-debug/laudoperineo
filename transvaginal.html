@@ -145,6 +145,17 @@
     padding:34px 36px 40px;
     font-family:'Times New Roman', Times, serif;font-size:11.5pt;line-height:1.15;color:var(--ink);
     max-height:calc(100vh - 150px);overflow-y:auto;
+    /* Matches the 17cm content width paginateForPrint() measures against
+       (21cm A4 minus 2cm side margins), so the on-screen page-break preview
+       below lines up with where the real print/Word output actually splits —
+       capped at 100% so it still fits narrow/mobile screens. */
+    width:calc(17cm + 72px);max-width:100%;margin:0 auto;
+  }
+  .pg-break-marker{
+    margin:18px 0;padding-top:8px;border-top:1.5px dashed #c7a2ab;
+    text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-soft);user-select:none;
   }
   .paper .id-card{
     background:#ffffff;border:1.5px solid #2b2b2e;border-radius:10px;padding:10px 16px;margin:0 0 20px;
@@ -204,6 +215,7 @@
     display:inline-block;margin-bottom:10px;
   }
   .status-pill.pending{background:var(--amber-light);color:var(--amber);}
+  .status-pill + .status-pill{margin-left:6px;}
 
   .print-alert{
     display:none;background:#B4432F;color:#fff;font-weight:600;font-size:13px;
@@ -237,6 +249,10 @@
   }
   @media print{
     .topbar, .settings-panel, #formCol, .preview-actions, .format-toolbar, .status-pill, .print-alert{display:none !important;}
+    /* Belt-and-suspenders: paginateForPrint() already strips .pg-break-marker
+       (the on-screen "fits on N pages" preview line) before building the real
+       paginated output, but this hides it too in case that ever runs first. */
+    .pg-break-marker{display:none !important;}
     .layout{display:block;padding:0;margin:0;max-width:none;}
     .preview-wrap{position:static;}
     .paper-table thead td{height:3.5cm;}
@@ -753,6 +769,7 @@
   <!-- PREVIEW COLUMN -->
   <div class="preview-wrap">
     <span class="status-pill" id="statusPill">0 campos pendentes</span>
+    <span class="status-pill" id="pageCountPill">1 página</span>
     <div class="print-alert" id="printAlert">⚠ Ainda há campos não preenchidos — corrija antes de imprimir.</div>
     <div class="format-toolbar" id="formatToolbar">
       <button type="button" class="fmt-btn" id="fmtBold" title="Negrito (Ctrl+B)"><b>N</b></button>
@@ -1702,6 +1719,88 @@
     if(li) impressaoOverrides[li.dataset.key] = li.textContent;
   });
 
+  // ---------- Live page-count preview ----------
+  // Answers "will this print on one page?" without leaving the editor. This
+  // is a lighter, independent approximation of paginateForPrint() below: it
+  // measures the live #paper directly (no hidden clone) and packs at
+  // top-level-element granularity only — it won't split the IMPRESSÃO list
+  // across pages the way the real print pipeline does — which is plenty to
+  // show the page count and roughly where a second page starts, without the
+  // cost/complexity of replicating that pipeline on every keystroke.
+  function updatePagePreview(){
+    const paperEl = $('paper');
+    paperEl.querySelectorAll('.pg-break-marker').forEach(el=>el.remove());
+
+    const children = Array.from(paperEl.children);
+    const pill = $('pageCountPill');
+    if(!children.length){ if(pill){ pill.textContent='1 página'; pill.classList.remove('pending'); } return; }
+
+    const ref = document.createElement('div');
+    ref.style.cssText = 'position:absolute;visibility:hidden;left:-99999px;top:0;width:0;height:24.2cm;';
+    document.body.appendChild(ref);
+    const pageHeightPx = ref.getBoundingClientRect().height;
+    document.body.removeChild(ref);
+    const packBudgetPx = pageHeightPx - 38; /* ~1cm safety, matches paginateForPrint() */
+
+    const originalLineHeight = paperEl.style.lineHeight;
+    const baseLineHeight = parseFloat(originalLineHeight) || 1.15;
+
+    function packAt(lineHeight){
+      paperEl.style.lineHeight = lineHeight;
+      const paddingTop = parseFloat(getComputedStyle(paperEl).paddingTop) || 0;
+      const paperTop = paperEl.getBoundingClientRect().top + paddingTop;
+      const boxes = children.map(el=>{
+        const r = el.getBoundingClientRect();
+        return {top: r.top - paperTop, bottom: r.bottom - paperTop, node: el};
+      });
+      const pages = [[]];
+      let pageStart = boxes[0].top;
+      boxes.forEach(box=>{
+        if((box.bottom - pageStart) > packBudgetPx && pages[pages.length-1].length > 0){
+          pages.push([]);
+          pageStart = box.top;
+        }
+        pages[pages.length-1].push(box);
+      });
+      return pages;
+    }
+
+    // Same auto-fit search paginateForPrint() does: try the current spacing,
+    // and only if that spills past one page, nudge it tighter until it fits
+    // or the floor is reached — matching the real print output exactly.
+    let pages = packAt(baseLineHeight);
+    if(pages.length > 1){
+      for(let lh = baseLineHeight - 0.03; lh >= 1.0 - 1e-9; lh -= 0.03){
+        const attempt = packAt(lh);
+        if(attempt.length === 1){ pages = attempt; break; }
+      }
+    }
+    paperEl.style.lineHeight = originalLineHeight;
+
+    if(pill){
+      pill.textContent = pages.length===1 ? '1 página' : pages.length+' páginas';
+      pill.classList.toggle('pending', pages.length > 1);
+    }
+    // pages.length>1 here only happens when auto-fit couldn't rescue it even
+    // at the tightest spacing, in which case `pages` is still the untouched
+    // baseLineHeight attempt — the same spacing currently on screen — so
+    // these box positions/nodes line up with what's actually visible.
+    for(let p=0; p<pages.length-1; p++){
+      const marker = document.createElement('div');
+      marker.className = 'pg-break-marker';
+      marker.contentEditable = 'false';
+      marker.textContent = 'Fim da página ' + (p+1);
+      paperEl.insertBefore(marker, pages[p+1][0].node);
+    }
+  }
+  let pagePreviewTimer = null;
+  function schedulePagePreview(){
+    clearTimeout(pagePreviewTimer);
+    pagePreviewTimer = setTimeout(updatePagePreview, 250);
+  }
+  $('paper').addEventListener('input', schedulePagePreview);
+  window.addEventListener('resize', schedulePagePreview);
+
   // ---------- Main render ----------
   let pendingCount = 0;
   let printAttempted = false;
@@ -2020,6 +2119,7 @@
     const pill = $('statusPill');
     if(pendingCount===0){ pill.textContent='Laudo completo'; pill.classList.remove('pending'); $('printAlert').classList.remove('show'); }
     else { pill.textContent = pendingCount+' campo'+(pendingCount>1?'s':'')+' pendente'+(pendingCount>1?'s':''); pill.classList.add('pending'); }
+    updatePagePreview();
   }
 
   // ---------- Wire up live updates ----------
@@ -2031,6 +2131,7 @@
   // ---------- Actions ----------
   function buildReportHtml(){
     const clone = $('paper').cloneNode(true);
+    clone.querySelectorAll('.pg-break-marker').forEach(el=>el.remove());
     // Word's HTML importer auto-applies its own bulleted list to any <ul><li>
     // it sees, ignoring list-style:none entirely (it drives the bullet off
     // its own mso-list machinery, not CSS) — stacking a Word bullet on top of
@@ -2103,6 +2204,7 @@
   // as broken/gapped pages.
   function paginateForPrint(){
     const paperEl = $('paper');
+    paperEl.querySelectorAll('.pg-break-marker').forEach(el=>el.remove());
     const originalHTML = paperEl.innerHTML;
     const originalLineHeight = paperEl.style.lineHeight;
 
@@ -2272,6 +2374,7 @@
     return function restore(){
       paperEl.innerHTML = originalHTML;
       paperEl.style.lineHeight = originalLineHeight;
+      updatePagePreview();
     };
   }
 
