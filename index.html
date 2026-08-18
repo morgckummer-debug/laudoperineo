@@ -263,10 +263,8 @@
 <div class="settings-panel" id="settingsPanel">
   <h3>Identificação do médico (assinatura do laudo)</h3>
   <div class="settings-grid">
-    <div class="field"><label>Nome do médico (assinatura)</label><input type="text" id="vr_medicoNome" value="Dra. Morgana Fialho Caldas Kummer"></div>
-    <div class="field"><label>Qualificação (linha 1)</label><input type="text" id="vr_medicoQual1" value="Especialista em Ultrassonografia Geral pelo CBR."></div>
-    <div class="field"><label>Qualificação (linha 2)</label><input type="text" id="vr_medicoQual2" value="Pós-Graduação em Medicina Fetal pela FCMMG."></div>
-    <div class="field"><label>CRM / RQE</label><input type="text" id="vr_medicoCRM" value="CRMMG: 45.304 - RQE: 39.156"></div>
+    <div class="field"><label>Nome do médico (assinatura)</label><input type="text" id="vr_medicoNome" value="DRA. MORGANA KUMMER"></div>
+    <div class="field"><label>CRM</label><input type="text" id="vr_medicoCRM" value="CRM-MG 45.304"></div>
   </div>
   <hr class="sep">
   <h3>Valores de referência (personalize e salve)</h3>
@@ -1162,10 +1160,7 @@
   });
 
   let VR = {
-    medicoNome:'Dra. Morgana Fialho Caldas Kummer',
-    medicoQual1:'Especialista em Ultrassonografia Geral pelo CBR.',
-    medicoQual2:'Pós-Graduação em Medicina Fetal pela FCMMG.',
-    medicoCRM:'CRMMG: 45.304 - RQE: 39.156',
+    medicoNome:'DRA. MORGANA KUMMER', medicoCRM:'CRM-MG 45.304',
     afunilamento:5, espessura:5, mobilidade:10, gap:25,
     slingUretraMin:3, slingUretraMax:5, slingPubis:15,
     hiatoLeve:25, hiatoModerado:30, hiatoAcentuado:35, hiatoSevero:40,
@@ -1191,8 +1186,6 @@
   }
   function applyVRToInputs(){
     $('vr_medicoNome').value = VR.medicoNome;
-    $('vr_medicoQual1').value = VR.medicoQual1;
-    $('vr_medicoQual2').value = VR.medicoQual2;
     $('vr_medicoCRM').value = VR.medicoCRM;
     $('vr_anguloMin').value = VR.anguloMin;
     $('vr_anguloMax').value = VR.anguloMax;
@@ -1257,8 +1250,6 @@
   $('btnSaveVR').addEventListener('click', async ()=>{
     VR = {
       medicoNome: $('vr_medicoNome').value || '',
-      medicoQual1: $('vr_medicoQual1').value || '',
-      medicoQual2: $('vr_medicoQual2').value || '',
       medicoCRM: $('vr_medicoCRM').value || '',
       anguloMin: pf('vr_anguloMin', 90),
       anguloMax: pf('vr_anguloMax', 120),
@@ -2002,10 +1993,7 @@
     // once: the footnote bottom-left, signature bottom-right.
     html += '<div class="rodape-final">';
     html += '<p class="footnote">Este laudo segue a padronização do sistema POP-Q, conforme recomendações da International Continence Society (ICS) e da American Urogynecologic Society (AUGS).</p>';
-    html += '<div class="assinatura"><p class="assinatura-nome">'+escapeHtml(VR.medicoNome)+'</p>';
-    if(VR.medicoQual1) html += '<p class="assinatura-info">'+escapeHtml(VR.medicoQual1)+'</p>';
-    if(VR.medicoQual2) html += '<p class="assinatura-info">'+escapeHtml(VR.medicoQual2)+'</p>';
-    html += '<p class="assinatura-info">'+escapeHtml(VR.medicoCRM)+'</p></div>';
+    html += '<div class="assinatura"><p class="assinatura-nome">'+escapeHtml(VR.medicoNome)+'</p><p class="assinatura-info">'+escapeHtml(VR.medicoCRM)+'</p></div>';
     html += '</div>';
 
     $('paper').innerHTML = html;
