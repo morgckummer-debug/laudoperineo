@@ -1606,7 +1606,6 @@
     endometrioma: (lado, m)=> phraseRaw('ovarioEndometrioma', {LADO:lado, MEDIDA:m})
   };
   const OVARIO_HD_TEXT = {
-    volume_reduzido: (lado)=> phraseRaw('impOvarioVolumeReduzido', {LADO:lado}),
     policistico: (lado)=> phraseRaw('impOvarioPolicistico', {LADO:lado}),
     cisto1: (lado)=> phraseRaw('impOvarioCisto1', {LADO:lado}),
     cisto2: (lado)=> phraseRaw('impOvarioCisto2', {LADO:lado}),
@@ -1656,7 +1655,20 @@
       items.push({key:'ov-policistico-bilateral', label:phraseRaw('impOvariosPolicisticosBilateral'), auto:true});
     }
 
-    const ambosOvariosVolumeReduzido = state.ovD_aspecto==='volume_reduzido' && state.ovE_aspecto==='volume_reduzido';
+    // Reduced ovarian volume isn't picked from the dropdown like a cyst or
+    // corpus luteum would be — it's just a numeric reading below the
+    // reference range, so it's also detected automatically off the volume
+    // field itself (only against the "padrão" VR, since the menopause VR has
+    // no lower bound to compare against).
+    function ovarioVolumeReduzido(prefix){
+      if(state[prefix+'_aspecto']==='volume_reduzido') return true;
+      if(state[prefix+'_aspecto']!=='normal' || state.vrOvarioTipo==='menopausa') return false;
+      const vn = state[prefix+'_volNum'];
+      return vn!=null && vn < VR.ovarioMin;
+    }
+    const ovD_volumeReduzido = ovarioVolumeReduzido('ovD');
+    const ovE_volumeReduzido = ovarioVolumeReduzido('ovE');
+    const ambosOvariosVolumeReduzido = ovD_volumeReduzido && ovE_volumeReduzido;
     if(ambosOvariosVolumeReduzido){
       items.push({key:'ov-volume-reduzido-bilateral', label:phraseRaw('impOvariosVolumeReduzidoBilateral'), auto:true});
     }
@@ -1665,12 +1677,15 @@
       const aspecto = state[prefix+'_aspecto'];
       const lado = prefix==='ovD' ? 'direito' : 'esquerdo';
       const ladoFem = prefix==='ovD' ? 'direita' : 'esquerda';
+      const volumeReduzido = prefix==='ovD' ? ovD_volumeReduzido : ovE_volumeReduzido;
       if(ambosOvariosPolicisticos && aspecto==='policistico') return;
-      if(ambosOvariosVolumeReduzido && aspecto==='volume_reduzido') return;
+      if(ambosOvariosVolumeReduzido && volumeReduzido) return;
       if(aspecto==='nao_identificado'){
         items.push({key:prefix+'-nao-identificado', label:phraseRaw('impOvarioNaoIdentificado', {LADO:lado}), auto:true});
       } else if(aspecto==='alterado' && state[prefix+'_descricao']){
         items.push({key:prefix+'-alterado', label:phraseRaw('impOvarioAlterado', {LADO:lado, DESCRICAO:state[prefix+'_descricao']}), auto:true});
+      } else if(volumeReduzido){
+        items.push({key:prefix+'-volume-reduzido', label:phraseRaw('impOvarioVolumeReduzido', {LADO:lado}), auto:true});
       } else if(OVARIO_HD_TEXT[aspecto]){
         const ladoUsado = (aspecto==='dermoide' || aspecto==='endometrioma') ? ladoFem : lado;
         items.push({key:prefix+'-'+aspecto, label:OVARIO_HD_TEXT[aspecto](ladoUsado), auto:true});
@@ -1950,8 +1965,9 @@
       miometrioAspecto, miomaTemDados: miomaFrags.length>0, miomaFrags, chkAdenomiose,
       chkIstmocele, istmocelePct, chkPolipoEndocervical, chkDIU, diuPosicao,
       endometrioAspecto,
-      ovD_aspecto: ovD.aspecto, ovD_descricao: ovD.descricao,
-      ovE_aspecto: ovE.aspecto, ovE_descricao: ovE.descricao,
+      ovD_aspecto: ovD.aspecto, ovD_descricao: ovD.descricao, ovD_volNum: ovD.volNum,
+      ovE_aspecto: ovE.aspecto, ovE_descricao: ovE.descricao, ovE_volNum: ovE.volNum,
+      vrOvarioTipo,
       chkHidrossalpinge, hidrossalpingeLado, chkVarizes,
       chkEndometriose, endometrioseLocal, endometrioseRegiao,
       chkMobilidadeOvD, chkMobilidadeOvE
