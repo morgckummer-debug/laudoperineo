@@ -165,7 +165,7 @@
   .paper .id-card-row{display:flex;justify-content:space-between;gap:16px;font-size:12pt;}
   .paper .id-card-row + .id-card-row{margin-top:2px;}
   .paper h3.doctitle{
-    text-align:center;text-decoration:underline;font-size:16px;letter-spacing:.5px;
+    text-align:center;text-decoration:underline;font-size:16pt;letter-spacing:.5px;
     margin:0 0 24px;font-weight:700;
   }
   .paper .relato{color:#C0392B;font-weight:700;margin:0 0 12px;}
@@ -795,6 +795,7 @@
       <span class="fmt-sep"></span>
       <label for="fmtLineHeight">Espaçamento entre linhas</label>
       <select id="fmtLineHeight" title="Espaçamento entre linhas">
+        <option value="1">Mínimo</option>
         <option value="1.15" selected>Compacto</option>
         <option value="1.35">Estreito</option>
         <option value="1.5">Normal</option>
@@ -929,12 +930,54 @@
       else if(e.key === 'u' || e.key === 'U'){ e.preventDefault(); applyFormat('underline'); }
     });
 
+    // Both selects below act on whatever's selected inside #paper, same as
+    // bold/italic — with nothing selected they fall back to the whole
+    // report. The selection has to be captured on mousedown, before the
+    // click's default action moves focus to the <select>: by the time
+    // 'change' fires (after the option is picked), the browser has already
+    // collapsed window.getSelection() to nothing, so reading it there would
+    // always fall into the "nothing selected" branch.
+    function captureSelectionInPaper(){
+      const sel = window.getSelection();
+      if(sel && sel.rangeCount && !sel.isCollapsed && paperEl.contains(sel.anchorNode) && paperEl.contains(sel.focusNode)){
+        return sel.getRangeAt(0).cloneRange();
+      }
+      return null;
+    }
+    // Wraps a captured range in a <span> carrying one inline style, then
+    // re-selects that span's contents so a follow-up change (picking another
+    // value right after) still targets the same text.
+    function wrapSelectionInStyledSpan(range, applyStyle){
+      const span = document.createElement('span');
+      applyStyle(span.style);
+      try{
+        range.surroundContents(span);
+      }catch(e){
+        const contents = range.extractContents();
+        span.appendChild(contents);
+        range.insertNode(span);
+      }
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      const newRange = document.createRange();
+      newRange.selectNodeContents(span);
+      sel.addRange(newRange);
+    }
+
     // Set as an inline style on #paper itself (not on its innerHTML), so it
     // survives render() re-drawing the report content — render() only ever
-    // reassigns paperEl.innerHTML, never touches paperEl.style.
+    // reassigns paperEl.innerHTML, never touches paperEl.style. With text
+    // selected inside #paper, it instead scopes to just that selection.
+    let savedLineHeightRange = null;
+    lineHeightSel.addEventListener('mousedown', ()=>{ savedLineHeightRange = captureSelectionInPaper(); });
     lineHeightSel.addEventListener('change', ()=>{
-      paperEl.style.lineHeight = lineHeightSel.value;
-      kvStore.set('paper-line-height', lineHeightSel.value);
+      if(savedLineHeightRange){
+        wrapSelectionInStyledSpan(savedLineHeightRange, style=>{ style.lineHeight = lineHeightSel.value; });
+        savedLineHeightRange = null;
+      } else {
+        paperEl.style.lineHeight = lineHeightSel.value;
+        kvStore.set('paper-line-height', lineHeightSel.value);
+      }
     });
     kvStore.get('paper-line-height').then(saved=>{
       if(!saved) return;
@@ -943,26 +986,12 @@
     });
 
     // Font size: if the user has text selected inside #paper (e.g. just the
-    // title), wrap only that selection in a sized span — same "acts on the
-    // selection" behavior as bold/italic. With nothing selected, it falls
-    // back to setting the whole report's default size (and that default is
-    // the part that's saved/restored across sessions).
-    //
-    // The selection has to be captured on mousedown, before the click's
-    // default action moves focus to the <select> — by the time 'change'
-    // fires (after the option is picked), the browser has already collapsed
-    // window.getSelection() to nothing, so reading it there would always
-    // fall into the "nothing selected" branch.
+    // title), wrap only that selection in a sized span. With nothing
+    // selected, it falls back to setting the whole report's default size
+    // (and that default is the part that's saved/restored across sessions).
     const fontSizeSel = $('fmtFontSize');
     let savedFontSizeRange = null;
-    fontSizeSel.addEventListener('mousedown', ()=>{
-      const sel = window.getSelection();
-      if(sel && sel.rangeCount && !sel.isCollapsed && paperEl.contains(sel.anchorNode) && paperEl.contains(sel.focusNode)){
-        savedFontSizeRange = sel.getRangeAt(0).cloneRange();
-      } else {
-        savedFontSizeRange = null;
-      }
-    });
+    fontSizeSel.addEventListener('mousedown', ()=>{ savedFontSizeRange = captureSelectionInPaper(); });
     fontSizeSel.addEventListener('change', ()=>{
       const size = fontSizeSel.value;
       const titleEl = paperEl.querySelector('h3.doctitle');
@@ -975,25 +1004,34 @@
         titleEl.style.fontSize = size + 'pt';
         savedFontSizeRange = null;
       } else if(savedFontSizeRange){
-        const span = document.createElement('span');
-        span.style.fontSize = size + 'pt';
-        try{
-          savedFontSizeRange.surroundContents(span);
-        }catch(e){
-          const contents = savedFontSizeRange.extractContents();
-          span.appendChild(contents);
-          savedFontSizeRange.insertNode(span);
-        }
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        const newRange = document.createRange();
-        newRange.selectNodeContents(span);
-        sel.addRange(newRange);
+        wrapSelectionInStyledSpan(savedFontSizeRange, style=>{ style.fontSize = size + 'pt'; });
         savedFontSizeRange = null;
       } else {
         paperEl.style.fontSize = size + 'pt';
         kvStore.set('paper-font-size', size);
       }
+    });
+    // The size select otherwise always showed whatever was last applied
+    // globally, even while clicking around text set to a different size (the
+    // title, or an earlier manual override) — so it looked like nothing was
+    // selected, when it was really just not reporting back. Reflect the
+    // actual font-size in effect at the caret/selection instead.
+    document.addEventListener('selectionchange', ()=>{
+      const sel = window.getSelection();
+      if(!sel || !sel.rangeCount) return;
+      const node = sel.anchorNode;
+      if(!node || !paperEl.contains(node)) return;
+      const el = node.nodeType === 3 ? node.parentElement : node;
+      if(!el) return;
+      const px = parseFloat(getComputedStyle(el).fontSize);
+      if(isNaN(px)) return;
+      const pt = px / (96/72);
+      let closest = null, closestDiff = Infinity;
+      Array.from(fontSizeSel.options).forEach(o=>{
+        const diff = Math.abs(parseFloat(o.value) - pt);
+        if(diff < closestDiff){ closest = o; closestDiff = diff; }
+      });
+      if(closest && closestDiff < 0.4) fontSizeSel.value = closest.value;
     });
     // A font size saved from a much earlier visit pins this browser to
     // whatever the app's default happened to be back then (body 11.5pt, or a
@@ -2201,7 +2239,7 @@
       });
       ul.replaceWith(div);
     });
-    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; if(!h.style.fontSize) h.style.fontSize='16px'; });
+    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='700'; if(!h.style.fontSize) h.style.fontSize='16pt'; });
     clone.querySelectorAll('.id-card').forEach(el=>{ el.style.background='#ffffff'; el.style.border='1.5px solid #2b2b2e'; el.style.borderRadius='10px'; el.style.padding='10px 16px'; el.style.marginBottom='20px'; el.style.fontWeight='700'; });
     clone.querySelectorAll('.relato').forEach(h=>{ h.style.color='#C0392B'; h.style.fontWeight='700'; });
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
