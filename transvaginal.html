@@ -853,6 +853,15 @@
         }
       }catch(e){ /* fall through to localStorage */ }
       try{ localStorage.setItem(key, value); }catch(e){ /* storage unavailable this session */ }
+    },
+    async remove(key){
+      try{
+        if(window.storage && typeof window.storage.remove === 'function'){
+          await window.storage.remove(key);
+          return;
+        }
+      }catch(e){ /* fall through to localStorage */ }
+      try{ localStorage.removeItem(key); }catch(e){ /* storage unavailable this session */ }
     }
   };
 
@@ -986,17 +995,32 @@
         kvStore.set('paper-font-size', size);
       }
     });
-    kvStore.get('paper-font-size').then(saved=>{
-      if(!saved) return;
-      fontSizeSel.value = saved;
-      paperEl.style.fontSize = saved + 'pt';
-    });
-    kvStore.get('title-font-size').then(saved=>{
-      if(!saved) return;
-      titleFontSize = saved;
-      const titleEl = paperEl.querySelector('h3.doctitle');
-      if(titleEl) titleEl.style.fontSize = saved + 'pt';
-    });
+    // A font size saved from a much earlier visit pins this browser to
+    // whatever the app's default happened to be back then (body 11.5pt, or a
+    // title resized off an even older default) — that stale value then
+    // silently outlives any later change to the app's own defaults. Clear it
+    // once so this browser picks up the current defaults again; a size the
+    // user deliberately re-picks afterward is saved fresh and respected as
+    // normal from then on.
+    (async function initFontSizePrefs(){
+      const migrated = await kvStore.get('font-size-defaults-reset-v1');
+      if(!migrated){
+        await kvStore.remove('paper-font-size');
+        await kvStore.remove('title-font-size');
+        await kvStore.set('font-size-defaults-reset-v1', '1');
+      }
+      const savedPaper = await kvStore.get('paper-font-size');
+      if(savedPaper){
+        fontSizeSel.value = savedPaper;
+        paperEl.style.fontSize = savedPaper + 'pt';
+      }
+      const savedTitle = await kvStore.get('title-font-size');
+      if(savedTitle){
+        titleFontSize = savedTitle;
+        const titleEl = paperEl.querySelector('h3.doctitle');
+        if(titleEl) titleEl.style.fontSize = savedTitle + 'pt';
+      }
+    })();
   })();
 
   // ---------- Médico solicitante: hand-rolled combobox, seeded with the
