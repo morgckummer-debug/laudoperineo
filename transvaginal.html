@@ -143,7 +143,7 @@
     background:#FEFCFE;border:1px solid var(--line);border-radius:4px;
     box-shadow:var(--shadow);
     padding:34px 36px 40px;
-    font-family:'Times New Roman', Times, serif;font-size:11.5pt;line-height:1.15;color:var(--ink);
+    font-family:'Times New Roman', Times, serif;font-size:12pt;line-height:1.15;color:var(--ink);
     max-height:calc(100vh - 150px);overflow-y:auto;
     /* Matches the 17cm content width paginateForPrint() measures against
        (21cm A4 minus 2cm side margins), so the on-screen page-break preview
@@ -162,7 +162,7 @@
     font-weight:700;
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   }
-  .paper .id-card-row{display:flex;justify-content:space-between;gap:16px;font-size:11.5pt;}
+  .paper .id-card-row{display:flex;justify-content:space-between;gap:16px;font-size:12pt;}
   .paper .id-card-row + .id-card-row{margin-top:2px;}
   .paper h3.doctitle{
     text-align:center;text-decoration:underline;font-size:16px;letter-spacing:.5px;
@@ -418,6 +418,8 @@
   <div class="field" style="margin-bottom:8px;"><label>Ovário alterado (outro) — use {LADO} e {DESCRICAO}</label><textarea id="ph_impOvarioAlterado" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovário policístico — use {LADO}</label><textarea id="ph_impOvarioPolicistico" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovários policísticos bilateral (ambos os ovários)</label><textarea id="ph_impOvariosPolicisticosBilateral" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Ovário de volume reduzido — use {LADO}</label><textarea id="ph_impOvarioVolumeReduzido" rows="2"></textarea></div>
+  <div class="field" style="margin-bottom:8px;"><label>Ovários de volume reduzido bilateral (ambos os ovários)</label><textarea id="ph_impOvariosVolumeReduzidoBilateral" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovário com 1 cisto simples — use {LADO}</label><textarea id="ph_impOvarioCisto1" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovário com 2 cistos simples — use {LADO}</label><textarea id="ph_impOvarioCisto2" rows="2"></textarea></div>
   <div class="field" style="margin-bottom:8px;"><label>Ovário com corpo lúteo — use {LADO}</label><textarea id="ph_impOvarioCorpoLuteo" rows="2"></textarea></div>
@@ -620,6 +622,7 @@
           <div class="field"><label>Aspecto</label>
             <select id="ovD_aspecto">
               <option value="normal">Normal (dimensões e ecotextura preservadas)</option>
+              <option value="volume_reduzido">Volume reduzido</option>
               <option value="policistico">Ovário policístico</option>
               <option value="cisto1">1 cisto simples</option>
               <option value="cisto2">2 cistos simples</option>
@@ -671,6 +674,7 @@
           <div class="field"><label>Aspecto</label>
             <select id="ovE_aspecto">
               <option value="normal">Normal (dimensões e ecotextura preservadas)</option>
+              <option value="volume_reduzido">Volume reduzido</option>
               <option value="policistico">Ovário policístico</option>
               <option value="cisto1">1 cisto simples</option>
               <option value="cisto2">2 cistos simples</option>
@@ -801,8 +805,8 @@
       <select id="fmtFontSize" title="Tamanho da fonte">
         <option value="10.5">10,5 pt</option>
         <option value="11">11 pt</option>
-        <option value="11.5" selected>11,5 pt (padrão)</option>
-        <option value="12">12 pt</option>
+        <option value="11.5">11,5 pt</option>
+        <option value="12" selected>12 pt (padrão)</option>
         <option value="12.5">12,5 pt</option>
         <option value="13">13 pt</option>
         <option value="14">14 pt</option>
@@ -1271,6 +1275,8 @@
     impOvarioAlterado: 'Ovário {LADO}: {DESCRICAO}.',
     impOvarioPolicistico: 'Ovário {LADO} com aspecto sugestivo de ovários policísticos.',
     impOvariosPolicisticosBilateral: 'Ovários de volume aumentado, micropolicísticos.',
+    impOvarioVolumeReduzido: 'Ovário {LADO} de volume reduzido.',
+    impOvariosVolumeReduzidoBilateral: 'Ovários de volume reduzido.',
     impOvarioCisto1: 'Ovário {LADO} de volume aumentado às custas de cisto uniloculado.',
     impOvarioCisto2: 'Ovário {LADO} de volume aumentado às custas de cistos uniloculados.',
     impOvarioCorpoLuteo: 'Ovário {LADO} de volume aumentado, apresentando imagem compatível com corpo lúteo.',
@@ -1600,6 +1606,7 @@
     endometrioma: (lado, m)=> phraseRaw('ovarioEndometrioma', {LADO:lado, MEDIDA:m})
   };
   const OVARIO_HD_TEXT = {
+    volume_reduzido: (lado)=> phraseRaw('impOvarioVolumeReduzido', {LADO:lado}),
     policistico: (lado)=> phraseRaw('impOvarioPolicistico', {LADO:lado}),
     cisto1: (lado)=> phraseRaw('impOvarioCisto1', {LADO:lado}),
     cisto2: (lado)=> phraseRaw('impOvarioCisto2', {LADO:lado}),
@@ -1649,11 +1656,17 @@
       items.push({key:'ov-policistico-bilateral', label:phraseRaw('impOvariosPolicisticosBilateral'), auto:true});
     }
 
+    const ambosOvariosVolumeReduzido = state.ovD_aspecto==='volume_reduzido' && state.ovE_aspecto==='volume_reduzido';
+    if(ambosOvariosVolumeReduzido){
+      items.push({key:'ov-volume-reduzido-bilateral', label:phraseRaw('impOvariosVolumeReduzidoBilateral'), auto:true});
+    }
+
     ['ovD','ovE'].forEach(prefix=>{
       const aspecto = state[prefix+'_aspecto'];
       const lado = prefix==='ovD' ? 'direito' : 'esquerdo';
       const ladoFem = prefix==='ovD' ? 'direita' : 'esquerda';
       if(ambosOvariosPolicisticos && aspecto==='policistico') return;
+      if(ambosOvariosVolumeReduzido && aspecto==='volume_reduzido') return;
       if(aspecto==='nao_identificado'){
         items.push({key:prefix+'-nao-identificado', label:phraseRaw('impOvarioNaoIdentificado', {LADO:lado}), auto:true});
       } else if(aspecto==='alterado' && state[prefix+'_descricao']){
@@ -2164,7 +2177,7 @@
     // rodapé. Tables render identically in Word as everywhere else, so any
     // row that relied on flex for its side-by-side layout is rebuilt as one.
     clone.querySelectorAll('.id-card-row').forEach(el=>{
-      el.style.fontSize = '11.5pt';
+      el.style.fontSize = '12pt';
       if(el.children.length !== 2) return;
       const [left, right] = el.children;
       const table = document.createElement('table');
@@ -2188,7 +2201,7 @@
     });
 
     const lineHeight = $('paper').style.lineHeight || '1.15';
-    const fontSize = $('paper').style.fontSize || '11.5pt';
+    const fontSize = $('paper').style.fontSize || '12pt';
     return "<div style=\"font-family:'Times New Roman',Times,serif;font-size:"+fontSize+";line-height:"+lineHeight+";\">"+clone.innerHTML+'</div>';
   }
 
