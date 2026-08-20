@@ -129,14 +129,14 @@
   }
   .paper h3.doctitle{
     text-align:center;text-decoration:underline;font-size:14pt;letter-spacing:.5px;
-    margin:0 0 4px;font-weight:600;
+    margin:var(--titulo-margin-top, 0) 0 4px;font-weight:600;
   }
   .paper .doctitle-sub{text-align:center;font-size:10.5pt;color:var(--ink-soft);margin-bottom:20px;}
   .paper h4.sec{
     text-decoration:underline;font-size:13px;letter-spacing:.4px;margin:20px 0 8px;font-weight:600;color:var(--rose-dark);
   }
   .paper ul{margin:0 0 4px 0;padding-left:20px;}
-  .paper li{margin-bottom:16px;}
+  .paper li{margin-bottom:var(--linha-margin, 16px);}
   .paper .blank{color:#B4432F;font-weight:600;}
   .paper .filled{color:var(--ink);}
   .paper .impressao li{font-weight:700;margin-bottom:2px;}
@@ -166,6 +166,18 @@
   .format-toolbar .fmt-btn:hover{border-color:var(--rose);color:var(--rose-dark);}
   .format-toolbar .fmt-btn.active{background:var(--rose-light);border-color:var(--rose);color:var(--rose-dark);}
   .format-toolbar .fmt-sep{width:1px;height:22px;background:var(--line);margin:0 4px;}
+  /* Keeps each label glued to its own <select> when the toolbar wraps at
+     narrow widths — before this, flex-wrap could break the line between a
+     label and its select (they were separate flex items), leaving a select
+     stranded on the next row with no visible label, easy to mistake for a
+     different control. */
+  .format-toolbar .fmt-group{display:inline-flex;align-items:center;gap:6px;}
+  .format-toolbar .fmt-reset{
+    border:1.5px solid var(--line);border-radius:8px;padding:5px 10px;font-size:12px;
+    background:#fff;color:var(--ink);cursor:pointer;white-space:nowrap;
+  }
+  .format-toolbar .fmt-reset:hover{border-color:var(--rose);color:var(--rose-dark);}
+  .format-toolbar .fmt-build{font-size:10.5px;color:var(--ink-soft);opacity:.75;margin-left:auto;white-space:nowrap;}
   .format-toolbar label{font-size:12px;color:var(--ink-soft);}
   .format-toolbar select{
     border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;font-size:12.5px;color:var(--ink);
@@ -819,29 +831,51 @@
         <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="3" x2="15" y2="3"/><line x1="1" y1="6.5" x2="15" y2="6.5"/><line x1="1" y1="10" x2="15" y2="10"/><line x1="1" y1="13.5" x2="15" y2="13.5"/></svg>
       </button>
       <span class="fmt-sep"></span>
-      <label for="fmtLineHeight">Espaçamento entre linhas</label>
-      <select id="fmtLineHeight" title="Espaçamento entre linhas">
-        <option value="1">Mínimo</option>
-        <option value="1.15" selected>Compacto</option>
-        <option value="1.35">Estreito</option>
-        <option value="1.5">Normal</option>
-        <option value="1.8">Largo</option>
-      </select>
+      <span class="fmt-group">
+        <label for="fmtLineHeight">Espaçamento entre linhas (todo o laudo)</label>
+        <select id="fmtLineHeight" title="Espaçamento entre linhas (todo o laudo)">
+          <option value="1">Mínimo</option>
+          <option value="1.15" selected>Compacto</option>
+          <option value="1.35">Estreito</option>
+          <option value="1.5">Normal</option>
+          <option value="1.8">Largo</option>
+        </select>
+      </span>
       <span class="fmt-sep"></span>
-      <label for="fmtFontSize">Tamanho da fonte</label>
-      <select id="fmtFontSize" title="Tamanho da fonte">
-        <option value="10.5">10,5 pt</option>
-        <option value="11">11 pt</option>
-        <option value="11.5" selected>11,5 pt (padrão)</option>
-        <option value="12">12 pt</option>
-        <option value="12.5">12,5 pt</option>
-        <option value="13">13 pt</option>
-        <option value="14">14 pt</option>
-        <option value="15">15 pt</option>
-        <option value="16">16 pt</option>
-        <option value="17">17 pt</option>
-        <option value="18">18 pt</option>
-      </select>
+      <span class="fmt-group">
+        <label for="fmtTituloGap">Espaço só acima do título</label>
+        <select id="fmtTituloGap" title="Espaço só acima do título (não mexe no resto do laudo)">
+          <option value="0" selected>Nenhum (padrão)</option>
+          <option value="1">1 mm</option>
+          <option value="2">2 mm</option>
+          <option value="3">3 mm</option>
+          <option value="5">5 mm</option>
+          <option value="8">8 mm</option>
+          <option value="12">12 mm</option>
+          <option value="16">16 mm</option>
+          <option value="20">20 mm</option>
+        </select>
+      </span>
+      <span class="fmt-sep"></span>
+      <span class="fmt-group">
+        <label for="fmtFontSize">Tamanho da fonte</label>
+        <select id="fmtFontSize" title="Tamanho da fonte">
+          <option value="10.5">10,5 pt</option>
+          <option value="11">11 pt</option>
+          <option value="11.5" selected>11,5 pt (padrão)</option>
+          <option value="12">12 pt</option>
+          <option value="12.5">12,5 pt</option>
+          <option value="13">13 pt</option>
+          <option value="14">14 pt</option>
+          <option value="15">15 pt</option>
+          <option value="16">16 pt</option>
+          <option value="17">17 pt</option>
+          <option value="18">18 pt</option>
+        </select>
+      </span>
+      <span class="fmt-sep"></span>
+      <button type="button" class="fmt-reset" id="fmtResetSpacing" title="Volta o espaçamento entre linhas e o espaço acima do título ao padrão, e apaga o que estiver salvo neste navegador">Restaurar espaçamento padrão</button>
+      <span class="fmt-build" title="Versão deste arquivo de laudo — útil para conferir se o navegador está abrindo a versão mais recente">v2026.08.20-a</span>
     </div>
     <table class="paper-table">
       <thead><tr><td></td></tr></thead>
@@ -880,6 +914,15 @@
         }
       }catch(e){ /* fall through to localStorage */ }
       try{ localStorage.setItem(key, value); }catch(e){ /* storage unavailable this session */ }
+    },
+    async remove(key){
+      try{
+        if(window.storage && typeof window.storage.remove === 'function'){
+          await window.storage.remove(key);
+          return;
+        }
+      }catch(e){ /* fall through to localStorage */ }
+      try{ localStorage.removeItem(key); }catch(e){ /* storage unavailable this session */ }
     }
   };
 
@@ -938,6 +981,55 @@
       else if(e.key === 'u' || e.key === 'U'){ e.preventDefault(); applyFormat('underline'); }
     });
 
+    // O espaço acima do título é margin do CSS, não uma linha de texto — e o
+    // título é o primeiríssimo elemento do laudo, então não existe lugar
+    // nenhum ali para o cursor pousar. A saída natural é dar Enter no
+    // começo do título para empurrá-lo para baixo; em vez de deixar esse
+    // atalho quebrado (ou criando lixo visual), ele passa a acionar o
+    // controle de verdade: no COMEÇO do título, Enter aumenta e Backspace
+    // diminui o espaço acima dele, um degrau do seletor por vez.
+    function cursorNoInicioDoTitulo(range){
+      const titleEl = paperEl.querySelector('h3.doctitle');
+      if(!titleEl || !range.collapsed || !titleEl.contains(range.startContainer)) return null;
+      const antes = document.createRange();
+      antes.selectNodeContents(titleEl);
+      antes.setEnd(range.startContainer, range.startOffset);
+      return antes.toString().length === 0 ? titleEl : null;
+    }
+    function passoEspacoTitulo(direcao){
+      const i = tituloGapSel.selectedIndex + direcao;
+      if(i < 0 || i >= tituloGapSel.options.length) return;
+      tituloGapSel.selectedIndex = i;
+      tituloGapSel.dispatchEvent(new Event('change'));
+    }
+    paperEl.addEventListener('keydown', e=>{
+      if(e.key !== 'Enter' && e.key !== 'Backspace') return;
+      const sel = window.getSelection();
+      if(!sel || !sel.rangeCount) return;
+      const range = sel.getRangeAt(0);
+
+      if(cursorNoInicioDoTitulo(range)){
+        e.preventDefault();
+        passoEspacoTitulo(e.key === 'Enter' ? 1 : -1);
+        return;
+      }
+      if(e.key !== 'Enter') return;
+
+      // Enter no meio do título dividiria o <h3 class="doctitle"> em dois
+      // <h3> (comportamento padrão do contenteditable dentro de um heading).
+      // Aqui o próximo render() reconstrói o innerHTML inteiro e apagaria
+      // essa duplicata de qualquer forma, mas até lá o laudo mostraria um
+      // segundo <h3> solto — uma quebra de linha simples evita esse estado
+      // intermediário confuso sem abrir mão de poder quebrar o título em
+      // duas linhas.
+      const anchorNode = sel.anchorNode;
+      const anchorEl = anchorNode ? (anchorNode.nodeType === 1 ? anchorNode : anchorNode.parentElement) : null;
+      if(anchorEl && anchorEl.closest('h3.doctitle')){
+        e.preventDefault();
+        document.execCommand('insertLineBreak');
+      }
+    });
+
     // Both selects below act on whatever's selected inside #paper, same as
     // bold/italic — with nothing selected they fall back to the whole
     // report. The selection has to be captured on mousedown, before the
@@ -976,14 +1068,41 @@
     // survives render() re-drawing the report content — render() only ever
     // reassigns paperEl.innerHTML, never touches paperEl.style. With text
     // selected inside #paper, it instead scopes to just that selection.
+    // "Espaçamento entre linhas" só mudava o line-height do texto — o
+    // espaço ENTRE itens da lista vem da margin de cada <li>, que é outra
+    // propriedade. Sem isso, escolher "Mínimo" não fechava a distância
+    // visível entre achados, mesmo o menu mostrando a opção ativa. Por isso
+    // o valor escolhido também ajusta a margin dos <li> que a seleção toca
+    // (ou de todos, sem seleção) — exceto os da lista de impressão
+    // diagnóstica (.impressao), que têm espaçamento fixo e apertado de
+    // propósito.
+    const LINE_HEIGHT_MARGIN = {'1':'1mm', '1.15':'2mm', '1.35':'3mm', '1.5':'4mm', '1.8':'6mm'};
     let savedLineHeightRange = null;
     lineHeightSel.addEventListener('mousedown', ()=>{ savedLineHeightRange = captureSelectionInPaper(); });
     lineHeightSel.addEventListener('change', ()=>{
-      if(savedLineHeightRange){
-        wrapSelectionInStyledSpan(savedLineHeightRange, style=>{ style.lineHeight = lineHeightSel.value; });
-        savedLineHeightRange = null;
+      const range = savedLineHeightRange;
+      savedLineHeightRange = null;
+      const margin = LINE_HEIGHT_MARGIN[lineHeightSel.value] || '16px';
+      if(range){
+        const itens = Array.from(paperEl.querySelectorAll('li')).filter(el=> !el.closest('.impressao') && range.intersectsNode(el));
+        if(itens.length > 1){
+          // Seleção cruza mais de um item: aplica direto em cada um, em vez
+          // de envolver num <span> — um <span> (inline) não pode conter
+          // <li> (bloco) validamente.
+          itens.forEach(el=>{ el.style.lineHeight = lineHeightSel.value; el.style.marginBottom = margin; });
+        } else {
+          wrapSelectionInStyledSpan(range, style=>{ style.lineHeight = lineHeightSel.value; });
+          itens.forEach(el=>{ el.style.marginBottom = margin; });
+        }
       } else {
+        // Sem seleção: limpa overrides de trechos selecionados antes, senão ficam "presos" e não acompanham a mudança geral.
+        paperEl.querySelectorAll('[style*="line-height"]').forEach(el=>{
+          el.style.lineHeight = '';
+          if(!el.getAttribute('style')) el.removeAttribute('style');
+        });
+        paperEl.querySelectorAll('li').forEach(el=>{ if(!el.closest('.impressao')) el.style.marginBottom = ''; });
         paperEl.style.lineHeight = lineHeightSel.value;
+        paperEl.style.setProperty('--linha-margin', margin);
         kvStore.set('paper-line-height', lineHeightSel.value);
       }
     });
@@ -991,7 +1110,41 @@
       if(!saved) return;
       lineHeightSel.value = saved;
       paperEl.style.lineHeight = saved;
+      paperEl.style.setProperty('--linha-margin', LINE_HEIGHT_MARGIN[saved] || '16px');
     });
+
+    // Espaço acima do título: controle dedicado e sempre visível, já que o
+    // título é o primeiro elemento do laudo (não há cabeçalho de
+    // identificação aqui) — nunca afeta os itens do corpo.
+    const tituloGapSel = $('fmtTituloGap');
+    const TITULO_GAP_MARGIN = {'0':'0mm', '1':'1mm', '2':'2mm', '3':'3mm', '5':'5mm', '8':'8mm', '12':'12mm', '16':'16mm', '20':'20mm'};
+    tituloGapSel.addEventListener('change', ()=>{
+      paperEl.style.setProperty('--titulo-margin-top', TITULO_GAP_MARGIN[tituloGapSel.value] || '0mm');
+      kvStore.set('titulo-gap', tituloGapSel.value);
+    });
+    kvStore.get('titulo-gap').then(saved=>{
+      if(!saved) return;
+      tituloGapSel.value = saved;
+      paperEl.style.setProperty('--titulo-margin-top', TITULO_GAP_MARGIN[saved] || '0mm');
+    });
+
+    // Volta os dois espaçamentos ao padrão de fábrica e apaga o que estiver
+    // salvo neste navegador.
+    function resetEspacamentos(){
+      paperEl.querySelectorAll('[style*="line-height"]').forEach(el=>{
+        el.style.lineHeight = '';
+        if(!el.getAttribute('style')) el.removeAttribute('style');
+      });
+      paperEl.querySelectorAll('li').forEach(el=>{ if(!el.closest('.impressao')) el.style.marginBottom = ''; });
+      paperEl.style.lineHeight = '';
+      paperEl.style.removeProperty('--linha-margin');
+      paperEl.style.removeProperty('--titulo-margin-top');
+      lineHeightSel.value = '1.15';
+      tituloGapSel.value = '0';
+      kvStore.remove('paper-line-height');
+      kvStore.remove('titulo-gap');
+    }
+    $('fmtResetSpacing').addEventListener('click', resetEspacamentos);
 
     // Font size: if the user has text selected inside #paper (e.g. just the
     // title), wrap only that selection in a sized span. With nothing
@@ -2145,7 +2298,13 @@
   function buildReportHtml(){
     const clone = $('paper').cloneNode(true);
     clone.querySelectorAll('.impressao li').forEach(li=>{ li.style.fontWeight = '700'; });
-    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='600'; if(!h.style.fontSize) h.style.fontSize='14pt'; });
+    // O <style> da página (incluindo a variável --titulo-margin-top) não
+    // acompanha este HTML exportado — só estilos inline sobrevivem. Sem
+    // isso, a escolha de "Espaço acima do título" ficaria correta na tela
+    // e na impressão, mas voltaria ao padrão no Word/clipboard.
+    const liveTituloEl = $('paper').querySelector('h3.doctitle');
+    const tituloMarginTop = liveTituloEl ? getComputedStyle(liveTituloEl).marginTop : '0px';
+    clone.querySelectorAll('h3.doctitle').forEach(h=>{ h.style.textAlign='center'; h.style.textDecoration='underline'; h.style.fontWeight='600'; if(!h.style.fontSize) h.style.fontSize='14pt'; h.style.marginTop=tituloMarginTop; });
     clone.querySelectorAll('.doctitle-sub').forEach(h=>{ h.style.textAlign='center'; h.style.color='#5b5b5e'; });
     clone.querySelectorAll('h4.sec').forEach(h=>{ h.style.textDecoration='underline'; h.style.fontWeight='600'; });
     clone.querySelectorAll('.blank').forEach(el=>{ el.style.color='#B4432F'; el.style.fontWeight='600'; });
