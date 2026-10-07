@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Laudo de Ultrassonografia Perineal — Dr. Benito Ceccato</title>
+<title>Laudo de Ultrassonografia de Períneo — Dr. Benito Ceccato</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -254,7 +254,7 @@
 
 <div class="topbar">
   <div>
-    <h1>Laudo de Ultrassonografia Perineal</h1>
+    <h1>Laudo de Ultrassonografia de Períneo</h1>
     <div class="sub">Versão personalizada — Dr. Benito Pio Vitorio Ceccato Junior · preencha as medidas e o laudo é montado ao lado</div>
   </div>
   <div class="topbar-actions">
@@ -298,6 +298,8 @@
     <div class="field"><label>Opção 2 — limite máximo (cm³)</label><input type="text" inputmode="decimal" data-decimals="1" id="vr_uteroMax2" value="140"></div>
     <div class="field"><label>Opção 3 — texto exibido</label><input type="text" id="vr_uteroTexto3" value="VR até 180 cm³"></div>
     <div class="field"><label>Opção 3 — limite máximo (cm³)</label><input type="text" inputmode="decimal" data-decimals="1" id="vr_uteroMax3" value="180"></div>
+    <div class="field"><label>Opção 4 (pós-menopausa) — texto exibido</label><input type="text" id="vr_uteroTexto4" value="VR < 70 cm³"></div>
+    <div class="field"><label>Opção 4 (pós-menopausa) — limite máximo (cm³)</label><input type="text" inputmode="decimal" data-decimals="1" id="vr_uteroMax4" value="70"></div>
   </div>
   <hr class="sep">
   <h3>Opções do dropdown — volume ovariano</h3>
@@ -583,6 +585,7 @@
               <option value="op1">VR &lt; 90 cm³</option>
               <option value="op2">VR até 140 cm³</option>
               <option value="op3">VR até 180 cm³</option>
+              <option value="op4">Pós-menopausa — VR &lt; 70 cm³</option>
             </select>
           </div>
         </div>
@@ -1696,6 +1699,7 @@
     uteroTexto1:'VR < 90 cm³', uteroMax1:90,
     uteroTexto2:'VR até 140 cm³', uteroMax2:140,
     uteroTexto3:'VR até 180 cm³', uteroMax3:180,
+    uteroTexto4:'VR < 70 cm³', uteroMax4:70,
     ovarioTexto1:'VR: 3,0 a 9,0 cm³', ovarioMin1:3, ovarioMax1:9,
     ovarioTexto2:'VR: até 5,0 cm³', ovarioMax2:5,
     esfIntSignif:30, esfExtSignif:50
@@ -1734,6 +1738,8 @@
     $('vr_uteroMax2').value = VR.uteroMax2;
     $('vr_uteroTexto3').value = VR.uteroTexto3;
     $('vr_uteroMax3').value = VR.uteroMax3;
+    $('vr_uteroTexto4').value = VR.uteroTexto4;
+    $('vr_uteroMax4').value = VR.uteroMax4;
     $('vr_ovarioTexto1').value = VR.ovarioTexto1;
     $('vr_ovarioMin1').value = VR.ovarioMin1;
     $('vr_ovarioMax1').value = VR.ovarioMax1;
@@ -1749,6 +1755,7 @@
       uteroSel.options[0].textContent = VR.uteroTexto1;
       uteroSel.options[1].textContent = VR.uteroTexto2;
       uteroSel.options[2].textContent = VR.uteroTexto3;
+      uteroSel.options[3].textContent = 'Pós-menopausa — '+VR.uteroTexto4;
     }
     const ovarioSel = $('vrOvarioTipo');
     if(ovarioSel){
@@ -1798,6 +1805,8 @@
       uteroMax2: pf('vr_uteroMax2', 140),
       uteroTexto3: $('vr_uteroTexto3').value || 'VR até 180 cm³',
       uteroMax3: pf('vr_uteroMax3', 180),
+      uteroTexto4: $('vr_uteroTexto4').value || 'VR < 70 cm³',
+      uteroMax4: pf('vr_uteroMax4', 70),
       ovarioTexto1: $('vr_ovarioTexto1').value || 'VR: 3,0 a 9,0 cm³',
       ovarioMin1: pf('vr_ovarioMin1', 3),
       ovarioMax1: pf('vr_ovarioMax1', 9),
@@ -2429,8 +2438,8 @@
 
     const uteroPosicao = v('uteroPosicao');
     const vrUteroTipo = v('vrUteroTipo');
-    const vrUteroLimite = vrUteroTipo==='op2' ? VR.uteroMax2 : (vrUteroTipo==='op3' ? VR.uteroMax3 : VR.uteroMax1);
-    const vrUteroTexto = escapeHtml(vrUteroTipo==='op2' ? VR.uteroTexto2 : (vrUteroTipo==='op3' ? VR.uteroTexto3 : VR.uteroTexto1));
+    const vrUteroLimite = vrUteroTipo==='op2' ? VR.uteroMax2 : (vrUteroTipo==='op3' ? VR.uteroMax3 : (vrUteroTipo==='op4' ? VR.uteroMax4 : VR.uteroMax1));
+    const vrUteroTexto = escapeHtml(vrUteroTipo==='op2' ? VR.uteroTexto2 : (vrUteroTipo==='op3' ? VR.uteroTexto3 : (vrUteroTipo==='op4' ? VR.uteroTexto4 : VR.uteroTexto1)));
     const uteroL = blankOrValue(req('uteroL'));
     const uteroAP = blankOrValue(req('uteroAP'));
     const uteroT = blankOrValue(req('uteroT'));
@@ -3096,7 +3105,7 @@
         + '<w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->'
         + '</head><body>' + html + '</body></html>';
       const blob = new Blob(['﻿', docHtml], {type:'application/msword;charset=utf-8'});
-      await saveBlobAs(blob, 'Laudo Perineal.doc');
+      await saveBlobAs(blob, 'Laudo Períneo.doc');
     }catch(e){
       alert('Não foi possível baixar o arquivo Word neste navegador.');
     }
