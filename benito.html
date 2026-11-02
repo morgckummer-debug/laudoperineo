@@ -15,6 +15,7 @@
     --rose:#6fae93;
     --rose-dark:#3f7a63;
     --rose-light:#e2efe9;
+    --rose-darker:#2c5a48;
     --sage:#3f7a63;
     --sage-light:#e2efe9;
     --amber:#c05a34;
@@ -78,6 +79,20 @@
     color:var(--rose-dark);margin:0;font-weight:600;
   }
   .card-body{padding:18px 20px 20px;}
+  /* Títulos dos cards viram barras clicáveis (2026-11-02, mesmo layout do laudo perineal da Dra. Morgana, na paleta verde) */
+  .card-head{cursor:pointer;user-select:none;gap:10px;}
+  .card-head h2{flex:1;}
+  .card-head:focus-visible{outline:2px solid var(--rose);outline-offset:-2px;}
+  .card > .card-head{background:var(--rose-dark);border-bottom-color:var(--rose-darker);}
+  .card > .card-head h2{color:#fff;}
+  .card > .card-head::after{background:rgba(255,255,255,.18);color:#fff;}
+  .card > .card-head:hover{background:var(--rose-darker);}
+  .card-head::after{content:'▶';width:22px;height:22px;border-radius:50%;background:var(--rose-light);color:var(--rose-dark);display:flex;align-items:center;justify-content:center;font-size:12px;transition:transform .2s;flex:none;transform:rotate(90deg);}
+  .card.fechado .card-head::after{transform:none;}
+  .card.card-fixo > .card-head{cursor:default;}
+  .card.card-fixo > .card-head::after{display:none;}
+  .card.fechado .card-head{border-bottom:0;}
+  .card.fechado .card-body{display:none;}
 
   .field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:14px;}
   .field{display:flex;flex-direction:column;gap:5px;}
@@ -108,6 +123,75 @@
   .conditional{display:none;}
   .conditional.show{display:block;}
 
+  /* Campos em quadros (mesmo padrão dos morfológicos, ver CLAUDE.md):
+     nome à esquerda, caixa curta, unidade à direita. .bio-linha também é
+     .field: anula o empilhamento dela. */
+  .bio-grupos{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px;}
+  .bio-col{flex:1 1 260px;display:flex;flex-direction:column;gap:14px;min-width:0;}
+  .bio-col:only-child{flex:0 1 520px;}
+  .bio-grupo{border:1px solid var(--line);border-radius:14px;padding:12px 16px 6px;background:#fff;}
+  .bio-grupo.conditional.show{display:block;}
+  .bio-grupo h4{margin:0 0 6px;font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-soft);font-weight:700;}
+  .field.bio-linha{display:grid;grid-template-columns:1fr 86px 30px;align-items:center;gap:10px;padding:5px 0;border-top:1px dashed var(--line-soft);margin:0;}
+  .bio-grupo h4 + .bio-linha, .bio-grupo h4 + div > .bio-linha:first-child{border-top:0;}
+  .field.bio-linha label{font-size:13.5px;color:var(--ink);font-weight:500;margin:0;}
+  .field.bio-linha label small{display:block;font-size:11px;color:var(--ink-soft);font-weight:400;}
+  .field.bio-linha .flag-note{margin-top:2px;}
+  .field.bio-linha input[type=text]{text-align:center;font-size:15px;font-weight:600;padding:8px 6px;}
+  .field.bio-linha.bio-medidas{grid-template-columns:1fr 150px 30px;}
+  .bio-un{font-size:12.5px;color:var(--ink-soft);}
+  .field.bio-linha.bio-sel{grid-template-columns:1fr 170px;}
+  .field.bio-linha.conditional{display:none;}
+  .field.bio-linha.conditional.show{display:grid;}
+  .bio-grupo .bex-aspecto, .bio-grupo #wrap_bexigaDescricao{border-top:1px dashed var(--line-soft);padding:8px 0;margin:0;}
+  .field.bio-linha select{padding:8px 8px;font-size:13px;}
+  .field.bio-linha.bio-texto{grid-template-columns:130px 1fr;}
+  .field.bio-linha.bio-data{grid-template-columns:1fr 130px;}
+  .field.bio-linha.bio-texto input[type=text]{text-align:left;font-weight:500;font-size:14px;padding:8px 12px;}
+  .field.bio-linha.bio-texto.bio-larga{grid-template-columns:1fr;gap:4px;}
+  .field.bio-linha.bio-gpa{grid-template-columns:repeat(3,auto 64px);justify-content:start;column-gap:10px;}
+  .field.bio-linha.bio-gpa label{font-weight:600;}
+  .field.bio-linha.bio-gpa label:not(:first-child){margin-left:14px;}
+  /* Quadro da paciente (2026-10-27, opção B escolhida pela médica): nome na linha de cima,
+     o resto em duas colunas dentro do mesmo quadro, com o G/P/A junto. */
+  .bio-grupo.bio-paciente{margin-bottom:14px;}
+  .bio-grade2{display:grid;grid-template-columns:1fr 1fr;column-gap:24px;}
+  .bio-grade2 > .field.bio-linha{border-top:1px dashed var(--line-soft);}
+  .bio-grade2 .field.bio-linha.bio-gpa{grid-template-columns:repeat(3,auto 56px);justify-content:space-between;column-gap:8px;}
+  .bio-grade2 .field.bio-linha.bio-gpa label:not(:first-child){margin-left:0;}
+  .bio-grupo h4 + .bio-grade2 > .field.bio-linha:nth-child(-n+2){border-top:0;}
+  @media (max-width:720px){ .bio-grade2{grid-template-columns:1fr;} .bio-grupo h4 + .bio-grade2 > .field.bio-linha:nth-child(2){border-top:1px dashed var(--line-soft);} }
+  /* Ovários lado a lado (2026-10-28): o aspecto de cada ovário fica dentro do quadro dele. */
+  .ov-aspecto{border-top:1px dashed var(--line-soft);margin-top:4px;padding-top:10px;}
+  .ov-aspecto .field-row{margin-bottom:10px;}
+  .ov-sub{border-top:1px dashed var(--line-soft);padding-top:8px;}
+  .ov-sub-titulo{margin:0 0 6px;font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-soft);font-weight:700;}
+  .ov-titulo{font-size:12.5px;color:var(--rose-dark);font-weight:600;margin:0 0 8px;}
+  @media (max-width:720px){ .bio-grupos{flex-direction:column;} .bio-col, .bio-col:only-child{flex:0 0 auto;} }
+  /* Nome e data do exame na mesma linha (2026-10-28) */
+  .bio-nome-data{display:grid;grid-template-columns:1fr 150px;column-gap:16px;align-items:end;}
+  .bio-nome-data > .field.bio-linha{grid-template-columns:1fr;gap:4px;}
+  .bio-nome-data > .field.bio-linha input[type=text]{text-align:left;font-weight:500;font-size:14px;padding:8px 12px;}
+  .bio-grupo h4 + .bio-nome-data > .field.bio-linha{border-top:0;}
+  .bio-grade2 > .field:only-child{grid-column:1/-1;}
+  @media (max-width:360px){ .bio-nome-data{grid-template-columns:1fr;} }
+  /* Compartimento médio: sub-barras clicáveis (2026-11-02, pedido da médica) */
+  .fsec{border:1px solid var(--line);border-radius:10px;margin:0 0 10px;background:#fff;overflow:hidden;}
+  .fsec-bar{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;background:#fff;border:0;cursor:pointer;text-align:left;font:inherit;color:inherit;}
+  .fsec-bar .num{width:24px;height:24px;border-radius:50%;background:var(--rose-dark);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;}
+  .fsec.feita .num{background:#3c8a5a;}
+  .fsec-bar .tit{font-size:12.5px;font-weight:700;color:var(--rose-dark);text-transform:uppercase;letter-spacing:.3px;text-align:left;}
+  .fsec-bar .res{margin-left:auto;font-size:12px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;max-width:50%;}
+  .fsec-bar .chev{width:22px;height:22px;border-radius:50%;background:var(--rose-light);color:var(--rose-dark);display:flex;align-items:center;justify-content:center;font-size:12px;transition:transform .2s;flex:none;}
+  .fsec.open{border-color:var(--rose);box-shadow:0 0 0 3px var(--rose-light);}
+  .fsec.open .fsec-bar{background:var(--rose-light);}
+  .fsec.open .fsec-bar .chev{transform:rotate(90deg);}
+  .fsec-body{display:none;padding:12px 14px 14px;border-top:1px solid var(--line);}
+  .fsec.open .fsec-body{display:block;}
+  .fsec-top{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;font-size:12px;color:var(--ink-soft);}
+  .fsec-top button{background:none;border:0;color:var(--rose-dark);font:inherit;font-weight:600;text-decoration:underline;cursor:pointer;padding:0;}
+  @media (max-width:560px){.fsec-bar .res{display:none;}}
+  .alt-fsecs{margin-top:4px;}
   hr.sep{border:none;border-top:1px dashed var(--line);margin:14px 0;}
 
   /* Preview / laudo pane */
@@ -468,13 +552,17 @@
   <!-- FORM COLUMN -->
   <div id="formCol">
 
-    <div class="card">
+    <div class="card card-fixo">
       <div class="card-head"><h2>Dados do exame</h2></div>
       <div class="card-body">
-        <div class="field-row">
-          <div class="field"><label>Nome da paciente</label><input type="text" id="nomePaciente" placeholder="nome completo"></div>
-          <div class="field"><label>Médico solicitante</label><input type="text" id="medicoSolicitante" placeholder="ex: Dr. Anderson"></div>
-          <div class="field"><label>Data do exame</label><input type="text" inputmode="numeric" id="dataExame" placeholder="dd/mm/aaaa" maxlength="10"></div>
+        <div class="bio-grupo bio-paciente"><h4>Paciente e exame</h4>
+          <div class="bio-nome-data">
+            <div class="field bio-linha bio-texto bio-larga"><label for="nomePaciente">Nome</label><input type="text" id="nomePaciente" placeholder="Nome completo"></div>
+            <div class="field bio-linha bio-data"><label for="dataExame">Data do exame</label><input type="text" inputmode="numeric" id="dataExame" placeholder="dd/mm/aaaa" maxlength="10"></div>
+          </div>
+          <div class="bio-grade2">
+            <div class="field bio-linha bio-texto"><label for="medicoSolicitante">Médico solicitante</label><input type="text" id="medicoSolicitante" placeholder="ex: Dr. Anderson"></div>
+          </div>
         </div>
         <hr class="sep">
         <label style="font-size:12.5px;color:var(--ink-soft);font-weight:500;display:block;margin-bottom:8px;">Objetivo do exame</label>
@@ -490,45 +578,30 @@
     <div class="card">
       <div class="card-head"><h2>Compartimento anterior</h2></div>
       <div class="card-body">
-        <div class="field-row">
-          <div class="field"><label>Comprimento da uretra ao repouso</label><input type="text" inputmode="decimal" data-decimals="1" id="uretraComprimento" placeholder="cm"></div>
-          <div class="field"><label>Abertura uretral à Valsalva</label>
-            <select id="aberturaUretral"><option value="normal">Normal</option><option value="anormal">Anormal</option></select>
+        <div class="bio-grupos">
+          <div class="bio-col">
+            <div class="bio-grupo"><h4>Uretra e colo vesical</h4>
+              <div class="field bio-linha"><label for="uretraComprimento">Comprimento da uretra<small>ao repouso</small></label><input type="text" inputmode="decimal" data-decimals="1" id="uretraComprimento" placeholder=""><span class="bio-un">cm</span></div>
+              <div class="field bio-linha bio-sel"><label for="aberturaUretral">Abertura uretral<small>à Valsalva</small></label><select id="aberturaUretral"><option value="normal">Normal</option><option value="anormal">Anormal</option></select></div>
+              <div class="field bio-linha"><label for="afunilamento">Afunilamento distal<small>VR: até <span class="vr-afunilamento">5</span> mm</small><span class="flag-note" id="flag_afunilamento">Acima do valor de referência</span></label><input type="text" inputmode="decimal" data-decimals="1" id="afunilamento" placeholder=""><span class="bio-un">mm</span></div>
+              <div class="field bio-linha"><label for="anguloRepouso">Ângulo retrovesical<small>ao repouso · VR: <span class="vr-anguloMin">90</span>–<span class="vr-anguloMax">120</span>°</small><span class="flag-note" id="flag_anguloRepouso">Fora do valor de referência</span></label><input type="text" inputmode="decimal" data-decimals="0" id="anguloRepouso" placeholder=""><span class="bio-un">°</span></div>
+              <div class="field bio-linha"><label for="anguloValsalva">Ângulo retrovesical<small>à Valsalva · VR: <span class="vr-anguloMin">90</span>–<span class="vr-anguloMax">120</span>°</small><span class="flag-note" id="flag_anguloValsalva">Fora do valor de referência</span></label><input type="text" inputmode="decimal" data-decimals="0" id="anguloValsalva" placeholder=""><span class="bio-un">°</span></div>
+              <div class="field bio-linha"><label for="mobilidadeColo">Mobilidade do colo vesical<small>VR: até <span class="vr-mobilidade">10</span> mm</small><span class="flag-note" id="flag_mobilidade">Acima do valor de referência</span></label><input type="text" inputmode="decimal" data-decimals="1" id="mobilidadeColo" placeholder=""><span class="bio-un">mm</span></div>
+            </div>
           </div>
-          <div class="field"><label>Afunilamento distal <span class="vr">VR: até <span class="vr-afunilamento">5</span> mm</span></label>
-            <input type="text" inputmode="decimal" data-decimals="1" id="afunilamento" placeholder="mm">
-            <span class="flag-note" id="flag_afunilamento">Acima do valor de referência</span>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Espessura parietal vesical <span class="vr">VR: até <span class="vr-espessura">5</span> mm</span></label>
-            <input type="text" inputmode="decimal" data-decimals="1" id="espessuraParede" placeholder="mm">
-            <span class="flag-note" id="flag_espessura">Acima do valor de referência</span>
-          </div>
-          <div class="field"><label>Volume vesical pré-miccional</label><input type="text" inputmode="decimal" data-decimals="1" id="volumePre" placeholder="mL"></div>
-          <div class="field"><label>Resíduo pós-miccional</label><input type="text" inputmode="decimal" data-decimals="1" id="residuoPos" placeholder="mL"></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Aspecto das paredes / conteúdo vesical</label>
-            <select id="bexigaAspecto"><option value="normal">Normal (paredes finas e regulares, conteúdo anecoico)</option><option value="alterado">Alterado (descrever)</option></select>
-          </div>
-        </div>
-        <div class="field conditional" id="wrap_bexigaDescricao">
-          <label>Descreva o achado</label>
-          <textarea id="bexigaDescricao" rows="2" placeholder="ex: paredes trabeculadas, compatível com bexiga de esforço; presença de divertículo em parede posterior; conteúdo ecogênico em suspensão..."></textarea>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Ângulo retrovesical ao repouso <span class="vr">VR: <span class="vr-anguloMin">90</span>–<span class="vr-anguloMax">120</span>°</span></label>
-            <input type="text" inputmode="decimal" data-decimals="0" id="anguloRepouso" placeholder="°">
-            <span class="flag-note" id="flag_anguloRepouso">Fora do valor de referência</span>
-          </div>
-          <div class="field"><label>Ângulo retrovesical à Valsalva <span class="vr">VR: <span class="vr-anguloMin">90</span>–<span class="vr-anguloMax">120</span>°</span></label>
-            <input type="text" inputmode="decimal" data-decimals="0" id="anguloValsalva" placeholder="°">
-            <span class="flag-note" id="flag_anguloValsalva">Fora do valor de referência</span>
-          </div>
-          <div class="field"><label>Mobilidade do colo vesical <span class="vr">VR: até <span class="vr-mobilidade">10</span> mm</span></label>
-            <input type="text" inputmode="decimal" data-decimals="1" id="mobilidadeColo" placeholder="mm">
-            <span class="flag-note" id="flag_mobilidade">Acima do valor de referência</span>
+          <div class="bio-col">
+            <div class="bio-grupo"><h4>Bexiga</h4>
+              <div class="field bio-linha"><label for="espessuraParede">Espessura parietal vesical<small>VR: até <span class="vr-espessura">5</span> mm</small><span class="flag-note" id="flag_espessura">Acima do valor de referência</span></label><input type="text" inputmode="decimal" data-decimals="1" id="espessuraParede" placeholder=""><span class="bio-un">mm</span></div>
+              <div class="field bio-linha"><label for="volumePre">Volume pré-miccional</label><input type="text" inputmode="decimal" data-decimals="1" id="volumePre" placeholder=""><span class="bio-un">mL</span></div>
+              <div class="field bio-linha"><label for="residuoPos">Resíduo pós-miccional</label><input type="text" inputmode="decimal" data-decimals="1" id="residuoPos" placeholder=""><span class="bio-un">mL</span></div>
+              <div class="field bex-aspecto"><label for="bexigaAspecto">Aspecto das paredes / conteúdo vesical</label>
+                <select id="bexigaAspecto"><option value="normal">Normal (paredes finas e regulares, conteúdo anecoico)</option><option value="alterado">Alterado (descrever)</option></select>
+              </div>
+              <div class="field conditional" id="wrap_bexigaDescricao">
+                <label>Descreva o achado</label>
+                <textarea id="bexigaDescricao" rows="2" placeholder="ex: paredes trabeculadas, compatível com bexiga de esforço; presença de divertículo em parede posterior; conteúdo ecogênico em suspensão..."></textarea>
+              </div>
+            </div>
           </div>
         </div>
         <div class="field-row">
@@ -548,128 +621,143 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-head"><h2>Compartimento médio — hiato e descenso uterino</h2></div>
+    <div class="card" id="cardCompMedio">
+      <div class="card-head"><h2>Compartimento Médio - Útero e Hiato Genital</h2></div>
       <div class="card-body">
-        <div class="field-row">
-          <div class="field"><label>Área do hiato genital</label><input type="text" inputmode="decimal" data-decimals="1" id="hiatoGenital" placeholder="cm²"></div>
-          <div class="field"><label>Classificação (automática)</label><input type="text" id="hiatoClassif" placeholder="—" disabled></div>
-        </div>
-        <hr class="sep">
-        <div class="field-row">
-          <div class="field"><label>Descenso uterino à Valsalva (em relação à borda inferior da sínfise púbica)</label>
-            <select id="descensoUterino">
-              <option value="ausente">Permanece acima da borda inferior do púbis (sem descenso significativo)</option>
-              <option value="1">Alcança a borda inferior do púbis — prolapso grau I (leve)</option>
-              <option value="2">Alcança o intróito vaginal — prolapso grau II (moderado)</option>
-              <option value="3">Ultrapassa o intróito vaginal — prolapso grau III (acentuado)</option>
-              <option value="4">Exterioriza-se completamente pelo intróito — prolapso grau IV (total)</option>
-            </select>
-          </div>
-        </div>
-        <div class="field-row conditional" id="wrap_inversaoUterina">
-          <div class="toggle-line" style="margin:0;"><input type="checkbox" id="chkInversaoAusente"><label for="chkInversaoAusente">Confirmar ausência de inversão uterina (útero exteriorizado)</label></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Útero</h2></div>
-      <div class="card-body">
-        <div class="field-row">
-          <div class="field"><label>Posição uterina</label>
-            <select id="uteroPosicao"><option value="AVF">AVF</option><option value="RVF">RVF</option><option value="MVF">MVF</option></select>
-          </div>
-          <div class="field"><label>Valor de referência — volume uterino</label>
-            <select id="vrUteroTipo">
-              <option value="op1">VR &lt; 90 cm³</option>
-              <option value="op2">VR até 140 cm³</option>
-              <option value="op3">VR até 180 cm³</option>
-              <option value="op4">Pós-menopausa — VR &lt; 70 cm³</option>
-            </select>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Útero — longitudinal (L)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="uteroL" placeholder="cm"></div>
-          <div class="field"><label>Útero — anteroposterior (AP)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="uteroAP" placeholder="cm"></div>
-          <div class="field"><label>Útero — transverso (T)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="uteroT" placeholder="cm"></div>
-          <div class="field"><label>Volume uterino</label>
-            <input type="text" inputmode="decimal" data-decimals="1" id="uteroVolume" placeholder="cm³">
-            <span class="flag-note" id="flag_uteroVolume">Acima do valor de referência</span>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field"><label>Textura miometrial</label>
-            <select id="miometrioTextura"><option value="homogenea">Sólida e homogênea (sem nódulos)</option><option value="heterogenea">Sólida e heterogênea (nódulos/miomas)</option></select>
-          </div>
-          <div class="field"><label>Colo uterino — comprimento</label><input type="text" inputmode="decimal" data-decimals="1" id="coloUterinoComprimento" placeholder="cm"></div>
-          <div class="field"><label>Aspecto do colo uterino</label>
-            <select id="coloUterinoAspecto"><option value="normal">Normal</option><option value="hipertrofico">Hipertrófico</option></select>
-          </div>
-        </div>
-
-        <div class="conditional" id="wrap_miomaDetalhes">
-          <div class="field-row">
-            <div class="field"><label>Número de nódulos</label>
-              <select id="miomaCount"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 ou mais</option></select>
+        <div class="alt-fsecs">
+          <div class="fsec open" data-fsec="1">
+            <button type="button" class="fsec-bar"><span class="num">1</span><span class="tit">Dimensões</span><span class="chev">▶</span></button>
+            <div class="fsec-body">
+            <div class="field-row">
+              <div class="field"><label>Posição uterina</label>
+                <select id="uteroPosicao"><option value="AVF">AVF</option><option value="RVF">RVF</option><option value="MVF">MVF</option></select>
+              </div>
+              <div class="field"><label>Valor de referência — volume uterino</label>
+                <select id="vrUteroTipo">
+                  <option value="op1">VR &lt; 90 cm³</option>
+                  <option value="op2">VR até 140 cm³</option>
+                  <option value="op3">VR até 180 cm³</option>
+                  <option value="op4">Pós-menopausa — VR &lt; 70 cm³</option>
+                </select>
+              </div>
+            </div>
+            <div class="bio-grupos">
+              <div class="bio-col">
+                <div class="bio-grupo"><h4>Medidas do útero</h4>
+                  <div class="field bio-linha"><label for="uteroL">Longitudinal (L)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="uteroL" placeholder=""><span class="bio-un">cm</span></div>
+                  <div class="field bio-linha"><label for="uteroAP">Anteroposterior (AP)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="uteroAP" placeholder=""><span class="bio-un">cm</span></div>
+                  <div class="field bio-linha"><label for="uteroT">Transverso (T)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="uteroT" placeholder=""><span class="bio-un">cm</span></div>
+                  <div class="field bio-linha"><label for="uteroVolume">Volume uterino<span class="flag-note" id="flag_uteroVolume">Acima do valor de referência</span></label><input type="text" inputmode="decimal" data-decimals="1" id="uteroVolume" placeholder=""><span class="bio-un">cm³</span></div>
+                </div>
+              </div>
+              <div class="bio-col">
+                <div class="bio-grupo"><h4>Colo uterino</h4>
+                  <div class="field bio-linha"><label for="coloUterinoComprimento">Comprimento</label><input type="text" inputmode="decimal" data-decimals="1" id="coloUterinoComprimento" placeholder=""><span class="bio-un">cm</span></div>
+                  <div class="field bio-linha bio-sel"><label for="coloUterinoAspecto">Aspecto</label><select id="coloUterinoAspecto"><option value="normal">Normal</option><option value="hipertrofico">Hipertrófico</option></select></div>
+                </div>
+              </div>
+            </div>
             </div>
           </div>
-          <div id="miomaNodulosContainer"></div>
-          <button type="button" class="btn-clear" id="btnAddMioma" style="margin:2px 0 12px;">+ Adicionar nódulo</button>
-          <div class="field" style="margin-top:4px;">
-            <label>Observações adicionais (opcional)</label>
-            <textarea id="miometrioDescricao" rows="2" placeholder="qualquer detalhe extra sobre os nódulos, ou demais nódulos além dos listados acima..."></textarea>
-          </div>
-        </div>
+          <div class="fsec" data-fsec="2">
+            <button type="button" class="fsec-bar"><span class="num">2</span><span class="tit">Miométrio</span><span class="chev">▶</span></button>
+            <div class="fsec-body">
+            <div class="field-row">
+              <div class="field"><label>Textura miometrial</label>
+                <select id="miometrioTextura"><option value="homogenea">Sólida e homogênea (sem nódulos)</option><option value="heterogenea">Sólida e heterogênea (nódulos/miomas)</option></select>
+              </div>
+            </div>
+            <div class="bio-grupos">
+              <div class="bio-col">
+                <div class="bio-grupo"><h4>Alterações adicionais</h4>
+                <div class="toggle-line"><input type="checkbox" id="chkAdenomiose"><label for="chkAdenomiose">Adenomiose (pode coexistir com mioma)</label></div>
+                <div class="field-row conditional" id="wrap_adenomioseSimetria">
+                  <div class="field"><label>Paredes miometriais</label>
+                    <select id="adenomioseSimetria"><option value="simetricas">Simétricas</option><option value="assimetricas">Assimétricas</option></select>
+                  </div>
+                </div>
 
-        <hr class="sep">
-        <p style="font-size:12.5px;color:var(--rose-dark);font-weight:600;margin:0 0 8px;">Alterações adicionais</p>
-        <div class="toggle-line"><input type="checkbox" id="chkAdenomiose"><label for="chkAdenomiose">Adenomiose (pode coexistir com mioma)</label></div>
-        <div class="field-row conditional" id="wrap_adenomioseSimetria">
-          <div class="field"><label>Paredes miometriais</label>
-            <select id="adenomioseSimetria"><option value="simetricas">Simétricas</option><option value="assimetricas">Assimétricas</option></select>
-          </div>
-        </div>
+                <div class="toggle-line"><input type="checkbox" id="chkIstmocele"><label for="chkIstmocele">Istmocele (em topografia de cesárea)</label></div>
+                <div class="field-row conditional" id="wrap_istmoceleCampos">
+                  <div class="field"><label>Medida da istmocele (mm)</label><input type="text" id="istmoceleMedida" placeholder="ex: 9 x 5 x 8"></div>
+                  <div class="field"><label>Espessura do miométrio adjacente — EMA</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleAnterior" placeholder="mm"></div>
+                  <div class="field"><label>Espessura do miométrio residual — EMR</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleResidual" placeholder="mm"></div>
+                </div>
 
-        <div class="toggle-line"><input type="checkbox" id="chkIstmocele"><label for="chkIstmocele">Istmocele (em topografia de cesárea)</label></div>
-        <div class="field-row conditional" id="wrap_istmoceleCampos">
-          <div class="field"><label>Medida da istmocele (mm)</label><input type="text" id="istmoceleMedida" placeholder="ex: 9 x 5 x 8"></div>
-          <div class="field"><label>Espessura do miométrio adjacente — EMA</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleAnterior" placeholder="mm"></div>
-          <div class="field"><label>Espessura do miométrio residual — EMR</label><input type="text" inputmode="decimal" data-decimals="1" id="istmoceleResidual" placeholder="mm"></div>
-        </div>
+                <div class="toggle-line"><input type="checkbox" id="chkPolipoEndocervical"><label for="chkPolipoEndocervical">Pólipo endocervical</label></div>
+                <div class="field-row conditional" id="wrap_polipoEndocervicalCampos">
+                  <div class="field"><label>Medida (mm)</label><input type="text" id="polipoEndocervicalMedida" placeholder="ex: 15 x 12,2"></div>
+                </div>
 
-        <div class="toggle-line"><input type="checkbox" id="chkPolipoEndocervical"><label for="chkPolipoEndocervical">Pólipo endocervical</label></div>
-        <div class="field-row conditional" id="wrap_polipoEndocervicalCampos">
-          <div class="field"><label>Medida (mm)</label><input type="text" id="polipoEndocervicalMedida" placeholder="ex: 15 x 12,2"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Endométrio</h2></div>
-      <div class="card-body">
-        <div class="field-row">
-          <div class="field"><label>Espessura endometrial</label><input type="text" inputmode="decimal" data-decimals="1" data-max="25" id="endometrio" placeholder="mm"></div>
-          <div class="field"><label>Textura endometrial</label>
-            <select id="endometrioTextura"><option value="homogenea">Homogênea</option><option value="heterogenea">Heterogênea</option></select>
+                </div>
+              </div>
+            </div>
+            <div class="conditional" id="wrap_miomaDetalhes">
+              <div class="field-row">
+                <div class="field"><label>Número de nódulos</label>
+                  <select id="miomaCount"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 ou mais</option></select>
+                </div>
+              </div>
+              <div id="miomaNodulosContainer"></div>
+              <button type="button" class="btn-clear" id="btnAddMioma" style="margin:2px 0 12px;">+ Adicionar nódulo</button>
+              <div class="field" style="margin-top:4px;">
+                <label>Observações adicionais (opcional)</label>
+                <textarea id="miometrioDescricao" rows="2" placeholder="qualquer detalhe extra sobre os nódulos, ou demais nódulos além dos listados acima..."></textarea>
+              </div>
+            </div>
+            </div>
           </div>
-          <div class="field"><label>Padrão endometrial</label>
-            <select id="endometrioPadrao"><option value="trilaminar">Trilaminar</option><option value="secretor">Secretor</option><option value="laminar">Laminar</option></select>
+          <div class="fsec" data-fsec="3">
+            <button type="button" class="fsec-bar"><span class="num">3</span><span class="tit">Endométrio</span><span class="chev">▶</span></button>
+            <div class="fsec-body">
+            <div class="bio-grupos">
+              <div class="bio-col">
+                <div class="bio-grupo"><h4>Endométrio</h4>
+                  <div class="field bio-linha"><label for="endometrio">Espessura endometrial</label><input type="text" inputmode="decimal" data-decimals="1" data-max="25" id="endometrio" placeholder=""><span class="bio-un">mm</span></div>
+                  <div class="field bio-linha bio-sel"><label for="endometrioTextura">Textura</label><select id="endometrioTextura"><option value="homogenea">Homogênea</option><option value="heterogenea">Heterogênea</option></select></div>
+                  <div class="field bio-linha bio-sel"><label for="endometrioPadrao">Padrão</label><select id="endometrioPadrao"><option value="trilaminar">Trilaminar</option><option value="secretor">Secretor</option><option value="laminar">Laminar</option></select></div>
+                    <div class="toggle-line"><input type="checkbox" id="chkPolipoEndometrial"><label for="chkPolipoEndometrial">Pólipo endometrial</label></div>
+                    <div class="field-row conditional" id="wrap_polipoEndometrialCampos">
+                      <div class="field"><label>Localização</label>
+                        <select id="polipoLocalizacao"><option value="corporal">Corporal</option><option value="fúndica">Fúndica</option></select>
+                      </div>
+                      <div class="field"><label>Pedículo no folheto</label>
+                        <select id="polipoPediculo"><option value="anterior">Anterior</option><option value="posterior">Posterior</option></select>
+                      </div>
+                      <div class="field"><label>Medida (mm)</label><input type="text" id="polipoMedida" placeholder="ex: 15 x 12,2"></div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            </div>
           </div>
-        </div>
-
-        <hr class="sep">
-        <p style="font-size:12.5px;color:var(--rose-dark);font-weight:600;margin:0 0 8px;">Alterações adicionais</p>
-        <div class="toggle-line"><input type="checkbox" id="chkPolipoEndometrial"><label for="chkPolipoEndometrial">Pólipo endometrial</label></div>
-        <div class="field-row conditional" id="wrap_polipoEndometrialCampos">
-          <div class="field"><label>Localização</label>
-            <select id="polipoLocalizacao"><option value="corporal">Corporal</option><option value="fúndica">Fúndica</option></select>
+          <div class="fsec" data-fsec="4">
+            <button type="button" class="fsec-bar"><span class="num">4</span><span class="tit">Hiato genital</span><span class="chev">▶</span></button>
+            <div class="fsec-body">
+            <div class="bio-grupos">
+              <div class="bio-col">
+                <div class="bio-grupo"><h4>Hiato genital</h4>
+                  <div class="field bio-linha"><label for="hiatoGenital">Área do hiato genital</label><input type="text" inputmode="decimal" data-decimals="1" id="hiatoGenital" placeholder=""><span class="bio-un">cm²</span></div>
+                  <div class="field bio-linha bio-data"><label for="hiatoClassif">Classificação<small>automática</small></label><input type="text" id="hiatoClassif" placeholder="—" disabled></div>
+                </div>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Descenso uterino à Valsalva (em relação à borda inferior da sínfise púbica)</label>
+                <select id="descensoUterino">
+                  <option value="ausente">Permanece acima da borda inferior do púbis (sem descenso significativo)</option>
+                  <option value="1">Alcança a borda inferior do púbis — prolapso grau I (leve)</option>
+                  <option value="2">Alcança o intróito vaginal — prolapso grau II (moderado)</option>
+                  <option value="3">Ultrapassa o intróito vaginal — prolapso grau III (acentuado)</option>
+                  <option value="4">Exterioriza-se completamente pelo intróito — prolapso grau IV (total)</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-row conditional" id="wrap_inversaoUterina">
+              <div class="toggle-line" style="margin:0;"><input type="checkbox" id="chkInversaoAusente"><label for="chkInversaoAusente">Confirmar ausência de inversão uterina (útero exteriorizado)</label></div>
+            </div>
+            </div>
           </div>
-          <div class="field"><label>Pedículo no folheto</label>
-            <select id="polipoPediculo"><option value="anterior">Anterior</option><option value="posterior">Posterior</option></select>
-          </div>
-          <div class="field"><label>Medida (mm)</label><input type="text" id="polipoMedida" placeholder="ex: 15 x 12,2"></div>
         </div>
       </div>
     </div>
@@ -685,186 +773,190 @@
             </select>
           </div>
         </div>
-        <hr class="sep">
-        <p style="font-size:12.5px;color:var(--rose-dark);font-weight:600;margin:0 0 8px;">Ovário direito</p>
-        <div class="field-row field-row-compact">
-          <div class="field"><label>L</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovD_L" placeholder="cm"></div>
-          <div class="field"><label>AP</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovD_AP" placeholder="cm"></div>
-          <div class="field"><label>T</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovD_T" placeholder="cm"></div>
-          <div class="field"><label>Volume</label>
-            <input type="text" inputmode="decimal" data-decimals="1" id="ovD_volume" placeholder="cm³">
-            <span class="flag-note" id="flag_ovD_volume">Fora do valor de referência</span>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Aspecto</label>
-            <select id="ovD_aspecto">
-              <option value="normal">Normal (dimensões e ecotextura preservadas)</option>
-              <option value="volume_reduzido">Volume reduzido</option>
-              <option value="policistico">Ovário policístico</option>
-              <option value="cisto">Cisto simples</option>
-              <option value="corpoluteo">Corpo lúteo</option>
-              <option value="foliculo">Folículo dominante</option>
-              <option value="dermoide">Cisto dermoide (teratoma)</option>
-              <option value="endometrioma">Endometrioma</option>
-              <option value="nao_identificado">Não identificado</option>
-              <option value="alterado">Outro (descrever)</option>
-            </select>
-          </div>
-          <div class="field conditional" id="wrap_ovD_policistico"><label>Volume do ovário</label><select id="ovD_policisticoVolume">
-            <option value="aumentado">Volume aumentado</option>
-            <option value="normal">Volume normal</option>
-          </select></div>
-        </div>
-        <div class="conditional" id="wrap_ovD_cisto">
-          <div id="ovD_cistoLista"></div>
-          <button type="button" class="btn-clear" id="ovD_cistoAdd" style="margin:2px 0 8px;">+ Adicionar cisto</button>
-          <label class="toggle-line" style="margin:0 0 12px;font-size:11.5px;"><input type="checkbox" id="ovD_cistoMostrarVolume" checked style="width:14px;height:14px;">Mostrar volume dos cistos no laudo</label>
-        </div>
-        <div class="field-row conditional" id="wrap_ovD_corpoluteo">
-          <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_corpoLuteoMedida" placeholder="ex: 15 x 12,2"></div>
-        </div>
-        <div class="field-row conditional" id="wrap_ovD_foliculo">
-          <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_foliculoMedida" placeholder="ex: 15 x 12,2"></div>
-        </div>
-        <div class="field-row conditional" id="wrap_ovD_dermoide">
-          <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_dermoideMedida" placeholder="ex: 35 x 30"></div>
-        </div>
-        <div class="field-row conditional" id="wrap_ovD_endometrioma">
-          <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_endometriomaMedida" placeholder="ex: 15 x 12,2"></div>
-        </div>
-        <div class="field conditional" id="wrap_ovD_descricao">
-          <label>Descreva o achado</label>
-          <textarea id="ovD_descricao" rows="2" placeholder="ex: formação sólida com fluxo ao Doppler..."></textarea>
-        </div>
+        <div class="bio-grupos">
+          <div class="bio-col">
+            <div class="bio-grupo"><h4>Ovário direito</h4>
+              <div class="conditional show" id="wrap_ovD_medidas">
+              <div class="field bio-linha"><label for="ovD_L">Longitudinal (L)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovD_L" placeholder=""><span class="bio-un">cm</span></div>
+                  <div class="field bio-linha"><label for="ovD_AP">Anteroposterior (AP)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovD_AP" placeholder=""><span class="bio-un">cm</span></div>
+                  <div class="field bio-linha"><label for="ovD_T">Transverso (T)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovD_T" placeholder=""><span class="bio-un">cm</span></div>
+              <div class="field bio-linha"><label for="ovD_volume">Volume<span class="flag-note" id="flag_ovD_volume">Fora do valor de referência</span></label><input type="text" inputmode="decimal" data-decimals="1" id="ovD_volume" placeholder=""><span class="bio-un">cm³</span></div>
+              </div>
+              <div class="ov-aspecto">
+              <div class="field-row">
+                <div class="field"><label>Aspecto</label>
+                  <select id="ovD_aspecto">
+                    <option value="normal">Normal (dimensões e ecotextura preservadas)</option>
+                    <option value="volume_reduzido">Volume reduzido</option>
+                    <option value="policistico">Ovário policístico</option>
+                    <option value="cisto">Cisto simples</option>
+                    <option value="corpoluteo">Corpo lúteo</option>
+                    <option value="foliculo">Folículo dominante</option>
+                    <option value="dermoide">Cisto dermoide (teratoma)</option>
+                    <option value="endometrioma">Endometrioma</option>
+                    <option value="ausente">Ausente (ooforectomia prévia)</option>
+                    <option value="nao_identificado">Não identificado</option>
+                    <option value="alterado">Outro (descrever)</option>
+                  </select>
+                </div>
+                <div class="field conditional" id="wrap_ovD_policistico"><label>Volume do ovário</label><select id="ovD_policisticoVolume">
+                  <option value="aumentado">Volume aumentado</option>
+                  <option value="normal">Volume normal</option>
+                </select></div>
+              </div>
+              <div class="conditional" id="wrap_ovD_cisto">
+                <div id="ovD_cistoLista"></div>
+                <button type="button" class="btn-clear" id="ovD_cistoAdd" style="margin:2px 0 8px;">+ Adicionar cisto</button>
+                <label class="toggle-line" style="margin:0 0 12px;font-size:11.5px;"><input type="checkbox" id="ovD_cistoMostrarVolume" checked style="width:14px;height:14px;">Mostrar volume dos cistos no laudo</label>
+              </div>
+              <div class="field-row conditional" id="wrap_ovD_corpoluteo">
+                <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_corpoLuteoMedida" placeholder="ex: 15 x 12,2"></div>
+              </div>
+              <div class="field-row conditional" id="wrap_ovD_foliculo">
+                <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_foliculoMedida" placeholder="ex: 15 x 12,2"></div>
+              </div>
+              <div class="field-row conditional" id="wrap_ovD_dermoide">
+                <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_dermoideMedida" placeholder="ex: 35 x 30"></div>
+              </div>
+              <div class="field-row conditional" id="wrap_ovD_endometrioma">
+                <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_endometriomaMedida" placeholder="ex: 15 x 12,2"></div>
+              </div>
+              <div class="field conditional" id="wrap_ovD_descricao">
+                <label>Descreva o achado</label>
+                <textarea id="ovD_descricao" rows="2" placeholder="ex: formação sólida com fluxo ao Doppler..."></textarea>
+              </div>
 
-        <div class="conditional show" id="wrap_ovD_segunda">
-          <div class="field-row">
-            <div class="field"><label>Alteração adicional no mesmo ovário (opcional)</label>
-              <select id="ovD_aspecto2">
-                <option value="">Nenhuma</option>
-                <option value="cisto">Cisto simples</option>
-                <option value="corpoluteo">Corpo lúteo</option>
-                <option value="foliculo">Folículo dominante</option>
-                <option value="dermoide">Cisto dermoide (teratoma)</option>
-                <option value="endometrioma">Endometrioma</option>
-                <option value="alterado">Outro (descrever)</option>
-              </select>
+              <div class="conditional show" id="wrap_ovD_segunda">
+                <div class="field-row">
+                  <div class="field"><label>Alteração adicional no mesmo ovário (opcional)</label>
+                    <select id="ovD_aspecto2">
+                      <option value="">Nenhuma</option>
+                      <option value="cisto">Cisto simples</option>
+                      <option value="corpoluteo">Corpo lúteo</option>
+                      <option value="foliculo">Folículo dominante</option>
+                      <option value="dermoide">Cisto dermoide (teratoma)</option>
+                      <option value="endometrioma">Endometrioma</option>
+                      <option value="alterado">Outro (descrever)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="conditional" id="wrap_ovD_cisto_2">
+                  <div id="ovD_cistoLista2"></div>
+                  <button type="button" class="btn-clear" id="ovD_cistoAdd2" style="margin:2px 0 8px;">+ Adicionar cisto</button>
+                  <label class="toggle-line" style="margin:0 0 12px;font-size:11.5px;"><input type="checkbox" id="ovD_cistoMostrarVolume2" checked style="width:14px;height:14px;">Mostrar volume dos cistos no laudo</label>
+                </div>
+                <div class="field-row conditional" id="wrap_ovD_corpoluteo_2">
+                  <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_corpoLuteoMedida2" placeholder="ex: 15 x 12,2"></div>
+                </div>
+                <div class="field-row conditional" id="wrap_ovD_foliculo_2">
+                  <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_foliculoMedida2" placeholder="ex: 15 x 12,2"></div>
+                </div>
+                <div class="field-row conditional" id="wrap_ovD_dermoide_2">
+                  <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_dermoideMedida2" placeholder="ex: 35 x 30"></div>
+                </div>
+                <div class="field-row conditional" id="wrap_ovD_endometrioma_2">
+                  <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_endometriomaMedida2" placeholder="ex: 15 x 12,2"></div>
+                </div>
+                <div class="field conditional" id="wrap_ovD_descricao_2">
+                  <label>Descreva o achado adicional</label>
+                  <textarea id="ovD_descricao2" rows="2" placeholder="ex: formação sólida com fluxo ao Doppler..."></textarea>
+                </div>
+              </div>
+              </div>
             </div>
           </div>
-          <div class="conditional" id="wrap_ovD_cisto_2">
-            <div id="ovD_cistoLista2"></div>
-            <button type="button" class="btn-clear" id="ovD_cistoAdd2" style="margin:2px 0 8px;">+ Adicionar cisto</button>
-            <label class="toggle-line" style="margin:0 0 12px;font-size:11.5px;"><input type="checkbox" id="ovD_cistoMostrarVolume2" checked style="width:14px;height:14px;">Mostrar volume dos cistos no laudo</label>
-          </div>
-          <div class="field-row conditional" id="wrap_ovD_corpoluteo_2">
-            <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_corpoLuteoMedida2" placeholder="ex: 15 x 12,2"></div>
-          </div>
-          <div class="field-row conditional" id="wrap_ovD_foliculo_2">
-            <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_foliculoMedida2" placeholder="ex: 15 x 12,2"></div>
-          </div>
-          <div class="field-row conditional" id="wrap_ovD_dermoide_2">
-            <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_dermoideMedida2" placeholder="ex: 35 x 30"></div>
-          </div>
-          <div class="field-row conditional" id="wrap_ovD_endometrioma_2">
-            <div class="field"><label>Medida (mm)</label><input type="text" id="ovD_endometriomaMedida2" placeholder="ex: 15 x 12,2"></div>
-          </div>
-          <div class="field conditional" id="wrap_ovD_descricao_2">
-            <label>Descreva o achado adicional</label>
-            <textarea id="ovD_descricao2" rows="2" placeholder="ex: formação sólida com fluxo ao Doppler..."></textarea>
-          </div>
-        </div>
+          <div class="bio-col">
+            <div class="bio-grupo"><h4>Ovário esquerdo</h4>
+              <div class="conditional show" id="wrap_ovE_medidas">
+              <div class="field bio-linha"><label for="ovE_L">Longitudinal (L)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovE_L" placeholder=""><span class="bio-un">cm</span></div>
+                  <div class="field bio-linha"><label for="ovE_AP">Anteroposterior (AP)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovE_AP" placeholder=""><span class="bio-un">cm</span></div>
+                  <div class="field bio-linha"><label for="ovE_T">Transverso (T)</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovE_T" placeholder=""><span class="bio-un">cm</span></div>
+              <div class="field bio-linha"><label for="ovE_volume">Volume<span class="flag-note" id="flag_ovE_volume">Fora do valor de referência</span></label><input type="text" inputmode="decimal" data-decimals="1" id="ovE_volume" placeholder=""><span class="bio-un">cm³</span></div>
+              </div>
+              <div class="ov-aspecto">
+              <div class="field-row">
+                <div class="field"><label>Aspecto</label>
+                  <select id="ovE_aspecto">
+                    <option value="normal">Normal (dimensões e ecotextura preservadas)</option>
+                    <option value="volume_reduzido">Volume reduzido</option>
+                    <option value="policistico">Ovário policístico</option>
+                    <option value="cisto">Cisto simples</option>
+                    <option value="corpoluteo">Corpo lúteo</option>
+                    <option value="foliculo">Folículo dominante</option>
+                    <option value="dermoide">Cisto dermoide (teratoma)</option>
+                    <option value="endometrioma">Endometrioma</option>
+                    <option value="ausente">Ausente (ooforectomia prévia)</option>
+                    <option value="nao_identificado">Não identificado</option>
+                    <option value="alterado">Outro (descrever)</option>
+                  </select>
+                </div>
+                <div class="field conditional" id="wrap_ovE_policistico"><label>Volume do ovário</label><select id="ovE_policisticoVolume">
+                  <option value="aumentado">Volume aumentado</option>
+                  <option value="normal">Volume normal</option>
+                </select></div>
+              </div>
+              <div class="conditional" id="wrap_ovE_cisto">
+                <div id="ovE_cistoLista"></div>
+                <button type="button" class="btn-clear" id="ovE_cistoAdd" style="margin:2px 0 8px;">+ Adicionar cisto</button>
+                <label class="toggle-line" style="margin:0 0 12px;font-size:11.5px;"><input type="checkbox" id="ovE_cistoMostrarVolume" checked style="width:14px;height:14px;">Mostrar volume dos cistos no laudo</label>
+              </div>
+              <div class="field-row conditional" id="wrap_ovE_corpoluteo">
+                <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_corpoLuteoMedida" placeholder="ex: 15 x 12,2"></div>
+              </div>
+              <div class="field-row conditional" id="wrap_ovE_foliculo">
+                <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_foliculoMedida" placeholder="ex: 15 x 12,2"></div>
+              </div>
+              <div class="field-row conditional" id="wrap_ovE_dermoide">
+                <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_dermoideMedida" placeholder="ex: 35 x 30"></div>
+              </div>
+              <div class="field-row conditional" id="wrap_ovE_endometrioma">
+                <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_endometriomaMedida" placeholder="ex: 15 x 12,2"></div>
+              </div>
+              <div class="field conditional" id="wrap_ovE_descricao">
+                <label>Descreva o achado</label>
+                <textarea id="ovE_descricao" rows="2" placeholder="ex: formação sólida com fluxo ao Doppler..."></textarea>
+              </div>
 
-        <hr class="sep">
-        <p style="font-size:12.5px;color:var(--rose-dark);font-weight:600;margin:0 0 8px;">Ovário esquerdo</p>
-        <div class="field-row field-row-compact">
-          <div class="field"><label>L</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovE_L" placeholder="cm"></div>
-          <div class="field"><label>AP</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovE_AP" placeholder="cm"></div>
-          <div class="field"><label>T</label><input type="text" inputmode="decimal" data-decimals="1" data-maxint="1" id="ovE_T" placeholder="cm"></div>
-          <div class="field"><label>Volume</label>
-            <input type="text" inputmode="decimal" data-decimals="1" id="ovE_volume" placeholder="cm³">
-            <span class="flag-note" id="flag_ovE_volume">Fora do valor de referência</span>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Aspecto</label>
-            <select id="ovE_aspecto">
-              <option value="normal">Normal (dimensões e ecotextura preservadas)</option>
-              <option value="volume_reduzido">Volume reduzido</option>
-              <option value="policistico">Ovário policístico</option>
-              <option value="cisto">Cisto simples</option>
-              <option value="corpoluteo">Corpo lúteo</option>
-              <option value="foliculo">Folículo dominante</option>
-              <option value="dermoide">Cisto dermoide (teratoma)</option>
-              <option value="endometrioma">Endometrioma</option>
-              <option value="nao_identificado">Não identificado</option>
-              <option value="alterado">Outro (descrever)</option>
-            </select>
-          </div>
-          <div class="field conditional" id="wrap_ovE_policistico"><label>Volume do ovário</label><select id="ovE_policisticoVolume">
-            <option value="aumentado">Volume aumentado</option>
-            <option value="normal">Volume normal</option>
-          </select></div>
-        </div>
-        <div class="conditional" id="wrap_ovE_cisto">
-          <div id="ovE_cistoLista"></div>
-          <button type="button" class="btn-clear" id="ovE_cistoAdd" style="margin:2px 0 8px;">+ Adicionar cisto</button>
-          <label class="toggle-line" style="margin:0 0 12px;font-size:11.5px;"><input type="checkbox" id="ovE_cistoMostrarVolume" checked style="width:14px;height:14px;">Mostrar volume dos cistos no laudo</label>
-        </div>
-        <div class="field-row conditional" id="wrap_ovE_corpoluteo">
-          <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_corpoLuteoMedida" placeholder="ex: 15 x 12,2"></div>
-        </div>
-        <div class="field-row conditional" id="wrap_ovE_foliculo">
-          <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_foliculoMedida" placeholder="ex: 15 x 12,2"></div>
-        </div>
-        <div class="field-row conditional" id="wrap_ovE_dermoide">
-          <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_dermoideMedida" placeholder="ex: 35 x 30"></div>
-        </div>
-        <div class="field-row conditional" id="wrap_ovE_endometrioma">
-          <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_endometriomaMedida" placeholder="ex: 15 x 12,2"></div>
-        </div>
-        <div class="field conditional" id="wrap_ovE_descricao">
-          <label>Descreva o achado</label>
-          <textarea id="ovE_descricao" rows="2" placeholder="ex: formação sólida com fluxo ao Doppler..."></textarea>
-        </div>
-
-        <div class="conditional show" id="wrap_ovE_segunda">
-          <div class="field-row">
-            <div class="field"><label>Alteração adicional no mesmo ovário (opcional)</label>
-              <select id="ovE_aspecto2">
-                <option value="">Nenhuma</option>
-                <option value="cisto">Cisto simples</option>
-                <option value="corpoluteo">Corpo lúteo</option>
-                <option value="foliculo">Folículo dominante</option>
-                <option value="dermoide">Cisto dermoide (teratoma)</option>
-                <option value="endometrioma">Endometrioma</option>
-                <option value="alterado">Outro (descrever)</option>
-              </select>
+              <div class="conditional show" id="wrap_ovE_segunda">
+                <div class="field-row">
+                  <div class="field"><label>Alteração adicional no mesmo ovário (opcional)</label>
+                    <select id="ovE_aspecto2">
+                      <option value="">Nenhuma</option>
+                      <option value="cisto">Cisto simples</option>
+                      <option value="corpoluteo">Corpo lúteo</option>
+                      <option value="foliculo">Folículo dominante</option>
+                      <option value="dermoide">Cisto dermoide (teratoma)</option>
+                      <option value="endometrioma">Endometrioma</option>
+                      <option value="alterado">Outro (descrever)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="conditional" id="wrap_ovE_cisto_2">
+                  <div id="ovE_cistoLista2"></div>
+                  <button type="button" class="btn-clear" id="ovE_cistoAdd2" style="margin:2px 0 8px;">+ Adicionar cisto</button>
+                  <label class="toggle-line" style="margin:0 0 12px;font-size:11.5px;"><input type="checkbox" id="ovE_cistoMostrarVolume2" checked style="width:14px;height:14px;">Mostrar volume dos cistos no laudo</label>
+                </div>
+                <div class="field-row conditional" id="wrap_ovE_corpoluteo_2">
+                  <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_corpoLuteoMedida2" placeholder="ex: 15 x 12,2"></div>
+                </div>
+                <div class="field-row conditional" id="wrap_ovE_foliculo_2">
+                  <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_foliculoMedida2" placeholder="ex: 15 x 12,2"></div>
+                </div>
+                <div class="field-row conditional" id="wrap_ovE_dermoide_2">
+                  <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_dermoideMedida2" placeholder="ex: 35 x 30"></div>
+                </div>
+                <div class="field-row conditional" id="wrap_ovE_endometrioma_2">
+                  <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_endometriomaMedida2" placeholder="ex: 15 x 12,2"></div>
+                </div>
+                <div class="field conditional" id="wrap_ovE_descricao_2">
+                  <label>Descreva o achado adicional</label>
+                  <textarea id="ovE_descricao2" rows="2" placeholder="ex: formação sólida com fluxo ao Doppler..."></textarea>
+                </div>
+              </div>
+              </div>
             </div>
           </div>
-          <div class="conditional" id="wrap_ovE_cisto_2">
-            <div id="ovE_cistoLista2"></div>
-            <button type="button" class="btn-clear" id="ovE_cistoAdd2" style="margin:2px 0 8px;">+ Adicionar cisto</button>
-            <label class="toggle-line" style="margin:0 0 12px;font-size:11.5px;"><input type="checkbox" id="ovE_cistoMostrarVolume2" checked style="width:14px;height:14px;">Mostrar volume dos cistos no laudo</label>
-          </div>
-          <div class="field-row conditional" id="wrap_ovE_corpoluteo_2">
-            <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_corpoLuteoMedida2" placeholder="ex: 15 x 12,2"></div>
-          </div>
-          <div class="field-row conditional" id="wrap_ovE_foliculo_2">
-            <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_foliculoMedida2" placeholder="ex: 15 x 12,2"></div>
-          </div>
-          <div class="field-row conditional" id="wrap_ovE_dermoide_2">
-            <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_dermoideMedida2" placeholder="ex: 35 x 30"></div>
-          </div>
-          <div class="field-row conditional" id="wrap_ovE_endometrioma_2">
-            <div class="field"><label>Medida (mm)</label><input type="text" id="ovE_endometriomaMedida2" placeholder="ex: 15 x 12,2"></div>
-          </div>
-          <div class="field conditional" id="wrap_ovE_descricao_2">
-            <label>Descreva o achado adicional</label>
-            <textarea id="ovE_descricao2" rows="2" placeholder="ex: formação sólida com fluxo ao Doppler..."></textarea>
-          </div>
         </div>
-
         <hr class="sep">
         <p style="font-size:12.5px;color:var(--rose-dark);font-weight:600;margin:0 0 8px;">Alterações adicionais</p>
         <div class="toggle-line"><input type="checkbox" id="chkHidrossalpinge"><label for="chkHidrossalpinge">Hidrossalpinge</label></div>
@@ -911,13 +1003,25 @@
         </div>
 
         <hr class="sep">
-        <div class="field-row">
-          <div class="field"><label>Imagem em "casca de cebola" (intussuscepção)</label>
-            <select id="cascaCebola"><option value="ausente">Ausente</option><option value="presente">Presente</option></select>
+        <div class="bio-grupos">
+          <div class="bio-col">
+            <div class="bio-grupo"><h4>Esfíncter anal</h4>
+              <div class="field bio-linha bio-sel"><label for="esfIntStatus">Esfíncter anal interno</label><select id="esfIntStatus"><option value="preservado">Íntegro/preservado</option><option value="defeito">Defeito</option></select></div>
+              <div class="field bio-linha bio-sel conditional" id="wrap_esfIntGrau"><label for="esfIntGrau">Grau</label><select id="esfIntGrau"><option value="leve">Leve</option><option value="moderado">Moderado</option><option value="severo">Severo</option></select></div>
+              <div class="field bio-linha conditional" id="wrap_esfIntHoras"><label for="esfIntHoras">Localização<small>em horas</small></label><input type="text" id="esfIntHoras" placeholder="ex: 10h"><span class="bio-un"></span></div>
+              <div class="field bio-linha conditional" id="wrap_esfIntPct"><label for="esfIntPct">Circunferência acometida</label><input type="text" inputmode="decimal" data-decimals="0" id="esfIntPct" placeholder=""><span class="bio-un">%</span></div>
+              <div class="field bio-linha conditional" id="wrap_esfIntExtensao"><label for="esfIntExtensao">Extensão da lesão</label><input type="text" inputmode="numeric" maxlength="2" data-decimals="0" id="esfIntExtensao" placeholder=""><span class="bio-un">mm</span></div>
+              <div class="field bio-linha bio-sel"><label for="esfExtStatus">Esfíncter anal externo</label><select id="esfExtStatus"><option value="preservado">Íntegro/preservado</option><option value="defeito">Defeito</option></select></div>
+              <div class="field bio-linha bio-sel conditional" id="wrap_esfExtGrau"><label for="esfExtGrau">Grau</label><select id="esfExtGrau"><option value="leve">Leve</option><option value="moderado">Moderado</option><option value="severo">Severo</option></select></div>
+              <div class="field bio-linha conditional" id="wrap_esfExtHoras"><label for="esfExtHoras">Localização<small>em horas</small></label><input type="text" id="esfExtHoras" placeholder="ex: 2h"><span class="bio-un"></span></div>
+              <div class="field bio-linha conditional" id="wrap_esfExtPct"><label for="esfExtPct">Circunferência acometida</label><input type="text" inputmode="decimal" data-decimals="0" id="esfExtPct" placeholder=""><span class="bio-un">%</span></div>
+              <div class="field bio-linha conditional" id="wrap_esfExtExtensao"><label for="esfExtExtensao">Extensão da lesão</label><input type="text" inputmode="numeric" maxlength="2" data-decimals="0" id="esfExtExtensao" placeholder=""><span class="bio-un">mm</span></div>
+            </div>
           </div>
-        </div>
-
-        <hr class="sep">
+          <div class="bio-col">
+            <div class="bio-grupo"><h4>Outros achados</h4>
+              <div class="toggle-line"><input type="checkbox" id="chkCascaCebola"><label for="chkCascaCebola">Imagem em "casca de cebola" (intussuscepção)</label></div>
+              <hr class="sep">
         <div class="toggle-line"><input type="checkbox" id="chkDiverticulos"><label for="chkDiverticulos">Divertículos de sigmoide</label></div>
         <div class="field-row conditional" id="wrap_diverticulosStatus">
           <div class="field"><label>Sinais inflamatórios</label>
@@ -928,58 +1032,29 @@
           <label>Descreva os sinais inflamatórios</label>
           <textarea id="diverticulosDescricao" rows="2" placeholder="ex: espessamento parietal segmentar, borramento da gordura pericólica..."></textarea>
         </div>
-
-        <hr class="sep">
-        <div class="toggle-line"><input type="checkbox" id="chkEndometriose"><label for="chkEndometriose">Sinais sugestivos de endometriose profunda</label></div>
-        <div class="field conditional" id="wrap_endometrioseDescricao">
-          <label>Descreva o achado (localização, tamanho, estruturas acometidas)</label>
-          <textarea id="endometrioseDescricao" rows="2" placeholder="ex: nódulo endometriótico em septo retovaginal medindo X cm; acometimento de ligamento uterossacro direito; aderência entre reto e parede vaginal posterior..."></textarea>
-        </div>
-
+              <hr class="sep">
         <div class="toggle-line"><input type="checkbox" id="chkEndometrioseNodulo"><label for="chkEndometrioseNodulo">Nódulo de endometriose profunda (intestinal)</label></div>
         <div class="field-row conditional" id="wrap_endometrioseNoduloCampos">
           <div class="field"><label>Localização (parede intestinal)</label><input type="text" id="endometrioseLocal" placeholder="ex: retossigmoide" value="retossigmoide"></div>
           <div class="field"><label>Região</label><input type="text" id="endometrioseRegiao" placeholder="ex: retrocervical" value="retrocervical"></div>
           <div class="field"><label>Medida (mm)</label><input type="text" id="endometrioseMedida" placeholder="ex: 35 x 23"></div>
         </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>Períneo</h2></div>
+      <div class="card-head"><h2>Gap Uretral</h2></div>
       <div class="card-body">
-        <div class="field-row">
-          <div class="field"><label>Gap uretral direito <span class="vr">VR: &lt; <span class="vr-gap">25</span> mm</span></label>
-            <input type="text" inputmode="decimal" data-decimals="1" id="gapDireito" placeholder="mm">
-            <span class="flag-note" id="flag_gapDireito">Acima do valor de referência</span>
+        <div class="bio-grupos">
+          <div class="bio-col">
+            <div class="bio-grupo"><h4>Gap uretral</h4>
+              <div class="field bio-linha"><label for="gapDireito">Direito<small>VR: &lt; <span class="vr-gap">25</span> mm</small><span class="flag-note" id="flag_gapDireito">Acima do valor de referência</span></label><input type="text" inputmode="decimal" data-decimals="1" id="gapDireito" placeholder=""><span class="bio-un">mm</span></div>
+              <div class="field bio-linha"><label for="gapEsquerdo">Esquerdo<small>VR: &lt; <span class="vr-gap">25</span> mm</small><span class="flag-note" id="flag_gapEsquerdo">Acima do valor de referência</span></label><input type="text" inputmode="decimal" data-decimals="1" id="gapEsquerdo" placeholder=""><span class="bio-un">mm</span></div>
+            </div>
           </div>
-          <div class="field"><label>Gap uretral esquerdo <span class="vr">VR: &lt; <span class="vr-gap">25</span> mm</span></label>
-            <input type="text" inputmode="decimal" data-decimals="1" id="gapEsquerdo" placeholder="mm">
-            <span class="flag-note" id="flag_gapEsquerdo">Acima do valor de referência</span>
-          </div>
-        </div>
-        <hr class="sep">
-        <div class="field-row">
-          <div class="field"><label>Esfíncter anal interno</label>
-            <select id="esfIntStatus"><option value="preservado">Íntegro/preservado</option><option value="defeito">Defeito</option></select>
-          </div>
-          <div class="field conditional" id="wrap_esfIntGrau"><label>Grau</label>
-            <select id="esfIntGrau"><option value="leve">Leve</option><option value="moderado">Moderado</option><option value="severo">Severo</option></select>
-          </div>
-          <div class="field conditional" id="wrap_esfIntHoras"><label>Localização (horas)</label><input type="text" id="esfIntHoras" placeholder="ex: 10h"></div>
-          <div class="field conditional" id="wrap_esfIntPct"><label>% da circunferência</label><input type="text" inputmode="decimal" data-decimals="0" id="esfIntPct" placeholder="%"></div>
-          <div class="field conditional" id="wrap_esfIntExtensao"><label>Extensão da lesão (em mm)</label><input type="text" inputmode="numeric" maxlength="2" data-decimals="0" id="esfIntExtensao" placeholder="mm"></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Esfíncter anal externo</label>
-            <select id="esfExtStatus"><option value="preservado">Íntegro/preservado</option><option value="defeito">Defeito</option></select>
-          </div>
-          <div class="field conditional" id="wrap_esfExtGrau"><label>Grau</label>
-            <select id="esfExtGrau"><option value="leve">Leve</option><option value="moderado">Moderado</option><option value="severo">Severo</option></select>
-          </div>
-          <div class="field conditional" id="wrap_esfExtHoras"><label>Localização (horas)</label><input type="text" id="esfExtHoras" placeholder="ex: 2h"></div>
-          <div class="field conditional" id="wrap_esfExtPct"><label>% da circunferência</label><input type="text" inputmode="decimal" data-decimals="0" id="esfExtPct" placeholder="%"></div>
-          <div class="field conditional" id="wrap_esfExtExtensao"><label>Extensão da lesão (em mm)</label><input type="text" inputmode="numeric" maxlength="2" data-decimals="0" id="esfExtExtensao" placeholder="mm"></div>
         </div>
       </div>
     </div>
@@ -1828,7 +1903,6 @@
   function toggle(id, show){ const el=$(id); if(!el) return; el.classList.toggle('show', show); }
 
   $('bexigaAspecto').addEventListener('change', e=> toggle('wrap_bexigaDescricao', e.target.value==='alterado'));
-  $('chkEndometriose').addEventListener('change', e=> toggle('wrap_endometrioseDescricao', e.target.checked));
   $('chkEndometrioseNodulo').addEventListener('change', e=> toggle('wrap_endometrioseNoduloCampos', e.target.checked));
   $('chkAdenomiose').addEventListener('change', e=> toggle('wrap_adenomioseSimetria', e.target.checked));
   $('chkIstmocele').addEventListener('change', e=> toggle('wrap_istmoceleCampos', e.target.checked));
@@ -2230,9 +2304,6 @@
         }
       }
     });
-    if(state.chkEndometriose && state.endometrioseDescricao){
-      items.push({key:'endometriose', label:'Sinais sugestivos de endometriose profunda: '+state.endometrioseDescricao+'.', auto:true});
-    }
     if(state.chkEndometrioseNodulo){
       items.push({key:'endometriose-nodulo', label:phraseRaw('impEndometrioseNodulo', {REGIAO:state.endometrioseRegiao}), auto:true});
     }
@@ -2289,7 +2360,7 @@
       items.push({key:'enterocele-ausente', label:'Enterocele ausente.', auto:true});
     }
 
-    if(state.cascaCebola==='presente'){
+    if(state.chkCascaCebola){
       items.push({key:'intussuscepcao', label:'Imagem em "casca de cebola", compatível com intussuscepção retal.', auto:true});
     }
 
@@ -2332,7 +2403,7 @@
     const bladderAbnormal = hipermobilidade || espessamento || temCistocele || (state.bexigaAspecto==='alterado');
     const uterusAbnormal = state.descensoUterino!=='ausente' || (state.miometrioTextura==='heterogenea' && state.miomaTemDados) || state.coloUterinoAspecto==='hipertrofico' || state.chkIstmocele || state.chkPolipoEndocervical || state.chkPolipoEndometrial || state.chkAdenomiose;
     const ovariesAbnormal = ['ovD','ovE'].some(p=> state[p+'_aspecto']!=='normal' || state[p+'_aspecto2'] || ovarioVolumeReduzido(p)) || state.chkHidrossalpinge;
-    const posteriorAbnormal = state.chkRetocele || state.chkLesao || state.chkEnterocele || state.chkDiverticulos || state.cascaCebola==='presente' || (state.chkEndometriose && state.endometrioseDescricao) || state.chkEndometrioseNodulo;
+    const posteriorAbnormal = state.chkRetocele || state.chkLesao || state.chkEnterocele || state.chkDiverticulos || state.chkCascaCebola || state.chkEndometrioseNodulo;
     const esfincterAbnormal = state.esfIntStatus==='defeito' || state.esfExtStatus==='defeito';
     // "Genital prolapse" in Dr. Benito's wording means actual anatomic descent — cistocele,
     // uterine descensus, retocele or enterocele — not puborretal lesions, diverticulosis, etc.
@@ -2550,9 +2621,7 @@
     const lesaoMedida = blankOrValue(v('lesaoMedida'));
     const chkEnterocele = $('chkEnterocele').checked;
     const enteroceleGrau = v('enteroceleGrau');
-    const cascaCebola = v('cascaCebola');
-    const chkEndometriose = $('chkEndometriose').checked;
-    const endometrioseDescricao = vNoDot('endometrioseDescricao');
+    const chkCascaCebola = $('chkCascaCebola').checked;
     const chkEndometrioseNodulo = $('chkEndometrioseNodulo').checked;
     const endometrioseLocal = v('endometrioseLocal') || 'retossigmoide';
     const endometrioseRegiao = v('endometrioseRegiao') || 'retrocervical';
@@ -2610,7 +2679,6 @@
       ovD_aspecto2: ovD.aspecto2, ovD_descricao2: ovD.descricao2,
       ovE_aspecto: ovE.aspecto, ovE_descricao: ovE.descricao, ovE_volNum: ovE.volNum, ovE_polVol: ovE.policisticoVolume, ovE_nCistos: ovE.cistos.length, ovE_nCistos2: ovE.cistos2.length,
       ovE_aspecto2: ovE.aspecto2, ovE_descricao2: ovE.descricao2,
-      chkEndometriose, endometrioseDescricao,
       chkEndometrioseNodulo, endometrioseRegiao,
       chkAdenomiose,
       chkIstmocele, istmocelePct,
@@ -2620,7 +2688,7 @@
       descensoParede, descensoUterino, inversaoConfirmada,
       miometrioTextura, miomaTemDados: figoFrags.length>0, coloUterinoAspecto,
       chkDiverticulos, diverticulosStatus,
-      chkRetocele, retoceleGrau, chkLesao, lesaoLado, lesaoGrau, chkEnterocele, enteroceleGrau, cascaCebola,
+      chkRetocele, retoceleGrau, chkLesao, lesaoLado, lesaoGrau, chkEnterocele, enteroceleGrau, chkCascaCebola,
       esfIntStatus, esfIntGrau, esfIntPct, esfExtStatus, esfExtGrau, esfExtPct,
       slingPresente, slingPosicao, slingOutroTexto
     };
@@ -2753,12 +2821,9 @@
         html += '<li>'+phrase('enterocele', {GRAU: enteroceleGrau})+'</li>';
       }
     }
-    html += '<li>'+(cascaCebola==='presente' ? phrase('cascaCebolaPresente') : phrase('cascaCebolaAusente'))+'</li>';
+    html += '<li>'+(chkCascaCebola ? phrase('cascaCebolaPresente') : phrase('cascaCebolaAusente'))+'</li>';
     if(chkDiverticulos){
       html += '<li>'+(diverticulosStatus==='com' ? phrase('diverticulosComInflamacao', {DESCRICAO: (diverticulosDescricao || '____')}) : phrase('diverticulosSemInflamacao'))+'</li>';
-    }
-    if(chkEndometriose && endometrioseDescricao){
-      html += '<li>Observam-se sinais sugestivos de endometriose profunda: '+escapeHtml(endometrioseDescricao)+'.</li>';
     }
     if(chkEndometrioseNodulo){
       html += '<li>'+phraseRaw('endometrioseNodulo', {LOCAL: escapeHtml(endometrioseLocal), MEDIDA: span(blankOrValue(endometrioseMedida)), REGIAO: escapeHtml(endometrioseRegiao)})+'</li>';
@@ -3138,6 +3203,37 @@
   });
 
   loadPhrases().then(()=> loadVR().then(()=> addMiomaNodule()));
+  // ----- Cards recolhíveis: o título é a barra (como no obstétrico) -----
+  // Começam fechados, menos "Dados do exame" (card-fixo); vários podem ficar abertos.
+  // A classe fica só na tela; campos continuam no DOM, então laudo e rascunho não mudam.
+  // Botão dentro da barra não abre nem fecha o card.
+  function cardsBarras(){
+    document.querySelectorAll('.card:not(.card-fixo) > .card-head').forEach(h=>{
+      if(h.dataset.barra) return;
+      h.dataset.barra = '1'; h.tabIndex = 0; h.setAttribute('role','button'); h.setAttribute('aria-expanded','false');
+      h.parentElement.classList.add('fechado');
+    });
+  }
+  function alternarCard(h){
+    const card = h.parentElement, fecha = !card.classList.contains('fechado');
+    card.classList.toggle('fechado', fecha);
+    h.setAttribute('aria-expanded', String(!fecha));
+  }
+  document.addEventListener('click', e=>{
+    if(e.target.closest('button, input, select, a')) return;
+    const h=e.target.closest('.card:not(.card-fixo) > .card-head'); if(h) alternarCard(h);
+  });
+  document.addEventListener('keydown', e=>{
+    if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('.card:not(.card-fixo) > .card-head')){ e.preventDefault(); alternarCard(e.target); }
+  });
+  // Compartimento médio: sub-barras clicáveis, uma aberta por vez (pedido da médica, 2026-11-02).
+  document.getElementById('cardCompMedio').addEventListener('click', e=>{
+    const bar = e.target.closest('.fsec-bar'); if(!bar) return;
+    const sec = bar.parentElement, abrir = !sec.classList.contains('open');
+    sec.parentElement.querySelectorAll('.fsec.open').forEach(o=>o.classList.remove('open'));
+    if(abrir) sec.classList.add('open');
+  });
+  cardsBarras();
 })();
 </script>
 </body>
